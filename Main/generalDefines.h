@@ -1,10 +1,10 @@
 // Define the hardware version here:
 #ifndef ENNOID_SS_LITE
-#define ENNOID_SS_LITE		1
+#define ENNOID_SS_LITE					0
 #endif
 
 #ifndef ENNOID_SS
-#define ENNOID_SS					0
+#define ENNOID_SS					1
 #endif
 
 #ifndef ENNOID_LV

@@ -20,7 +20,7 @@
  
 #include "modDelay.h"
 #include "driverHWPowerState.h"
-#include "modconfig.h"
+#include "modConfig.h"
 
 #define POWERBUTTON_POWERDOWN_THRESHOLD_TIME 1000
 #define POWERBUTTON_FORCEON_THRESHOLD_TIME 5000

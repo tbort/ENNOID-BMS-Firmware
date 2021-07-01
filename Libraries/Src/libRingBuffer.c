@@ -1,4 +1,4 @@
-#include "libRingbuffer.h"
+#include "libRingBuffer.h"
 
 libRingBufferTypedef *libRingBufferNew(int size, int len) {
   libRingBufferTypedef *self = (libRingBufferTypedef *)malloc(sizeof(libRingBufferTypedef));
