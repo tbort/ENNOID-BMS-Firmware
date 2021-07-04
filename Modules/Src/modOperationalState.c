@@ -165,8 +165,10 @@ void modOperationalStateTask(void) {
 				if(modOperationalStateGeneralConfigHandle->LCUsePrecharge>=1){
 				  modOperationalStateSetNewState(OP_STATE_ERROR_PRECHARGE);				// An error occured during pre charge
 					modOperationalStatePackStatehandle->faultState = FAULT_CODE_PRECHARGE_TIMEOUT;
-				}else
+				}else{
 					modOperationalStateSetNewState(OP_STATE_LOAD_ENABLED);					// Goto normal load enabled operation
+					modPowerElectronicsSetPreCharge(false);
+				}
 			}
 		
 			modOperationalStateUpdateStates();
