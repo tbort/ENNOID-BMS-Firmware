@@ -9,6 +9,13 @@ This is the firmware repository containing all firmware source files. There are 
 [ENNOID-BMS Configuration tool](https://github.com/EnnoidMe/ENNOID-BMS-Tool) the tool to configure the ENNOID-BMS and upload the bootloader / update the main firmware.
 
 
+# Building with GCC
+
+- Install arm-none-eabi-gcc
+- Configure `generalDefines.h` for LV, HV, SS, or SS_LITE versions
+- Makefile has rules for flashing with STLink or JLink
+- Could also load using bootloader with binary
+
 When flashing the application the start address should be: <b>0x08000000</b>
 When flashing the bootloader the start address should be: <b>0x08032000</b>
 

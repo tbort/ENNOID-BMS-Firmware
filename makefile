@@ -100,6 +100,10 @@ LINKER_FLAGS = -Wl,-Map=main.map -Wl,--gc-sections
 
 OPENOCD_FLAGS = -f interface/stlink-v2.cfg -f target/stm32f3x.cfg
 
+OPENOCD_FLAGS_STLINK_V3 = -f interface/stlink.cfg -f target/stm32f3x.cfg
+
+OPENOCD_FLAGS_RM_PROTECTION_BIT = -d0 -f interface/stlink-v2.cfg -f target/stm32f3x.cfg -f GCC/lock.cfg
+
 all: main.elf main.bin main.hex main-St.txt main-d.txt main-h.txt main-nm.txt
 
 %.o: %.c
@@ -134,6 +138,12 @@ upload-stlink: main.elf
 upload-bin-stlink: main.bin
 	openocd $(OPENOCD_FLAGS) -c "program main.bin reset verify exit 0x08000000"
 
+rm_protection_bit_stlink:
+	openocd $(OPENOCD_FLAGS_RM_PROTECTION_BIT) 
+
+upload-bin-stlinkv3: main.bin
+	openocd $(OPENOCD_FLAGS_STLINK_V3) -c "program main.bin reset verify exit 0x08000000"
+
 upload-hex-stlink: main.hex
 	openocd $(OPENOCD_FLAGS) -c "program main.hex reset verify exit"
 
@@ -149,6 +159,8 @@ upload-bin: main.bin
 
 connect:
 	openocd $(OPENOCD_FLAGS)
+
+
 
 debug:
 	arm-none-eabi-gdb --eval-command="target remote localhost:3333" main.elf
