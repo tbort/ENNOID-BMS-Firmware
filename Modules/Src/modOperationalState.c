@@ -154,7 +154,6 @@ void modOperationalStateTask(void) {
 				if(modOperationalStateGeneralConfigHandle->buzzerSignalSource)
 					modEffectChangeStateError(STAT_BUZZER,STAT_ERROR,modOperationalStatePackStatehandle->faultState);	
 			}
-			
 			if((modOperationalStatePackStatehandle->loCurrentLoadVoltage > modOperationalStatePackStatehandle->packVoltage*modOperationalStateGeneralConfigHandle->minimalPrechargePercentage) && (modOperationalStatePackStatehandle->disChargeLCAllowed || modOperationalStateForceOn)) {
 				if(modOperationalStateForceOn) {
 					modOperationalStateSetNewState(OP_STATE_FORCEON);								// Goto force on
@@ -163,12 +162,10 @@ void modOperationalStateTask(void) {
 				}
 			}else if(modDelayTick1ms(&modOperationalStatePreChargeTimeout,modOperationalStateGeneralConfigHandle->timeoutLCPreCharge)){
 				if(modOperationalStateGeneralConfigHandle->LCUsePrecharge>=1){
-				  modOperationalStateSetNewState(OP_STATE_ERROR_PRECHARGE);				// An error occured during pre charge
+					modOperationalStateSetNewState(OP_STATE_ERROR_PRECHARGE);				// An error occured during pre charge
 					modOperationalStatePackStatehandle->faultState = FAULT_CODE_PRECHARGE_TIMEOUT;
-				}else{
+				}else
 					modOperationalStateSetNewState(OP_STATE_LOAD_ENABLED);					// Goto normal load enabled operation
-					modPowerElectronicsSetPreCharge(false);
-				}
 			}
 		
 			modOperationalStateUpdateStates();
@@ -226,7 +223,7 @@ void modOperationalStateTask(void) {
 			}
 
 			
-			if(fabs(modOperationalStatePackStatehandle->packCurrent) >= modOperationalStateGeneralConfigHandle->notUsedCurrentThreshold) {
+			if(fabs(modOperationalStatePackStatehandle->packCurrent) >= fabs(modOperationalStateGeneralConfigHandle->notUsedCurrentThreshold)) {
 				if(modDelayTick1ms(&modOperationalStateNotUsedResetDelay,1000))
 					modOperationalStateNotUsedTime = HAL_GetTick();
 			}else{
@@ -408,7 +405,7 @@ void modOperationalStateTask(void) {
 				modPowerElectronicsSetDisCharge(false);
 			}
 						
-			if(fabs(modOperationalStatePackStatehandle->packCurrent) >= modOperationalStateGeneralConfigHandle->notUsedCurrentThreshold) {
+			if(fabs(modOperationalStatePackStatehandle->packCurrent) >= fabs(modOperationalStateGeneralConfigHandle->notUsedCurrentThreshold)) {
 				if(modDelayTick1ms(&modOperationalStateNotUsedResetDelay,1000))
 					modOperationalStateNotUsedTime = HAL_GetTick();
 			}else{

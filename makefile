@@ -88,7 +88,7 @@ OBJDUMP = arm-none-eabi-objdump
 CFLAGS  = -std=gnu99 -g -Os -Wall
 CFLAGS += -mlittle-endian -mthumb -mthumb-interwork
 CFLAGS += -mcpu=cortex-m4 -fsingle-precision-constant
-CFLAGS += -Wdouble-promotion
+#CFLAGS += -Wdouble-promotion
 CFLAGS += -specs=nano.specs -specs=nosys.specs
 CFLAGS += -mfpu=fpv4-sp-d16 -mfloat-abi=hard -march=armv7e-m
 CFLAGS += -ffunction-sections -fdata-sections
@@ -139,7 +139,7 @@ upload-bin-stlink: main.bin
 	openocd $(OPENOCD_FLAGS) -c "program main.bin reset verify exit 0x08000000"
 
 rm_protection_bit_stlink:
-	openocd $(OPENOCD_FLAGS_RM_PROTECTION_BIT) 
+	openocd $(OPENOCD_FLAGS_RM_PROTECTION_BIT)
 
 upload-bin-stlinkv3: main.bin
 	openocd $(OPENOCD_FLAGS_STLINK_V3) -c "program main.bin reset verify exit 0x08000000"

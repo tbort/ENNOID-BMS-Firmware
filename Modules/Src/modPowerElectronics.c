@@ -270,9 +270,18 @@ void modPowerElectronicsSetPreCharge(bool newState) {
 	static bool preChargeLastState = false;
 	
 	if(preChargeLastState != newState) {
-		preChargeLastState = newState;	
-		modPowerElectronicsPackStateHandle->preChargeDesired = newState;
+		preChargeLastState = newState;
+
+		if(modPowerElectronicsGeneralConfigHandle->LCUsePrecharge>=1)
+			modPowerElectronicsPackStateHandle->preChargeDesired = newState;
+			
+		else
+			modPowerElectronicsPackStateHandle->preChargeDesired = false;
+
+		
+		
 		modPowerElectronicsUpdateSwitches();
+		
 	}
 };
 
@@ -280,14 +289,21 @@ void modPowerElectronicsSetPreCharge(bool newState) {
 bool modPowerElectronicsSetDisCharge(bool newState) {
 	static bool dischargeLastState = false;
 	
-	if(dischargeLastState != newState) {	
-		modPowerElectronicsPackStateHandle->disChargeDesired = newState;
+	if(dischargeLastState != newState) {
+		dischargeLastState = newState;	
+
+		if(modPowerElectronicsGeneralConfigHandle->LCUseDischarge==1)
+			modPowerElectronicsPackStateHandle->disChargeDesired = newState;
+		else
+			modPowerElectronicsPackStateHandle->disChargeDesired = false;
+		
+		
 		modPowerElectronicsUpdateSwitches();
-		dischargeLastState = newState;
+		
 	}
 	
-	if((modPowerElectronicsPackStateHandle->loCurrentLoadVoltage < modPowerElectronicsGeneralConfigHandle->minimalPrechargePercentage*(modPowerElectronicsPackStateHandle->packVoltage)) && modPowerElectronicsGeneralConfigHandle->LCUsePrecharge>=1) // Prevent turn on with to low output voltage
-		return false;																																			                                                  // Load voltage to low (output not precharged enough) return whether or not precharge is needed.
+	if((modPowerElectronicsPackStateHandle->loCurrentLoadVoltage < modPowerElectronicsGeneralConfigHandle->minimalPrechargePercentage*(modPowerElectronicsPackStateHandle->packVoltage)) && modPowerElectronicsGeneralConfigHandle->LCUsePrecharge>=1) // Prevent turn on with too low output voltage
+		return false;															 // Load voltage to low (output not precharged enough) return whether or not precharge is needed.
 	else
 		return true;
 };

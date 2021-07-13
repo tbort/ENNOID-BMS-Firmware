@@ -501,7 +501,7 @@ void modCANSetESCBrakeCurrentRelative(uint8_t controllerID, float currentRel) {
 	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_ESC_SET_CURRENT_BRAKE_REL), buffer, sendIndex);
 }
 
-static void modCANSendPacketWrapper(unsigned char *data, unsigned int length) {
+void modCANSendPacketWrapper(unsigned char *data, unsigned int length) {
 	modCANSendBuffer(modCANRxBufferLastID, data, length, true);
 }
 

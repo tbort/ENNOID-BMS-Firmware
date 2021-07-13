@@ -39,7 +39,7 @@ uint32_t modPowerStatePowerDownTimeout;
 bool tempButtonPressed;
 
 void modPowerStateInit(PowerStateStateTypedef desiredPowerState) {
-	uint32_t startupDelay = HAL_GetTick();
+	//uint32_t startupDelay = HAL_GetTick();
 	modPowerStateStartupDelay = HAL_GetTick();
 	modPowerStatePowerDownTimeout = HAL_GetTick();
 	modPowerStatePulsePowerDownDesired = false;

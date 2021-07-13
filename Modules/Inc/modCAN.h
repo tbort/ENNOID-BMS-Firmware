@@ -57,7 +57,7 @@ void          modCANSetESCRPM(uint8_t controllerID, float rpm);
 void          modCANSetESCPosition(uint8_t controllerID, float pos);
 void          modCANSetESCCurrentRelative(uint8_t controllerID, float currentRel);
 void          modCANSetESCBrakeCurrentRelative(uint8_t controllerID, float currentRel);
-static void   modCANSendPacketWrapper(unsigned char *data, unsigned int len);
+void	      modCANSendPacketWrapper(unsigned char *data, unsigned int len);
 void          modCANHandleKeepAliveSafetyMessage(CanRxMsgTypeDef canMsg);
 void          modCANHandleCANOpenMessage(CanRxMsgTypeDef canMsg);
 void          modCANHandleSubTaskCharger(void);
