@@ -89,7 +89,7 @@ CFLAGS  = -std=gnu99 -g -Os -Wall
 CFLAGS += -mlittle-endian -mthumb -mthumb-interwork
 CFLAGS += -mcpu=cortex-m4 -fsingle-precision-constant
 #CFLAGS += -Wdouble-promotion
-CFLAGS += -specs=nano.specs -specs=nosys.specs
+CFLAGS += -specs=nano.specs -specs=nosys.specs -u_printf_float -u_scanf_float
 CFLAGS += -mfpu=fpv4-sp-d16 -mfloat-abi=hard -march=armv7e-m
 CFLAGS += -ffunction-sections -fdata-sections
 # define board for compiler
