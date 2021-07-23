@@ -95,6 +95,7 @@ CFLAGS += -ffunction-sections -fdata-sections
 # define board for compiler
 CFLAGS += -D STM32F303xC
 CFLAGS += -D USE_HAL_DRIVER
+CFLAGS += $(build_args)
 
 LINKER_FLAGS = -Wl,-Map=main.map -Wl,--gc-sections
 
@@ -164,22 +165,18 @@ connect:
 
 debug:
 	arm-none-eabi-gdb --eval-command="target remote localhost:3333" main.elf
-
 clean:
-	rm main.elf
-	rm main.bin
-	rm main.map
-	rm main-d.txt
-	rm main-h.txt
-	rm main-nm.txt
-	rm main-St.txt
-	rm main.hex
-	rm Main/main.o
-	rm Modules/Src/*.o
-	rm Libraries/Src/*.o
-	rm Drivers/HWDrivers/Src/*.o
-	rm Drivers/SWDrivers/Src/*.o
-	rm Drivers/STM32F3xx_HAL_Driver/Src/*.o
-	rm Drivers/CMSIS/Device/ST/STM32F3xx/Source/Templates/*.o
-	rm GCC/*.o
-	rm Device/*.o
+	-rm *.elf
+	-rm *.bin
+	-rm *.map
+	-rm *.txt
+	-rm *.hex
+	-rm Main/main.o
+	-rm Modules/Src/*.o
+	-rm Libraries/Src/*.o
+	-rm Drivers/HWDrivers/Src/*.o
+	-rm Drivers/SWDrivers/Src/*.o
+	-rm Drivers/STM32F3xx_HAL_Driver/Src/*.o
+	-rm Drivers/CMSIS/Device/ST/STM32F3xx/Source/Templates/*.o
+	-rm GCC/*.o
+	-rm Device/*.o

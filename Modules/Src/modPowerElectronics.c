@@ -145,7 +145,7 @@ void modPowerElectronicsInit(modPowerElectronicsPackStateTypedef *packState, mod
 	// Init the external bus monitor
   modPowerElectronicsInitISL();
 	
-	#if (ENNOID_SS || ENNOID_SS_LITE)
+	#if (ENNOID_SS || ENNOID_SS_LITE || ENNOID-LV_2)
 		if(modPowerElectronicsGeneralConfigHandle->humidityICType == si7020)
 			driverSWSHT21Init();
 		else
@@ -198,7 +198,7 @@ bool modPowerElectronicsTask(void) {
 		modPowerElectronicsCellMonitorsCheckConfigAndReadAnalogData();
 		
 		// get PCB mounted temperature sensor & humitity if applicable
-		#if (ENNOID_SS || ENNOID_SS_LITE)
+		#if (ENNOID_SS || ENNOID_SS_LITE || ENNOID_LV_2)
 			if(modPowerElectronicsGeneralConfigHandle->humidityICType == si7020){
 				static uint32_t measureSHTStartLastTick          = 0;
 				static driverSWSHT21MeasureType lastMeasuredType = TEMP;
@@ -1269,7 +1269,7 @@ void modPowerElectronicsLCSenseSample(void) {
 			modPowerElectronicsPackStateHandle->loCurrentLoadVoltage = 0;
 		#endif
 	
-	#if (ENNOID_SS || ENNOID_SS_LITE)
+	#if (ENNOID_SS || ENNOID_SS_LITE || ENNOID_LV_2)
 		driverHWADCGetChargerVoltage(&modPowerElectronicsPackStateHandle->chargerVoltage, modPowerElectronicsGeneralConfigHandle->chargerVoltageOffset, modPowerElectronicsGeneralConfigHandle->chargerVoltageFactor);
 	#endif
 	

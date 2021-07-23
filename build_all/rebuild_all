@@ -1,0 +1,65 @@
+#!/bin/bash
+set -e
+
+FWPATH="../"
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+#################### HW ENNOID_SS ########################
+
+COPYDIR=ENNOID-SS
+rm -f $COPYDIR/*
+
+cd $FWPATH
+make clean
+make build_args='-DENNOID_SS=1'
+cd $DIR
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_SS.bin
+
+#################### HW ENNOID_SS_LITE ########################
+
+COPYDIR=ENNOID-SS-LITE
+rm -f $COPYDIR/*
+
+cd $FWPATH
+make clean
+make build_args='-DENNOID_SS_LITE=1'
+cd $DIR
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_SS_LITE.bin
+
+#################### HW ENNOID_HV ########################
+
+COPYDIR=ENNOID-HV
+rm -f $COPYDIR/*
+
+cd $FWPATH
+make clean
+make build_args='-DENNOID_HV=1'
+cd $DIR
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_HV.bin
+
+#################### HW ENNOID_LV ########################
+
+COPYDIR=ENNOID-LV
+rm -f $COPYDIR/*
+
+cd $FWPATH
+make clean
+make build_args='-DENNOID_LV=1'
+cd $DIR
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_LV.bin
+
+#################### HW ENNOID_LV_2 ########################
+
+COPYDIR=ENNOID-LV-2
+rm -f $COPYDIR/*
+
+cd $FWPATH
+make clean
+make build_args='-DENNOID_LV_2=1'
+cd $DIR
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_LV_2.bin
+
+# Clean
+cd $FWPATH
+make clean
+cd $DIR

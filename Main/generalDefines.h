@@ -4,7 +4,7 @@
 #endif
 
 #ifndef ENNOID_SS
-#define ENNOID_SS					1
+#define ENNOID_SS					0
 #endif
 
 #ifndef ENNOID_LV
@@ -13,6 +13,10 @@
 
 #ifndef ENNOID_HV
 #define ENNOID_HV					0
+#endif
+
+#ifndef ENNOID_LV_2
+#define ENNOID_LV_2					0
 #endif
 
 // Firmware version
@@ -27,6 +31,14 @@
 // Hardware names and limits
 #if ENNOID_LV
   #define HW_NAME "ENNOID-LV"
+	#define HW_LIM_CELL_BALANCE_MAX_SIMULTANEOUS_DISCHARGE 18
+	#define HW_LIM_CELL_MONITOR_IC_COUNT                   18
+	#define HW_LIM_MIN_NOT_USED_DELAY                      5000
+#endif
+
+// Hardware names and limits
+#if ENNOID_LV_2
+  #define HW_NAME "ENNOID-LV-GEN2"
 	#define HW_LIM_CELL_BALANCE_MAX_SIMULTANEOUS_DISCHARGE 18
 	#define HW_LIM_CELL_MONITOR_IC_COUNT                   18
 	#define HW_LIM_MIN_NOT_USED_DELAY                      5000
