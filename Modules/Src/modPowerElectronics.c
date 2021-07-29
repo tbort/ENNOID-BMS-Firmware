@@ -128,6 +128,7 @@ void modPowerElectronicsInit(modPowerElectronicsPackStateTypedef *packState, mod
 			modPowerElectronicsPackStateHandle->cellModuleVoltages[modulePointer][cellPointer] = 0.0f;
 		
 		modPowerElectronicsPackStateHandle->cellModuleBalanceResistorEnableMask[modulePointer] = 0;
+		modPowerElectronicsPackStateHandle->cellModuleBalanceResistorEnableMaskTest[modulePointer] = 0;
 	}
 	// init the aux module variables empty
 	for( uint8_t modulePointer = 0; modulePointer < NoOfCellMonitorsPossibleOnBMS; modulePointer++) {
@@ -412,8 +413,9 @@ void modPowerElectronicsCallMonitorsCalcBalanceResistorArray(void) {
 	uint8_t moduleCount = 0;
 	
 	// Clear array
-	for(uint8_t moduleClearPointer = 0; moduleClearPointer < NoOfCellMonitorsPossibleOnBMS; moduleClearPointer++) 
+	for(uint8_t moduleClearPointer = 0; moduleClearPointer < NoOfCellMonitorsPossibleOnBMS; moduleClearPointer++)
 		modPowerElectronicsPackStateHandle->cellModuleBalanceResistorEnableMask[moduleClearPointer] = 0;
+	
 	
 	for(uint8_t cellPointer = 0; cellPointer < modPowerElectronicsGeneralConfigHandle->noOfCellsSeries*modPowerElectronicsGeneralConfigHandle->noOfParallelModules; cellPointer++) {
 		seriesCount = cellPointer/modPowerElectronicsGeneralConfigHandle->noOfCellsSeries; 
@@ -1027,6 +1029,14 @@ void modPowerElectronicsCellMonitorsEnableBalanceResistors(uint32_t balanceEnabl
 	driverSWLTC6804EnableBalanceResistors(balanceEnableMask, modPowerElectronicsGeneralConfigHandle->cellMonitorType);
 }
 
+void modPowerElectronicsCellMonitorsEnableBalanceResistorsArrayTest(uint32_t balanceEnableMask){
+	for(uint8_t moduleClearPointer = 0; moduleClearPointer < NoOfCellMonitorsPossibleOnBMS; moduleClearPointer++) 
+		modPowerElectronicsPackStateHandle->cellModuleBalanceResistorEnableMaskTest[moduleClearPointer] = balanceEnableMask;
+	modPowerElectronicsCellMonitorsCheckAndSolveInitState();
+	driverSWLTC6804EnableBalanceResistorsArray(modPowerElectronicsPackStateHandle->cellModuleBalanceResistorEnableMaskTest, modPowerElectronicsGeneralConfigHandle->cellMonitorType);	
+}
+
+
 void modPowerElectronicsCellMonitorsEnableBalanceResistorsArray(){
 	modPowerElectronicsCellMonitorsCheckAndSolveInitState();
 	driverSWLTC6804EnableBalanceResistorsArray(modPowerElectronicsPackStateHandle->cellModuleBalanceResistorEnableMask, modPowerElectronicsGeneralConfigHandle->cellMonitorType);	
@@ -1134,7 +1144,7 @@ void modPowerElectronicsTerminalCellConnectionTest(int argc, const char **argv) 
 		if((conversionResults[0][cellIDPointer] >= modPowerElectronicsGeneralConfigHandle->cellHardOverVoltage) || (conversionResults[0][cellIDPointer] <= modPowerElectronicsGeneralConfigHandle->cellHardUnderVoltage)) {
 			overAllPassFail = passFail = false;
 		}else{
-			if((cellIDPointer != 0) && (cellIDPointer != (modPowerElectronicsGeneralConfigHandle->noOfCellsSeries-1)) && (fabs(difference) >= 0.05f))
+			if((cellIDPointer != 0) && (cellIDPointer != (modPowerElectronicsGeneralConfigHandle->noOfCellsSeries-1)) && ((cellIDPointer+1) % modPowerElectronicsGeneralConfigHandle->noOfCellsPerModule != 0) && (fabs(difference) >= 0.05f))
 				overAllPassFail = passFail = false;
 			else
 			  passFail = true;
@@ -1152,7 +1162,7 @@ void modPowerElectronicsTerminalCellConnectionTest(int argc, const char **argv) 
 
 	// Even cells
 	modPowerElectronicsCellMonitorsCheckConfigAndReadAnalogData();
-	modPowerElectronicsCellMonitorsEnableBalanceResistors(cellBalanceMaskEnableRegister & 0x0002AAAA);
+	modPowerElectronicsCellMonitorsEnableBalanceResistorsArrayTest(cellBalanceMaskEnableRegister & 0x0002AAAA);
 	
 	for(int delay = 0; delay < 5; delay++){
 		while(!modDelayTick100ms(&delayLastTick,3)){};                   // Wait
@@ -1169,7 +1179,7 @@ void modPowerElectronicsTerminalCellConnectionTest(int argc, const char **argv) 
 	
 	// Uneven cells
 	modPowerElectronicsCellMonitorsCheckConfigAndReadAnalogData();
-	modPowerElectronicsCellMonitorsEnableBalanceResistors(cellBalanceMaskEnableRegister & 0x00015555);
+	modPowerElectronicsCellMonitorsEnableBalanceResistorsArrayTest(cellBalanceMaskEnableRegister & 0x00015555);
 	
 	
 	for(int delay = 0; delay < 5; delay++){
@@ -1185,7 +1195,7 @@ void modPowerElectronicsTerminalCellConnectionTest(int argc, const char **argv) 
 	  conversionResults[3][cellIDPointer] = modPowerElectronicsPackStateHandle->cellVoltagesIndividual[cellIDPointer].cellVoltage;
 	}
 
-	modPowerElectronicsCellMonitorsEnableBalanceResistors(0);
+	modPowerElectronicsCellMonitorsEnableBalanceResistorsArrayTest(0);
 	
 	for(cellIDPointer = 0; cellIDPointer < modPowerElectronicsGeneralConfigHandle->noOfCellsSeries ; cellIDPointer++){
 		float difference = fabs(conversionResults[4][cellIDPointer] - conversionResults[2][cellIDPointer]) + fabs(conversionResults[4][cellIDPointer] - conversionResults[3][cellIDPointer]);                                          // Calculate difference

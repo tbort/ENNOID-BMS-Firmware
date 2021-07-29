@@ -54,7 +54,7 @@
 #if ENNOID_SS
   #define HW_NAME "ENNOID-SS"
 	#define HW_LIM_CELL_BALANCE_MAX_SIMULTANEOUS_DISCHARGE 18
-	#define HW_LIM_CELL_MONITOR_IC_COUNT                   1
+	#define HW_LIM_CELL_MONITOR_IC_COUNT                   2
 	#define HW_LIM_MIN_NOT_USED_DELAY                      5000
 #endif
 

@@ -134,6 +134,7 @@ typedef struct {
 	float    auxModuleVoltages[NoOfCellMonitorsPossibleOnBMS][12];
 	float    expModuleVoltages[NoOfExpMonitorPossibleOnBMS][8];
 	uint32_t cellModuleBalanceResistorEnableMask[NoOfCellMonitorsPossibleOnBMS];
+	uint32_t cellModuleBalanceResistorEnableMaskTest[NoOfCellMonitorsPossibleOnBMS];
 	uint32_t dieTemperature[NoOfCellMonitorsPossibleOnBMS];
 	
 } modPowerElectronicsPackStateTypedef;
@@ -168,6 +169,7 @@ void  modPowerElectronicsCellMonitorsStartCellConversion(void);
 void  modPowerElectronicsCellMonitorsStartLoadedCellConversion(bool PUP);
 void  modPowerElectronicsCellMonitorsStartTemperatureConversion(void);
 void  modPowerElectronicsCellMonitorsEnableBalanceResistors(uint32_t);
+void  modPowerElectronicsCellMonitorsEnableBalanceResistorsArrayTest(uint32_t);
 void  modPowerElectronicsCellMonitorsEnableBalanceResistorsArray(void);
 void  modPowerElectronicsCellMonitorsReadVoltageFlags(uint32_t *underVoltageFlags, uint32_t *overVoltageFlags);
 void  modPowerElectronicsCellMonitorsCheckAndSolveInitState(void);
