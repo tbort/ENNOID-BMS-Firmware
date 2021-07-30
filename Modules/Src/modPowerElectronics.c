@@ -146,7 +146,7 @@ void modPowerElectronicsInit(modPowerElectronicsPackStateTypedef *packState, mod
 	// Init the external bus monitor
   modPowerElectronicsInitISL();
 	
-	#if (ENNOID_SS || ENNOID_SS_LITE || ENNOID-LV_2)
+	#if (HAS_HUMIDITY)
 		if(modPowerElectronicsGeneralConfigHandle->humidityICType == si7020)
 			driverSWSHT21Init();
 		else
@@ -199,7 +199,7 @@ bool modPowerElectronicsTask(void) {
 		modPowerElectronicsCellMonitorsCheckConfigAndReadAnalogData();
 		
 		// get PCB mounted temperature sensor & humitity if applicable
-		#if (ENNOID_SS || ENNOID_SS_LITE || ENNOID_LV_2)
+		#if (HAS_HUMIDITY)
 			if(modPowerElectronicsGeneralConfigHandle->humidityICType == si7020){
 				static uint32_t measureSHTStartLastTick          = 0;
 				static driverSWSHT21MeasureType lastMeasuredType = TEMP;
@@ -565,7 +565,7 @@ void modPowerElectronicsUpdateSwitches(void) {
 	}else{
 		driverHWSwitchesSetSwitchState(SWITCH_CHARGE,(driverHWSwitchesStateTypedef)SWITCH_RESET);
 	};
-	#if (ENNOID_SS || ENNOID_SS_LITE)
+	#if (HAS_PFET_OUTPUT)
 	//Handle chargePFET input
 	if(modPowerElectronicsPackStateHandle->chargePFETDesired && modPowerElectronicsPackStateHandle->chargeAllowed){
 		driverHWSwitchesSetSwitchState(SWITCH_CHARGE_BYPASS,(driverHWSwitchesStateTypedef)SWITCH_SET);
@@ -1275,11 +1275,11 @@ float modPowerElectronicsCalcPackCurrent(void){
 void modPowerElectronicsLCSenseSample(void) {
 		driverSWISL28022GetBusCurrent(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,&modPowerElectronicsPackStateHandle->loCurrentLoadCurrent,initCurrentOffset, modPowerElectronicsGeneralConfigHandle->shuntLCFactor);
 		driverHWADCGetLoadVoltage(&modPowerElectronicsPackStateHandle->loCurrentLoadVoltage, modPowerElectronicsGeneralConfigHandle->loadVoltageOffset, modPowerElectronicsGeneralConfigHandle->loadVoltageFactor);
-		#if (ENNOID_SS_LITE)
-			modPowerElectronicsPackStateHandle->loCurrentLoadVoltage = 0;
+		#if (HAS_NO_DISCHARGE)
+			modPowerElectronicsPackStateHandle->loCurrentLoadVoltage = modPowerElectronicsPackStateHandle->packVoltage;
 		#endif
 	
-	#if (ENNOID_SS || ENNOID_SS_LITE || ENNOID_LV_2)
+	#if (HAS_CHARGER_VOLTAGE_MEASUREMENT)
 		driverHWADCGetChargerVoltage(&modPowerElectronicsPackStateHandle->chargerVoltage, modPowerElectronicsGeneralConfigHandle->chargerVoltageOffset, modPowerElectronicsGeneralConfigHandle->chargerVoltageFactor);
 	#endif
 	

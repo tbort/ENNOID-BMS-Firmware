@@ -15,6 +15,17 @@ make build_args='-DENNOID_SS=1'
 cd $DIR
 cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_SS.bin
 
+#################### HW ENNOID_SS_24 ########################
+
+COPYDIR=ENNOID-SS-24
+rm -f $COPYDIR/*
+
+cd $FWPATH
+make clean
+make build_args='-DENNOID_SS_24=1'
+cd $DIR
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_SS_24.bin
+
 #################### HW ENNOID_SS_LITE ########################
 
 COPYDIR=ENNOID-SS-LITE

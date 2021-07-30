@@ -5,12 +5,6 @@
 #include "driverHWI2C1.h"
 #include "generalDefines.h"
 
-#if (ENNOID_SS || ENNOID_SS_LITE || ENNOID_LV_2)
-#define ISL28022_MASTER_ADDRES      0x45
-#else
-#define ISL28022_MASTER_ADDRES      0x40
-#endif
-
 #define ISL28022_MASTER_BUS         2
 typedef enum {
 	BRNG_16V = 0,
