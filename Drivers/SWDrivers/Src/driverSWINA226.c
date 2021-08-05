@@ -18,11 +18,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-#include "driverSWINA238.h"
+#include "driverSWINA226.h"
 
-void driverSWINA238Init(uint8_t i2cAddres, uint8_t i2cBus, driverSWISL28022InitStruct initStruct){
-	// Implementing the fancy driverSWINA238InitStruct is still on my todo list :).
-	uint8_t writeData[6] = {0x00,0xC0,0x3F,0x01,0xBF,0xFF};
+void driverSWINA226Init(uint8_t i2cAddres, uint8_t i2cBus, driverSWINA226InitStruct initStruct){
+	// Implementing the fancy driverSWINA226InitStruct is still on my todo list :).
+	uint8_t writeData[6] = {0x00,0x49,0x27}; // 0 100 100 100 100 111
 	
 	if(i2cBus == 1){
 		driverHWI2C1Init();
@@ -33,7 +33,7 @@ void driverSWINA238Init(uint8_t i2cAddres, uint8_t i2cBus, driverSWISL28022InitS
 	}
 };
 
-bool driverSWINA238GetBusCurrent(uint8_t i2cAddres, uint8_t i2cBus, float *busCurrent, int16_t offset, float scalar) {
+bool driverSWINA226GetBusCurrent(uint8_t i2cAddres, uint8_t i2cBus, float *busCurrent, int16_t offset, float scalar) {
 	// ToDo make register to current conversion register dependent
 	uint8_t writeDataC[1] = {REG_VSHUNT};
 	uint8_t readDataC[2];
@@ -58,7 +58,7 @@ bool driverSWINA238GetBusCurrent(uint8_t i2cAddres, uint8_t i2cBus, float *busCu
 	return commSucces == HAL_OK;
 };
 
-bool driverSWINA238GetBusVoltage(uint8_t i2cAddres, uint8_t i2cBus, float *busVoltage, int16_t offset, float scalar){
+bool driverSWINA226GetBusVoltage(uint8_t i2cAddres, uint8_t i2cBus, float *busVoltage, int16_t offset, float scalar){
 	uint8_t writeDataV[1] = {REG_VBUS};
 	uint8_t readDataV[2];
 	uint8_t commSucces = HAL_OK;

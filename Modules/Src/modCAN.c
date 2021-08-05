@@ -23,8 +23,9 @@
 // Variables
 CAN_HandleTypeDef      modCANHandle;
 uint32_t               modCANErrorLastTick;
-uint32_t               modCANSendStatusSimpleFastLastTisk;
-uint32_t               modCANSendStatusSimpleSlowLastTisk;
+uint32_t               modCANSendStatusFastLastTisk;
+uint32_t               modCANSendStatusSlowLastTisk;
+uint32_t               modCANSendStatusVESCLastTisk;
 uint32_t               modCANSafetyCANMessageTimeout;
 uint32_t               modCANLastRXID;
 uint32_t               modCANLastRXDifferLastTick;
@@ -113,8 +114,9 @@ void modCANInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneral
 	modCANRxFrameRead = 0;
 	modCANRxFrameWrite = 0;
 			
-	modCANSendStatusSimpleFastLastTisk = HAL_GetTick();
-	modCANSendStatusSimpleSlowLastTisk = HAL_GetTick();
+	modCANSendStatusFastLastTisk = HAL_GetTick();
+	modCANSendStatusSlowLastTisk = HAL_GetTick();
+	modCANSendStatusVESCLastTisk = HAL_GetTick();
 	modCANSafetyCANMessageTimeout = HAL_GetTick();
 	modCANErrorLastTick = HAL_GetTick();
 }
@@ -129,13 +131,18 @@ void modCANTask(void){
 	}
 	
 	if(modCANGeneralConfigHandle->emitStatusOverCAN) {
-		// Send status messages with interval
-		if(modDelayTick1ms(&modCANSendStatusSimpleFastLastTisk,200))                        // 5 Hz
-			modCANSendSimpleStatusFast();
+		if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolDieBieEngineering) {
+			// Send status messages with interval
+			if(modDelayTick1ms(&modCANSendStatusFastLastTisk,200))                        // 5 Hz
+				modCANSendStatusFast();
 		
-		// Send status messages with interval
-		if(modDelayTick1ms(&modCANSendStatusSimpleSlowLastTisk,500))                        // 2 Hz
-			modCANSendSimpleStatusSlow();
+			// Send status messages with interval
+			if(modDelayTick1ms(&modCANSendStatusSlowLastTisk,500))                        // 2 Hz
+				modCANSendStatusSlow();
+		}else if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolVESC){
+			if(modDelayTick1ms(&modCANSendStatusVESCLastTisk,2000)) 
+				modCANSendStatusVESC();
+		}
 	}
 	
 	if(modDelayTick1ms(&modCANSafetyCANMessageTimeout,5000))
@@ -197,7 +204,7 @@ uint32_t modCANGetCANID(uint32_t destinationID, CAN_PACKET_ID packetID) {
   return returnCANID;
 }
 
-void modCANSendSimpleStatusFast(void) {
+void modCANSendStatusFast(void) {
 	int32_t sendIndex;
 	uint8_t buffer[8];
 	uint8_t flagHolder = 0;
@@ -209,27 +216,27 @@ void modCANSendSimpleStatusFast(void) {
 		disChargeDesiredMask = modCANPackStateHandle->disChargeDesired && modCANPackStateHandle->powerButtonActuated && modPowerElectronicsHCSafetyCANAndPowerButtonCheck();
 	}
 	
-	flagHolder |= (modCANPackStateHandle->chargeAllowed          << 0);
-	flagHolder |= (modCANPackStateHandle->chargeDesired          << 1);
-	flagHolder |= (modCANPackStateHandle->disChargeLCAllowed     << 2);
-	flagHolder |= (disChargeDesiredMask                          << 3);
-	flagHolder |= (modCANPackStateHandle->balanceActive   			 << 4);
-	flagHolder |= (modCANPackStateHandle->packInSOADischarge     << 5);
-	flagHolder |= (modCANPackStateHandle->chargePFETDesired    	 << 6);
-	flagHolder |= (modCANPackStateHandle->powerButtonActuated    << 7);
+	flagHolder |= (modCANPackStateHandle->chargeAllowed		<< 0);
+	flagHolder |= (modCANPackStateHandle->chargeDesired		<< 1);
+	flagHolder |= (modCANPackStateHandle->disChargeLCAllowed	<< 2);
+	flagHolder |= (disChargeDesiredMask				<< 3);
+	flagHolder |= (modCANPackStateHandle->balanceActive		<< 4);
+	flagHolder |= (modCANPackStateHandle->packInSOADischarge	<< 5);
+	flagHolder |= (modCANPackStateHandle->chargePFETDesired		<< 6);
+	flagHolder |= (modCANPackStateHandle->powerButtonActuated	<< 7);
 	
 	// Send (dis)charge throttle and booleans.
 	sendIndex = 0;
 	libBufferAppend_float16(buffer, modCANPackStateHandle->loCurrentLoadVoltage,1e2,&sendIndex);
-  libBufferAppend_float16(buffer, modCANPackStateHandle->SoCCapacityAh,1e2,&sendIndex);
-  libBufferAppend_uint8(buffer, (uint8_t)modCANPackStateHandle->SoC,&sendIndex);
-  libBufferAppend_uint8(buffer, modCANPackStateHandle->throttleDutyCharge/10,&sendIndex);
-  libBufferAppend_uint8(buffer, modCANPackStateHandle->throttleDutyDischarge/10,&sendIndex);
+	libBufferAppend_float16(buffer, modCANPackStateHandle->SoCCapacityAh,1e2,&sendIndex);
+	libBufferAppend_uint8(buffer, (uint8_t)modCANPackStateHandle->SoC,&sendIndex);
+	libBufferAppend_uint8(buffer, modCANPackStateHandle->throttleDutyCharge/10,&sendIndex);
+	libBufferAppend_uint8(buffer, modCANPackStateHandle->throttleDutyDischarge/10,&sendIndex);
 	libBufferAppend_uint8(buffer,flagHolder,&sendIndex);
-	modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_BMS_STATUS_THROTTLE_CH_DISCH_BOOL), buffer, sendIndex);
+	modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_EBMS_STATUS_THROTTLE_CH_DISCH_BOOL), buffer, sendIndex);
 }
 
-void modCANSendSimpleStatusSlow(void) {
+void modCANSendStatusSlow(void) {
 	int32_t sendIndex;
 	uint8_t buffer[8];
 
@@ -237,13 +244,117 @@ void modCANSendSimpleStatusSlow(void) {
 	sendIndex = 0;
 	libBufferAppend_float32(buffer, modCANPackStateHandle->packVoltage,1e5,&sendIndex);
 	libBufferAppend_float32(buffer, modCANPackStateHandle->packCurrent,1e5,&sendIndex);
-	modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_BMS_STATUS_MAIN_IV), buffer, sendIndex);
+	modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_EBMS_STATUS_MAIN_IV), buffer, sendIndex);
 	
 	// Send highest and lowest cell voltage
 	sendIndex = 0;
 	libBufferAppend_float32(buffer, modCANPackStateHandle->cellVoltageLow,1e5,&sendIndex);
 	libBufferAppend_float32(buffer, modCANPackStateHandle->cellVoltageHigh,1e5,&sendIndex);
-	modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_BMS_STATUS_CELLVOLTAGE), buffer, sendIndex);
+	modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_EBMS_STATUS_CELLVOLTAGE), buffer, sendIndex);
+}
+
+void modCANSendStatusVESC(void){
+
+		int32_t send_index = 0;
+		uint8_t buffer[8];
+		
+		libBufferAppend_float32_auto(buffer, modCANPackStateHandle->packVoltage, &send_index);
+		libBufferAppend_float32_auto(buffer, modCANPackStateHandle->chargerVoltage, &send_index);
+		modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_BMS_V_TOT), buffer, send_index);
+
+		send_index = 0;
+		libBufferAppend_float32_auto(buffer, modCANPackStateHandle->packCurrent, &send_index);
+		libBufferAppend_float32_auto(buffer, modCANPackStateHandle->packCurrent, &send_index);
+		modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_BMS_I), buffer, send_index);
+
+		send_index = 0;
+		libBufferAppend_float32_auto(buffer, modCANPackStateHandle->packCurrent, &send_index); //To do : define AhCounter
+		libBufferAppend_float32_auto(buffer, modCANPackStateHandle->packVoltage, &send_index); //To do : define WhCounter
+		modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_BMS_AH_WH), buffer, send_index);
+		
+		uint8_t cellPointer = 0;
+		uint8_t totalNoOfCells = modCANGeneralConfigHandle->noOfCellsSeries*modCANGeneralConfigHandle->noOfParallelModules;
+		for(cellPointer = 0; cellPointer < totalNoOfCells; cellPointer++){
+			send_index = 0;
+			buffer[send_index++] = cellPointer;
+			buffer[send_index++] = totalNoOfCells;
+
+			if (cellPointer < totalNoOfCells) {
+				libBufferAppend_float16(buffer, modCANPackStateHandle->cellVoltagesIndividual[cellPointer++].cellVoltage, 1e3, &send_index);
+			}
+			if (cellPointer < totalNoOfCells) {
+				libBufferAppend_float16(buffer, modCANPackStateHandle->cellVoltagesIndividual[cellPointer++].cellVoltage, 1e3, &send_index);
+			}
+			if (cellPointer < totalNoOfCells) {
+				libBufferAppend_float16(buffer, modCANPackStateHandle->cellVoltagesIndividual[cellPointer++].cellVoltage, 1e3, &send_index);
+			}
+			modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_BMS_V_CELL), buffer, send_index);
+		}
+
+		send_index = 0;
+		buffer[send_index++] = totalNoOfCells;
+		uint64_t bal_state = 0;
+		for (int i = 0; i < totalNoOfCells; i++) {
+			bal_state |= (uint64_t)modCANPackStateHandle->cellVoltagesIndividual[i].cellBleedActive << i;
+		}
+		buffer[send_index++] = (bal_state >> 48) & 0xFF;
+		buffer[send_index++] = (bal_state >> 40) & 0xFF;
+		buffer[send_index++] = (bal_state >> 32) & 0xFF;
+		buffer[send_index++] = (bal_state >> 24) & 0xFF;
+		buffer[send_index++] = (bal_state >> 16) & 0xFF;
+		buffer[send_index++] = (bal_state >> 8) & 0xFF;
+		buffer[send_index++] = (bal_state >> 8) & 0xFF;
+		modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_BMS_BAL), buffer, send_index);
+
+		uint8_t auxPointer = 0;
+		uint8_t totalNoOfAux =modCANGeneralConfigHandle->cellMonitorICCount*modCANGeneralConfigHandle->noOfTempSensorPerModule;
+		while (auxPointer < totalNoOfAux ) {
+			send_index = 0;
+			buffer[send_index++] = auxPointer;
+			buffer[send_index++] = totalNoOfAux;
+			if (auxPointer < totalNoOfAux) {
+				libBufferAppend_float16(buffer, modCANPackStateHandle->auxVoltagesIndividual[auxPointer++].auxVoltage, 1e2, &send_index);
+			}
+			if (auxPointer < totalNoOfAux) {
+				libBufferAppend_float16(buffer, modCANPackStateHandle->auxVoltagesIndividual[auxPointer++].auxVoltage, 1e2, &send_index);
+			}
+			if (auxPointer < totalNoOfAux) {
+				libBufferAppend_float16(buffer, modCANPackStateHandle->auxVoltagesIndividual[auxPointer++].auxVoltage, 1e2, &send_index);
+			}
+			modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_BMS_TEMPS), buffer, send_index);
+		}
+
+		send_index = 0;
+		libBufferAppend_float16(buffer, modCANPackStateHandle->temperatures[0], 1e2, &send_index);
+		libBufferAppend_float16(buffer, modCANPackStateHandle->humidity, 1e2, &send_index);
+		libBufferAppend_float16(buffer, modCANPackStateHandle->temperatures[1], 1e2, &send_index);
+		modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_BMS_HUM), buffer, send_index);
+
+		
+		 //* CAN_PACKET_BMS_SOC_SOH_TEMP_STAT
+		 //*
+		 //* b[0] - b[1]: V_CELL_MIN (mV)
+		 //* b[2] - b[3]: V_CELL_MAX (mV)
+		 //* b[4]: SoC (0 - 255)
+		 //* b[5]: SoH (0 - 255)
+		 //* b[6]: T_CELL_MAX (-128 to +127 degC)
+		 //* b[7]: State bitfield:
+		 //* [B7      B6      B5      B4      B3      B2      B1      B0      ]
+		 //* [RSV     RSV     RSV     RSV     RSV     CHG_OK  IS_BAL  IS_CHG  ]
+		 
+		send_index = 0;
+		libBufferAppend_float16(buffer, modCANPackStateHandle->cellVoltageLow, 1e3, &send_index);
+		libBufferAppend_float16(buffer, modCANPackStateHandle->cellVoltageHigh, 1e3, &send_index);
+		buffer[send_index++] = (uint8_t)modCANPackStateHandle->SoC * 255.0;
+		buffer[send_index++] = (uint8_t)(1 * 255.0);
+		buffer[send_index++] = (int8_t) modCANPackStateHandle->tempBatteryHigh;
+		buffer[send_index++] =
+				(modCANPackStateHandle->chargeDesired << 0) | //To do: Define isCharging bool instead of chargeDesired...
+				(modCANPackStateHandle->balanceActive << 1) |
+				(modCANPackStateHandle->chargeAllowed << 2);
+		modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_BMS_SOC_SOH_TEMP_STAT), buffer, send_index);
+
+
 }
 
 void CAN_RX0_IRQHandler(void) {
@@ -456,52 +567,52 @@ void modCANSetESCDuty(uint8_t controllerID, float duty) {
 	int32_t sendIndex = 0;
 	uint8_t buffer[4];
 	libBufferAppend_int32(buffer, (int32_t)(duty * 100000.0f), &sendIndex);
-	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_ESC_SET_DUTY), buffer, sendIndex);
+	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_SET_DUTY), buffer, sendIndex);
 }
 
 void modCANSetESCCurrent(uint8_t controllerID, float current) {
 	int32_t sendIndex = 0;
 	uint8_t buffer[4];
 	libBufferAppend_int32(buffer, (int32_t)(current * 1000.0f), &sendIndex);
-	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_ESC_SET_CURRENT), buffer, sendIndex);
+	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_SET_CURRENT), buffer, sendIndex);
 }
 
 void modCANSetESCBrakeCurrent(uint8_t controllerID, float current) {
 	int32_t sendIndex = 0;
 	uint8_t buffer[4];
 	libBufferAppend_int32(buffer, (int32_t)(current * 1000.0f), &sendIndex);
-	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_ESC_SET_CURRENT_BRAKE), buffer, sendIndex);
+	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_SET_CURRENT_BRAKE), buffer, sendIndex);
 }
 
 void modCANSetESCRPM(uint8_t controllerID, float rpm) {
 	int32_t sendIndex = 0;
 	uint8_t buffer[4];
 	libBufferAppend_int32(buffer, (int32_t)rpm, &sendIndex);
-	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_ESC_SET_RPM), buffer, sendIndex);
+	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_SET_RPM), buffer, sendIndex);
 }
 
 void modCANSetESCPosition(uint8_t controllerID, float pos) {
 	int32_t sendIndex = 0;
 	uint8_t buffer[4];
 	libBufferAppend_int32(buffer, (int32_t)(pos * 1000000.0f), &sendIndex);
-	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_ESC_SET_POS), buffer, sendIndex);
+	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_SET_POS), buffer, sendIndex);
 }
 
 void modCANSetESCCurrentRelative(uint8_t controllerID, float currentRel) {
 	int32_t sendIndex = 0;
 	uint8_t buffer[4];
 	libBufferAppend_float32(buffer, currentRel, 1e5, &sendIndex);
-	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_ESC_SET_CURRENT_REL), buffer, sendIndex);
+	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_SET_CURRENT_REL), buffer, sendIndex);
 }
 
 void modCANSetESCBrakeCurrentRelative(uint8_t controllerID, float currentRel) {
 	int32_t sendIndex = 0;
 	uint8_t buffer[4];
 	libBufferAppend_float32(buffer, currentRel, 1e5, &sendIndex);
-	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_ESC_SET_CURRENT_BRAKE_REL), buffer, sendIndex);
+	modCANTransmitExtID(modCANGetCANID(controllerID,CAN_PACKET_SET_CURRENT_BRAKE_REL), buffer, sendIndex);
 }
 
-void modCANSendPacketWrapper(unsigned char *data, unsigned int length) {
+static void modCANSendPacketWrapper(unsigned char *data, unsigned int length) {
 	modCANSendBuffer(modCANRxBufferLastID, data, length, true);
 }
 

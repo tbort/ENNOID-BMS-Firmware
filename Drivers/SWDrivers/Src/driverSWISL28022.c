@@ -21,8 +21,10 @@
 #include "driverSWISL28022.h"
 
 void driverSWISL28022Init(uint8_t i2cAddres, uint8_t i2cBus, driverSWISL28022InitStruct initStruct){
-	// Implementing the fancy driverSWISL28022InitStruct is still on my todo list :).
-	uint8_t writeData[3] = {0x00,0x7F,0xFF};
+	
+	uint8_t firstByte = initStruct.busVoltageRange << 6 | initStruct.currentShuntGain << 4 | (initStruct.ADCSetting & 0x06) >> 1;
+	uint8_t secondByte = (initStruct.ADCSetting & 0x01) << 7 | initStruct.ADCSetting << 3 | initStruct.Mode ;
+	uint8_t writeData[3] = {0x00,firstByte,secondByte};
 	
 	if(i2cBus == 1){
 		driverHWI2C1Init();

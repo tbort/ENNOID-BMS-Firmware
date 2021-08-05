@@ -32,6 +32,9 @@
 #include "mainDataTypes.h"
 #include "modCAN.h"
 
+//#include "safety_check.h"
+//#include "report_status.h"
+
 // This next define enables / disables the watchdog
 //#define AllowDebug
 
@@ -67,7 +70,9 @@ int main(void) {
 	modEffectChangeState(STAT_LED_DEBUG,STAT_FLASH);													// Set Debug LED to blinking mode	
 	modPowerElectronicsInit(&packState,generalConfig);												// Will measure all voltages and store them in packState	
 	modOperationalStateInit(&packState,generalConfig,generalStateOfCharge);		// Will keep track of and control operational state (eg. normal use / charging / balancing / power down)
-
+  	
+	//safety_check_init(&packState, generalConfig);
+  	//report_status_init(&packState); 
 		
   while(true) {
 		modEffectTask();
@@ -78,7 +83,10 @@ int main(void) {
 		mainWatchDogReset();
 		
 		if(modPowerElectronicsTask())																						// Handle power electronics task
-			modStateOfChargeProcess();																						// If there is new data handle SoC estimation
+			modStateOfChargeProcess();
+
+    //safety_check_task(); 
+    //report_status_task();																						// If there is new data handle SoC estimation
   }
 }
 

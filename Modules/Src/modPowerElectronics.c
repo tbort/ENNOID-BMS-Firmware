@@ -824,7 +824,7 @@ void modPowerElectronicsInitISL(void) {
 	driverSWISL28022InitStruct ISLInitStruct;
 	ISLInitStruct.ADCSetting = ADC_128_64010US;
 	ISLInitStruct.busVoltageRange = BRNG_60V_1;
-	ISLInitStruct.currentShuntGain = PGA_4_160MV;
+	ISLInitStruct.currentShuntGain = PGA_8_320MV;
 	ISLInitStruct.Mode = MODE_SHUNTANDBUS_CONTINIOUS;
 	driverSWISL28022Init(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,ISLInitStruct);
 }
@@ -1227,7 +1227,7 @@ void modPowerElectronicsSamplePackAndLCData(void) {
 			// Make BMS signal error state and power down.
 			modPowerElectronicsVoltageSenseError = true;
 		}else{
-			modPowerElectronicsLCSenseInit();																												// Reinit I2C and ISL
+			modPowerElectronicsInitISL();																												// Reinit I2C and ISL
 		}
 	}
 }
@@ -1236,7 +1236,7 @@ void modPowerElectronicsSamplePackVoltage(float *voltagePointer) {
 	switch(modPowerElectronicsGeneralConfigHandle->packVoltageDataSource) {
 		case sourcePackVoltageNone:
 			break;
-		case sourcePackVoltageISL28022_2_BatteryIn:
+		case sourcePackVoltageISL28022:
 				driverSWISL28022GetBusVoltage(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,voltagePointer,modPowerElectronicsGeneralConfigHandle->voltageLCOffset, modPowerElectronicsGeneralConfigHandle->voltageLCFactor);
 			break;
 		case sourcePackVoltageSumOfIndividualCellVoltages:
@@ -1248,6 +1248,9 @@ void modPowerElectronicsSamplePackVoltage(float *voltagePointer) {
 		case sourcePackVoltageCANIsabellenhutte:
 			*voltagePointer = 0.0f;
 			break;
+		case sourcePackVoltageINA226:
+				driverSWISL28022GetBusVoltage(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,voltagePointer,modPowerElectronicsGeneralConfigHandle->voltageLCOffset, modPowerElectronicsGeneralConfigHandle->voltageLCFactor);
+			break;		
 		default:
 			break;
 	}
@@ -1257,14 +1260,17 @@ float modPowerElectronicsCalcPackCurrent(void){
 	float returnCurrent = 0.0f;
 
 	switch(modPowerElectronicsGeneralConfigHandle->packCurrentDataSource){
-		case sourcePackCurrentLowCurrentShunt:
+		case sourcePackCurrentISL28022:
 			returnCurrent = modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
 			break;
 		case sourcePackCurrentNone:
 		case sourcePackCurrentCANDieBieShunt:
 		case sourcePackCurrentCANIsaBellenHuette:
 			returnCurrent = 0.0f;
-			break;	
+			break;
+		case sourcePackCurrentINA226:
+			returnCurrent = modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
+			break;
 		default:
 			break;
 	}
@@ -1291,10 +1297,6 @@ void modPowerElectronicsLCSenseSample(void) {
 			initCurrentOffset = modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
 		}
 	}
-}
-
-void modPowerElectronicsLCSenseInit(void) {
-		modPowerElectronicsInitISL();
 }
 
 uint16_t modPowerElectronicsLowestInThree(uint16_t num1,uint16_t num2,uint16_t num3) {

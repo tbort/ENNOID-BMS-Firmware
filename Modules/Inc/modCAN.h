@@ -39,32 +39,33 @@
 #define RX_CAN_FRAMES_SIZE	    255       // max 255
 #define RX_CAN_BUFFER_SIZE	    PACKET_MAX_PL_LEN
 
-void          modCANInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneralConfigStructTypedef *generalConfigPointer);
-void          modCANTask(void);
-uint32_t      modCANGetDestinationID(CanRxMsgTypeDef canMsg);
-CAN_PACKET_ID modCANGetPacketID(CanRxMsgTypeDef canMsg);
-uint32_t      modCANGetCANID(uint32_t destinationID, CAN_PACKET_ID packetID);
-void          modCANSendSimpleStatusFast(void);
-void          modCANSendSimpleStatusSlow(void);
-void          modCANSubTaskHandleCommunication(void);
-void          modCANTransmitExtID(uint32_t id, uint8_t *data, uint8_t len);
-void          modCANTransmitStandardID(uint32_t id, uint8_t *data, uint8_t len);
-void          modCANSendBuffer(uint8_t controllerID, uint8_t *data, unsigned int len, bool send);
-void          modCANSetESCDuty(uint8_t controllerID, float duty);
-void          modCANSetESCCurrent(uint8_t controllerID, float current);
-void          modCANSetESCBrakeCurrent(uint8_t controllerID, float current);
-void          modCANSetESCRPM(uint8_t controllerID, float rpm);
-void          modCANSetESCPosition(uint8_t controllerID, float pos);
-void          modCANSetESCCurrentRelative(uint8_t controllerID, float currentRel);
-void          modCANSetESCBrakeCurrentRelative(uint8_t controllerID, float currentRel);
-void	      modCANSendPacketWrapper(unsigned char *data, unsigned int len);
-void          modCANHandleKeepAliveSafetyMessage(CanRxMsgTypeDef canMsg);
-void          modCANHandleCANOpenMessage(CanRxMsgTypeDef canMsg);
-void          modCANHandleSubTaskCharger(void);
-void          modCANRXWatchDog(void);
-void          modCANOpenChargerCheckPresent(void);
-void          modCANOpenBMSSendHeartBeat(void);
-void          modCANOpenChargerStartNode(void);
-void          modCANOpenChargerSetCurrentVoltageReady(float current,float voltage,bool ready);
+void		modCANInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneralConfigStructTypedef *generalConfigPointer);
+void		modCANTask(void);
+uint32_t	modCANGetDestinationID(CanRxMsgTypeDef canMsg);
+CAN_PACKET_ID	modCANGetPacketID(CanRxMsgTypeDef canMsg);
+uint32_t	modCANGetCANID(uint32_t destinationID, CAN_PACKET_ID packetID);
+void		modCANSendStatusFast(void);
+void		modCANSendStatusSlow(void);
+void		modCANSendStatusVESC(void);
+void		modCANSubTaskHandleCommunication(void);
+void		modCANTransmitExtID(uint32_t id, uint8_t *data, uint8_t len);
+void		modCANTransmitStandardID(uint32_t id, uint8_t *data, uint8_t len);
+void		modCANSendBuffer(uint8_t controllerID, uint8_t *data, unsigned int len, bool send);
+void		modCANSetESCDuty(uint8_t controllerID, float duty);
+void		modCANSetESCCurrent(uint8_t controllerID, float current);
+void		modCANSetESCBrakeCurrent(uint8_t controllerID, float current);
+void		modCANSetESCRPM(uint8_t controllerID, float rpm);
+void		modCANSetESCPosition(uint8_t controllerID, float pos);
+void		modCANSetESCCurrentRelative(uint8_t controllerID, float currentRel);
+void		modCANSetESCBrakeCurrentRelative(uint8_t controllerID, float currentRel);
+static void	modCANSendPacketWrapper(unsigned char *data, unsigned int len);
+void		modCANHandleKeepAliveSafetyMessage(CanRxMsgTypeDef canMsg);
+void		modCANHandleCANOpenMessage(CanRxMsgTypeDef canMsg);
+void		modCANHandleSubTaskCharger(void);
+void		modCANRXWatchDog(void);
+void		modCANOpenChargerCheckPresent(void);
+void		modCANOpenBMSSendHeartBeat(void);
+void		modCANOpenChargerStartNode(void);
+void		modCANOpenChargerSetCurrentVoltageReady(float current,float voltage,bool ready);
 
 #endif /* MODCAN_H_ */
