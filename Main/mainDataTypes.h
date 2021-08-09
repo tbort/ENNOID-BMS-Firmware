@@ -729,7 +729,7 @@ typedef enum {
 } configCellMonitorICTypeEnum;
 
 typedef enum {
-  opStateExternal = 0,
+  	opStateExternal = 0,
 	opStateExtNormal
 } configExtEnableStateTypeEnum;
 
@@ -804,7 +804,7 @@ typedef struct {
 } expMonitorTypeDef;
 
 typedef struct {
-  float    voltages[12];
+  	float    voltages[12];
 	uint16_t balanceMask;
 	float    temperatures[8];
 	float    humidity;
@@ -821,5 +821,88 @@ typedef enum {
 	si7020,
 	htc1080
 } humidityICTypeEnum;
+
+
+
+typedef struct __attribute__((packed)) {
+	// ID if this BMS (e.g. on the CAN-bus)
+	uint8_t controller_id;
+
+	// Rate at which status messages are sent on the CAN-bus
+	uint32_t send_can_status_rate_hz;
+
+	configCANSpeedTypeEnum can_baud_rate;
+
+	BMS_BALANCE_MODE balance_mode;
+
+	// Number of cells in series
+	int cell_num;
+
+	// Channel of the first cell
+	int cell_first_index;
+
+	// Maximum simultaneous balancing channels
+	int max_bal_ch;
+
+	// Distributed balancing
+	bool dist_bal;
+
+	// Start balancing if cell voltage is this much above the minimum cell voltage
+	float vc_balance_start;
+
+	// Stop balancing when cell voltage is this much above the minimum cell voltage
+	float vc_balance_end;
+
+	// Start charging when max cell voltage is below this voltage
+	float vc_charge_start;
+
+	// End charging when max cell voltage is above this voltage
+	float vc_charge_end;
+
+	// Only allow charging if all cells are above this voltage
+	float vc_charge_min;
+
+	// Only allow balancing if all cells are above this voltage
+	float vc_balance_min;
+
+	// Only allow balancing when the current magnitude is below this value
+	float balance_max_current;
+
+	// Current must be above this magnitude for the Ah and Wh couters to run
+	float min_current_ah_wh_cnt;
+
+	// Enter sleep mode when the current magnitude is below this value
+	float min_current_sleep;
+
+	// Charge port voltage at which a charger is considered plugged in
+	float v_charge_detect;
+
+	// Only allow charging when the cell temperature is below this value
+	float t_charge_max;
+
+	// Current measurement mode
+	I_MEASURE_MODE i_measure_mode;
+
+	// Shunt resistance on external PCB
+	float ext_shunt_res;
+
+	// Shunt amplifier gain on external PCB
+	float ext_shunt_gain;
+
+	// Precharge output voltage divider top resistor
+	float ext_pch_r_top; // TODO
+
+	// Precharge output voltage divider bottom resistor
+	float ext_pch_r_bot; // TODO
+
+	// Reset sleep timeout to this value at events that prevent sleeping
+	int sleep_timeout_reset_ms;
+
+	// Maximum allowed charging current
+	float max_charge_current;
+
+	// Filter constant for SoC filter
+	float soc_filter_const;
+} main_config_t;
 
 #endif /* DATATYPES_H_ */

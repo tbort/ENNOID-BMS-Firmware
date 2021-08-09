@@ -140,7 +140,7 @@ void modCANTask(void){
 			if(modDelayTick1ms(&modCANSendStatusSlowLastTisk,500))                        // 2 Hz
 				modCANSendStatusSlow();
 		}else if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolVESC){
-			if(modDelayTick1ms(&modCANSendStatusVESCLastTisk,2000)) 
+			if(modDelayTick1ms(&modCANSendStatusVESCLastTisk,1000)) 
 				modCANSendStatusVESC();
 		}
 	}

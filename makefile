@@ -63,6 +63,10 @@ SRCS += ./Libraries/Src/libGLCDFont.c
 SRCS += ./Libraries/Src/libGraphics.c
 SRCS += ./Libraries/Src/libPacket.c
 SRCS += ./Libraries/Src/libRingBuffer.c
+SRCS += ./Libraries/Src/libMempools.c
+
+SRCS += ./Config/confparser.c
+SRCS += ./Config/confxml.c
 
 SRCS += ./GCC/EBMS-startup.c
 
@@ -78,6 +82,7 @@ INCLUDE += -I ./Drivers/SWDrivers/Inc
 INCLUDE += -I ./Libraries/Inc
 INCLUDE += -I ./Modules/Inc
 INCLUDE += -I ./CubeMX/Inc
+INCLUDE += -I ./Config
 
 LINKER_SCRIPT = ./GCC/EBMS-linker.ld
 
@@ -179,4 +184,5 @@ clean:
 	-rm Drivers/STM32F3xx_HAL_Driver/Src/*.o
 	-rm Drivers/CMSIS/Device/ST/STM32F3xx/Source/Templates/*.o
 	-rm GCC/*.o
+	-rm Config/*.o
 	-rm Device/*.o

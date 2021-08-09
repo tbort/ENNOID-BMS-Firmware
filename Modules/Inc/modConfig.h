@@ -45,12 +45,12 @@ typedef struct {
 	float    cellLCSoftUnderVoltage;																							// If the lowest cell is under this voltage -> disable low current load
 	float    cellSoftOverVoltage;																								  // If the upper cell is above this voltage -> disable charging, but keep bms enabled
 	float    cellBalanceDifferenceThreshold;																			// If the upper cell is more than this voltage away from the average -> start discharging this cell
-	float    cellBalanceStart;																										// If an upper cell is above this voltage and higher than the cellBalanceDifferenceThreshold voltage then average, start discharging 
-	bool 		 cellBalanceAllTime;																									// Enable balancing under all opstate
+	float		cellBalanceStart;																										// If an upper cell is above this voltage and higher than the cellBalanceDifferenceThreshold voltage then average, start discharging 
+	bool 		cellBalanceAllTime;																									// Enable balancing under all opstate
 	float    cellThrottleUpperStart;																							// Charge throttle range
 	float    cellThrottleLowerStart;																							// Discharge throttle rande
 	float    cellThrottleUpperMargin;																							// Margin from the upper cell voltage extremes
-  float    cellThrottleLowerMargin;                                             // Margin from the lower cell voltage extremes
+  	float    cellThrottleLowerMargin;                                             // Margin from the lower cell voltage extremes
 	uint8_t  packVoltageDataSource;                                               // Enum value of pack voltage data source (what source to derive the voltage information from different ADC options)
 	uint8_t  packCurrentDataSource;                                               // Enum value of pack current data source (what source to derive the current information from LC/HC/LC+HC/CAN)
 	uint8_t  buzzerSignalSource;                                                  // - Stores what source shoud be taken to trigger
@@ -116,7 +116,7 @@ typedef struct {
 	uint8_t  useCANSafetyInput;                                                   // Use the safe input state received from the CAN bus.
 	uint8_t  useCANDelayedPowerDown;                                              // Config that holds the preference whethet to used delayes power down
 	uint8_t  cellMonitorType;                                  										// The cell monitor IC type
-  uint8_t  cellMonitorICCount;																									// The amount of cell monitor IC's connected
+  	uint8_t  cellMonitorICCount;																									// The amount of cell monitor IC's connected
 	uint8_t	 lastICNoOfCells;																											// Store number of cells in the last module (Used for odd number of cells in series only)
 	uint32_t lastICMask;																													// Stores the mask to select what cell should be monitored when last IC is not equal to other ones (Used for odd number of cells in series only)
 	uint8_t  externalEnableOperationalState;                  										// The state to enter when externally enabled
