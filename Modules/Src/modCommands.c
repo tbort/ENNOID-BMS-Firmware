@@ -63,6 +63,8 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 	uint8_t cellPointer;
 	uint8_t auxPointer;
 	uint8_t expPointer;
+	uint8_t totalNoOfCells;
+	uint8_t totalNoOfAux;
 
 	packet_id = (COMM_PACKET_ID) data[0];
 	data++;
@@ -418,10 +420,9 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 		 	libBufferAppend_float32(modCommandsSendBuffer, modCommandsGeneralState->packVoltage,			1e3, 		&ind); //TO DO: define WhCounter instead of packCurrent
 
 			// Cell voltages
-			uint8_t cellPointer = 0;
-			uint8_t totalNoOfCells = modCommandsGeneralConfig->noOfCellsSeries*modCommandsGeneralConfig->noOfParallelModules;
+			totalNoOfCells = modCommandsGeneralConfig->noOfCellsSeries*modCommandsGeneralConfig->noOfParallelModules;
 			modCommandsSendBuffer[ind++] = totalNoOfCells;
-			for (cellPointer = 0; cellPointer < totalNoOfCells;cellPointer++) {
+			for (cellPointer = 0; cellPointer < totalNoOfCells; cellPointer++) {
 				libBufferAppend_float16(modCommandsSendBuffer, modCommandsGeneralState->cellVoltagesIndividual[cellPointer].cellVoltage, 1e3, &ind);
 			}
 
@@ -431,8 +432,7 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			}
 
 			// Temperatures
-			uint8_t auxPointer = 0;
-			uint8_t totalNoOfAux = modCommandsGeneralConfig->cellMonitorICCount*modCommandsGeneralConfig->noOfTempSensorPerModule;
+			totalNoOfAux = modCommandsGeneralConfig->cellMonitorICCount*modCommandsGeneralConfig->noOfTempSensorPerModule;
 			modCommandsSendBuffer[ind++] = totalNoOfAux;
 			for (auxPointer = 0; auxPointer < totalNoOfAux; auxPointer++) {
 				libBufferAppend_float16(modCommandsSendBuffer, modCommandsGeneralState->auxVoltagesIndividual[auxPointer].auxVoltage, 1e2, &ind); 

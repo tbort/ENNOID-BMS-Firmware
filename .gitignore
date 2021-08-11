@@ -16,16 +16,14 @@ History
 *.htm
 *.PrjPCBStructure
 *.wmf
-*.uvoptx
-*.uvprojx
 *.dionn
 *.ini
-*.lst
 *.axf
 *.hex
 *.dep
 *.map
 *.lnp
+*.bak
 *.sct
 *.dbgconf
 tools/
