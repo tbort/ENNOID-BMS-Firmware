@@ -184,5 +184,6 @@ void  modPowerElectronicsSamplePackVoltage(float *voltagePointer);
 void  modPowerElectronicsLCSenseSample(void);
 void  modPowerElectronicsLCSenseInit(void);
 uint16_t modPowerElectronicsLowestInThree(uint16_t num1,uint16_t num2,uint16_t num3);
+void  modPowerElectronicsResetCurrentOffset(void);
 
 #endif

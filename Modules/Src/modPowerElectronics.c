@@ -52,9 +52,9 @@ uint32_t modPowerElectronicsSOADisChargeChangeLastTick;
 uint32_t chargeIncreaseIntervalTime;
 
 uint16_t  calculatedChargeThrottle = 0;
-float initCurrentOffset = 0.0f;
-//float initCurrentOffsetTemp = 0.0f;
-uint8_t initCurrentOffsetCounter = 0;
+float currentOffset = 0.0f;
+//float currentOffsetTemp = 0.0f;
+uint8_t currentOffsetCounter = 0;
 
 //uint32_t hardUnderVoltageFlags, hardOverVoltageFlags;
 
@@ -1279,7 +1279,7 @@ float modPowerElectronicsCalcPackCurrent(void){
 }
 
 void modPowerElectronicsLCSenseSample(void) {
-		driverSWISL28022GetBusCurrent(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,&modPowerElectronicsPackStateHandle->loCurrentLoadCurrent,initCurrentOffset, modPowerElectronicsGeneralConfigHandle->shuntLCFactor);
+		driverSWISL28022GetBusCurrent(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,&modPowerElectronicsPackStateHandle->loCurrentLoadCurrent,currentOffset, modPowerElectronicsGeneralConfigHandle->shuntLCFactor);
 		driverHWADCGetLoadVoltage(&modPowerElectronicsPackStateHandle->loCurrentLoadVoltage, modPowerElectronicsGeneralConfigHandle->loadVoltageOffset, modPowerElectronicsGeneralConfigHandle->loadVoltageFactor);
 		#if (HAS_NO_DISCHARGE)
 			modPowerElectronicsPackStateHandle->loCurrentLoadVoltage = modPowerElectronicsPackStateHandle->packVoltage;
@@ -1290,11 +1290,11 @@ void modPowerElectronicsLCSenseSample(void) {
 	#endif
 	
 	//Calculate the zero current offset
-	if(initCurrentOffsetCounter < 2){
-		//initCurrentOffsetTemp += modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
-		initCurrentOffsetCounter++;
-		if(initCurrentOffsetCounter == 2){
-			initCurrentOffset = modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
+	if(currentOffsetCounter < 2){
+		//currentOffsetTemp += modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
+		currentOffsetCounter++;
+		if(currentOffsetCounter == 2){
+			currentOffset = modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
 		}
 	}
 }
@@ -1309,7 +1309,8 @@ uint16_t modPowerElectronicsLowestInThree(uint16_t num1,uint16_t num2,uint16_t n
 	}
 }
 
-
-
+void  modPowerElectronicsResetCurrentOffset(void){
+	currentOffset = modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
+}
 
 

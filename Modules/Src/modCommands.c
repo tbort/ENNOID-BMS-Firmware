@@ -452,6 +452,31 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 
 		  	modCommandsSendPacket(modCommandsSendBuffer, ind);
 			break;
+
+		case COMM_BMS_SET_CHARGE_ALLOWED:
+			modCommandsGeneralState->chargeAllowed = true;
+			break;
+
+		case COMM_BMS_SET_BALANCE_OVERRIDE:
+			//modCommandsGeneralConfig->cellBalanceAllTime = true;
+			break;
+
+		case COMM_BMS_RESET_COUNTERS:
+			if (data[0]) {
+			//To do
+			}
+
+			if (data[1]) {
+			//To do
+			}
+			break;
+
+		case COMM_BMS_FORCE_BALANCE:
+			modCommandsGeneralConfig->cellBalanceAllTime = true;
+			break;
+		case COMM_BMS_ZERO_CURRENT_OFFSET:
+			modPowerElectronicsResetCurrentOffset();
+		break;
 		case COMM_GET_CUSTOM_CONFIG:
 		case COMM_GET_CUSTOM_CONFIG_DEFAULT: {
 			main_config_t *conf = libMempools_alloc_conf();
