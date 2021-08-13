@@ -1,6 +1,6 @@
 // Define the hardware version here:
 #ifndef ENNOID_SS_LITE
-#define ENNOID_SS_LITE		0
+#define ENNOID_SS_LITE					0
 #endif
 
 #ifndef ENNOID_SS
@@ -16,20 +16,20 @@
 #endif
 
 #ifndef ENNOID_LV_2
-#define ENNOID_LV_2				0
+#define ENNOID_LV_2					0
 #endif
 
 #ifndef ENNOID_SS_24
-#define ENNOID_SS_24			1
+#define ENNOID_SS_24					0
 #endif
 
 // Firmware version
-#define FW_VERSION_MAJOR		1
-#define FW_VERSION_MINOR		4
-#define FW_REAL_VERSION			"V1.4"
-
+#define FW_VERSION_MAJOR				1
+#define FW_VERSION_MINOR				4
+#define FW_REAL_VERSION					"V1.4"
+#define FW_TEST_VERSION_NUMBER				0
 // UUID
-#define STM32_UUID					((uint32_t*)0x1FFFF7AC)
+#define STM32_UUID				((uint32_t*)0x1FFFF7AC)
 #define STM32_UUID_8				((uint8_t*)0x1FFFF7AC)
 
 // Hardware names and limits

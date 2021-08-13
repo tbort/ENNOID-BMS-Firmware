@@ -96,7 +96,7 @@ CFLAGS += -mcpu=cortex-m4 -fsingle-precision-constant
 CFLAGS += -Wdouble-promotion
 CFLAGS += -specs=nano.specs -specs=nosys.specs -u_printf_float #-u_scanf_float
 CFLAGS += -mfpu=fpv4-sp-d16 -mfloat-abi=hard -march=armv7e-m
-CFLAGS += -ffunction-sections -fdata-sections
+CFLAGS += -ffunction-sections -fdata-sections #-fshort-enums
 # define board for compiler
 CFLAGS += -D STM32F303xC
 CFLAGS += -D USE_HAL_DRIVER

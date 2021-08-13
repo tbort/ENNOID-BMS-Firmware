@@ -40,7 +40,7 @@ typedef enum {
 	HW_TYPE_VESC = 0,
 	HW_TYPE_VESC_BMS,
 	HW_TYPE_CUSTOM_MODULE,
-	HW_TYPE_EBMS
+	HW_TYPE_ENNOID_BMS
 } HW_TYPE;
 
 typedef enum {

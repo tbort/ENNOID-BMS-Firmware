@@ -80,6 +80,12 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			ind += strlen(HW_NAME) + 1;
 			memcpy(modCommandsSendBuffer + ind, STM32_UUID_8, 12);
 			ind += 12;
+			modCommandsSendBuffer[ind++] = 0;
+			modCommandsSendBuffer[ind++] = 2;
+
+			modCommandsSendBuffer[ind++] = HW_TYPE_ENNOID_BMS;
+
+			modCommandsSendBuffer[ind++] = FW_TEST_VERSION_NUMBER; // One custom config
 
 			modCommandsSendPacket(modCommandsSendBuffer, ind);
 			break;
@@ -510,7 +516,9 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 				modCommandsVESCToEBMS(conf);
 
 				ind = 0;
+				//modCommandsSendBuffer[50];
 				modCommandsSendBuffer[ind++] = packet_id;
+				modCommandsSendPacket(modCommandsSendBuffer, ind);
 			} else {
 				modCommandsPrintf("Warning: Could not set configuration");
 			}
@@ -541,7 +549,8 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			libBufferAppend_int32(modCommandsSendBuffer, ofs_conf, &ind);
 			memcpy(modCommandsSendBuffer + ind, data_main_config_t_ + ofs_conf, len_conf);
 			ind += len_conf;
-			//reply_func(modCommandsSendBuffer, ind);
+			modCommandsSendPacket(modCommandsSendBuffer, ind);
+			
 
 		} break;
 		default:
