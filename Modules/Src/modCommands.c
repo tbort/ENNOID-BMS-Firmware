@@ -453,8 +453,8 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			libBufferAppend_float16(modCommandsSendBuffer, modCommandsGeneralState->tempBatteryHigh, 1e2, &ind);
 
 			// State of charge and state of health
-			libBufferAppend_float16(modCommandsSendBuffer, modCommandsGeneralState->SoC, 1e3, &ind);
-			libBufferAppend_float16(modCommandsSendBuffer, 255.0, 1e3, &ind);
+			libBufferAppend_float16(modCommandsSendBuffer, modCommandsGeneralState->SoC/100, 1e3, &ind);
+			libBufferAppend_float16(modCommandsSendBuffer, 0.0, 1e3, &ind);
 
 		  	modCommandsSendPacket(modCommandsSendBuffer, ind);
 			break;
