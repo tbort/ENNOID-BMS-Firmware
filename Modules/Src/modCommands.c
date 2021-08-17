@@ -81,11 +81,11 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			memcpy(modCommandsSendBuffer + ind, STM32_UUID_8, 12);
 			ind += 12;
 			modCommandsSendBuffer[ind++] = 0;
-			modCommandsSendBuffer[ind++] = 2;
+			modCommandsSendBuffer[ind++] = FW_TEST_VERSION_NUMBER;
 
 			modCommandsSendBuffer[ind++] = HW_TYPE_ENNOID_BMS;
 
-			modCommandsSendBuffer[ind++] = FW_TEST_VERSION_NUMBER; // One custom config
+			modCommandsSendBuffer[ind++] = 1; // One custom config
 
 			modCommandsSendPacket(modCommandsSendBuffer, ind);
 			break;
