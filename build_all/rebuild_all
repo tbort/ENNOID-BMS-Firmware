@@ -13,7 +13,7 @@ cd $FWPATH
 make clean
 make build_args='-DENNOID_SS=1'
 cd $DIR
-cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_SS.bin
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS.bin
 
 #################### HW ENNOID_SS_24 ########################
 
@@ -24,7 +24,7 @@ cd $FWPATH
 make clean
 make build_args='-DENNOID_SS_24=1'
 cd $DIR
-cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_SS_24.bin
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS.bin
 
 #################### HW ENNOID_SS_LITE ########################
 
@@ -35,7 +35,7 @@ cd $FWPATH
 make clean
 make build_args='-DENNOID_SS_LITE=1'
 cd $DIR
-cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_SS_LITE.bin
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS.bin
 
 #################### HW ENNOID_HV ########################
 
@@ -46,7 +46,7 @@ cd $FWPATH
 make clean
 make build_args='-DENNOID_HV=1'
 cd $DIR
-cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_HV.bin
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS.bin
 
 #################### HW ENNOID_LV ########################
 
@@ -57,7 +57,7 @@ cd $FWPATH
 make clean
 make build_args='-DENNOID_LV=1'
 cd $DIR
-cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_LV.bin
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS.bin
 
 #################### HW ENNOID_LV_2 ########################
 
@@ -68,7 +68,7 @@ cd $FWPATH
 make clean
 make build_args='-DENNOID_LV_2=1'
 cd $DIR
-cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS_LV_2.bin
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS.bin
 
 # Clean
 cd $FWPATH

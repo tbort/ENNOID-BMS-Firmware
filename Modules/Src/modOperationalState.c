@@ -191,6 +191,7 @@ void modOperationalStateTask(void) {
 				}
 			}else{
 				modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);
+				modOperationalStatePackStatehandle->faultState = FAULT_CODE_DISCHARGE_RETRY;
 				modPowerElectronicsSetDisCharge(false);
 				modPowerElectronicsSetCharge(false);
 				modPowerElectronicsSetChargePFET(false);
