@@ -581,64 +581,35 @@ void modCommandsVESCToEBMS(main_config_t *conf) {
 	modCommandsGeneralConfig->CANID	= conf->controller_id;
 	modCommandsGeneralConfig->canBusSpeed = conf->can_baud_rate;
 	modCommandsGeneralConfig->noOfCellsSeries = conf->cell_num;
-	modCommandsGeneralConfig->notUsedCurrentThreshold = conf->min_current_sleep;
+	modCommandsGeneralConfig->noOfTempSensorPerModule = conf->temp_num;
+	modCommandsGeneralConfig->cellBalanceStart = conf->balance_start_voltage;
+	modCommandsGeneralConfig->maxMismatchThreshold = conf->balance_difference_threshold;
+	modCommandsGeneralConfig->cellSoftOverVoltage = conf->soft_overvoltage;
+	modCommandsGeneralConfig->cellLCSoftUnderVoltage = conf->soft_undervoltage;
+	modCommandsGeneralConfig->cellHardOverVoltage = conf->hard_overvoltage;
+	modCommandsGeneralConfig->cellHardUnderVoltage = conf->hard_undervoltage;
 	modCommandsGeneralConfig->allowedTempBattChargingMax = conf->t_charge_max;
-	modCommandsGeneralConfig->cellSoftOverVoltage = conf->vc_charge_end;
-	modCommandsGeneralConfig->notUsedTimeout = conf->sleep_timeout_reset_ms;
-	modCommandsGeneralConfig->maxSimultaneousDischargingCells = conf->max_bal_ch;
-	modCommandsGeneralConfig->cellBalanceStart = conf->vc_balance_min;
-	modCommandsGeneralConfig->maxMismatchThreshold =  conf->vc_balance_end;;
-	//modCommandsGeneralConfig->cellBalanceDifferenceThreshold = conf->vc_balance_start;
-	//modCommandsGeneralConfig->cellBalanceAllTime = conf->balance_mode;
-	//modCommandsGeneralConfig->shuntLCFactor = conf->ext_shunt_gain;
-	//modCommandsGeneralConfig->packCurrentDataSource = conf->i_measure_mode;
-	//modCommandsGeneralConfig->chargerEnabledThreshold = conf->vc_charge_min;
-/*
-	conf->send_can_status_rate_hz;
-	conf->dist_bal;
-	conf->cell_first_index;
-	conf->vc_charge_start;
-	conf->balance_max_current;
-	conf->min_current_ah_wh_cnt;
+	modCommandsGeneralConfig->allowedTempBattDischargingMax = conf->t_discharge_max;
+	modCommandsGeneralConfig->notUsedCurrentThreshold = conf->not_used_current_threshold;
+	modCommandsGeneralConfig->notUsedTimeout = conf->not_used_timeout;
 
-	conf->v_charge_detect;
-	
-	conf->ext_shunt_res;
-	conf->ext_pch_r_top;
-	conf->ext_pch_r_bot;
-	conf->max_charge_current;
-	conf->soc_filter_const;
-*/
 }
 
 void modCommandsEBMSToVESC(main_config_t *conf) {
 	conf->controller_id = modCommandsGeneralConfig->CANID;
-	conf->send_can_status_rate_hz = CONF_SEND_CAN_STATUS_RATE_HZ;
 	conf->can_baud_rate = modCommandsGeneralConfig->canBusSpeed;
-	conf->max_bal_ch = modCommandsGeneralConfig->maxSimultaneousDischargingCells;
-	conf->dist_bal = CONF_DIST_BAL;
-	conf->balance_mode = CONF_BALANCE_MODE;
 	conf->cell_num = modCommandsGeneralConfig->noOfCellsSeries;
-	conf->cell_first_index = CONF_CELL_FIRST_INDEX;
-	conf->vc_balance_start = CONF_BALANCE_START;
-	conf->vc_balance_end = modCommandsGeneralConfig->maxMismatchThreshold;
-	conf->vc_charge_start = CONF_CHARGE_START;
-	conf->vc_charge_end = modCommandsGeneralConfig->cellSoftOverVoltage;
-	conf->vc_charge_min = CONF_CHARGE_MIN;
-	conf->vc_balance_min = modCommandsGeneralConfig->cellBalanceStart;
-	conf->balance_max_current = CONF_BALANCE_MAX_CURRENT;
-	conf->min_current_ah_wh_cnt = CONF_MIN_CURRENT_AH_WH_CNT;
-	conf->min_current_sleep = modCommandsGeneralConfig->notUsedCurrentThreshold;
-	conf->v_charge_detect = CONF_V_CHARGE_DETECT;
+	conf->temp_num = modCommandsGeneralConfig->noOfTempSensorPerModule;
+	conf->balance_start_voltage = modCommandsGeneralConfig->cellBalanceStart;
+	conf->balance_difference_threshold = modCommandsGeneralConfig->maxMismatchThreshold;
+	conf->soft_overvoltage = modCommandsGeneralConfig->cellSoftOverVoltage;
+	conf->soft_undervoltage = modCommandsGeneralConfig->cellLCSoftUnderVoltage;
+	conf->hard_overvoltage = modCommandsGeneralConfig->cellHardOverVoltage;
+	conf->hard_undervoltage = modCommandsGeneralConfig->cellHardUnderVoltage;
 	conf->t_charge_max = modCommandsGeneralConfig->allowedTempBattChargingMax;
-	conf->i_measure_mode = CONF_I_MEASURE_MODE;
-	conf->ext_shunt_res = CONF_EXT_SHUNT_RES;
-	conf->ext_shunt_gain = CONF_EXT_SHUNT_GAIN;
-	conf->ext_pch_r_top = CONF_EXT_PCH_R_TOP;
-	conf->ext_pch_r_bot = CONF_EXT_PCH_R_BOTTOM;
-	conf->max_charge_current = CONF_MAX_CHARGE_CURRENT;
-	conf->sleep_timeout_reset_ms = modCommandsGeneralConfig->notUsedTimeout;
-	conf->soc_filter_const = CONF_SOC_FILTER_CONST;
+	conf->t_discharge_max = modCommandsGeneralConfig->allowedTempBattDischargingMax;
+	conf->not_used_current_threshold = modCommandsGeneralConfig->notUsedCurrentThreshold;
+	conf->not_used_timeout = modCommandsGeneralConfig->notUsedTimeout;
 }
 
 void modCommandsJumpToMainApplication(void) {

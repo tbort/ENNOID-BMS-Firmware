@@ -832,6 +832,7 @@ float modPowerElectronicsMapVariableFloat(float inputVariable, float inputLowerL
 
 void modPowerElectronicsInitISL(void) {
 	// Init BUS monitor
+
 	driverSWISL28022InitStruct ISLInitStruct;
 	ISLInitStruct.ADCSetting = ADC_128_64010US;
 	ISLInitStruct.busVoltageRange = BRNG_60V_1;
@@ -839,6 +840,21 @@ void modPowerElectronicsInitISL(void) {
 	ISLInitStruct.Mode = MODE_SHUNTANDBUS_CONTINIOUS;
 	driverSWISL28022Init(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,ISLInitStruct);
 }
+
+/*
+void modPowerElectronicsInitINA(void) {
+
+	// Init BUS monitor
+	driverSWINA226InitStruct INAInitStruct;
+	INAInitStruct.ADCSetting = ADC_128_64010US;
+	INAInitStruct.busVoltageRange = BRNG_60V_1;
+	INAInitStruct.currentShuntGain = PGA_8_320MV;
+	ISNAInitStruct.Mode = MODE_SHUNTANDBUS_CONTINIOUS;
+
+	driverSWINA226Init(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,INAInitStruct);
+
+}
+*/
 
 void modPowerElectronicsCheckPackSOA(void) {
 	static float hysteresysBMS       = -2.0f;
@@ -1260,7 +1276,7 @@ void modPowerElectronicsSamplePackVoltage(float *voltagePointer) {
 			*voltagePointer = 0.0f;
 			break;
 		case sourcePackVoltageINA226:
-				driverSWISL28022GetBusVoltage(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,voltagePointer,modPowerElectronicsGeneralConfigHandle->voltageLCOffset, modPowerElectronicsGeneralConfigHandle->voltageLCFactor);
+				//driverSWINA226GetBusVoltage(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,voltagePointer,modPowerElectronicsGeneralConfigHandle->voltageLCOffset, modPowerElectronicsGeneralConfigHandle->voltageLCFactor);
 			break;		
 		default:
 			break;

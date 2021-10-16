@@ -5,12 +5,7 @@
 
 // BMS ID
 #ifndef CONF_CONTROLLER_ID
-#define CONF_CONTROLLER_ID 104
-#endif
-
-// CAN Status Rate
-#ifndef CONF_SEND_CAN_STATUS_RATE_HZ
-#define CONF_SEND_CAN_STATUS_RATE_HZ 10
+#define CONF_CONTROLLER_ID 10
 #endif
 
 // CAN Baud Rate
@@ -18,124 +13,64 @@
 #define CONF_CAN_BAUD_RATE 2
 #endif
 
-// Max Balance Channels
-#ifndef CONF_MAX_BAL_CH
-#define CONF_MAX_BAL_CH 11
-#endif
-
-// Distributed Balancing
-#ifndef CONF_DIST_BAL
-#define CONF_DIST_BAL 1
-#endif
-
-// Balancing Mode
-#ifndef CONF_BALANCE_MODE
-#define CONF_BALANCE_MODE 2
-#endif
-
 // Number of Cells
 #ifndef CONF_CELL_NUM
-#define CONF_CELL_NUM 12
+#define CONF_CELL_NUM 18
 #endif
 
-// First Cell Index
-#ifndef CONF_CELL_FIRST_INDEX
-#define CONF_CELL_FIRST_INDEX 0
+// Number of Temperature sensors
+#ifndef CONF_TEMP_NUM
+#define CONF_TEMP_NUM 0
 #endif
 
 // Balance Starting Voltage
 #ifndef CONF_BALANCE_START
-#define CONF_BALANCE_START 0.015
+#define CONF_BALANCE_START 4
 #endif
 
-// Balance End Voltage
-#ifndef CONF_BALANCE_END
-#define CONF_BALANCE_END 0.008
+// Balance difference threshold
+#ifndef CONF_BALANCE_DIFF
+#define CONF_BALANCE_DIFF 0.01
 #endif
 
-// Charge Start Voltage
-#ifndef CONF_CHARGE_START
-#define CONF_CHARGE_START 4.16
+// Soft Overvoltage
+#ifndef CONF_SOFT_OVER
+#define CONF_SOFT_OVER 4.1
 #endif
 
-// Charge End Voltage
-#ifndef CONF_CHARGE_END
-#define CONF_CHARGE_END 4.21
+// Soft Undervoltage
+#ifndef CONF_SOFT_UNDER
+#define CONF_SOFT_UNDER 3
 #endif
 
-// Charge Minimum Voltage
-#ifndef CONF_CHARGE_MIN
-#define CONF_CHARGE_MIN 2
+// Hard Overvoltage
+#ifndef CONF_HARD_OVER
+#define CONF_HARD_OVER 4.2
 #endif
 
-// Balance Minimum Voltage
-#ifndef CONF_BALANCE_MIN
-#define CONF_BALANCE_MIN 3.5
-#endif
-
-// Balance Maximum Current
-#ifndef CONF_BALANCE_MAX_CURRENT
-#define CONF_BALANCE_MAX_CURRENT 3
-#endif
-
-// Minimum Counter Current
-#ifndef CONF_MIN_CURRENT_AH_WH_CNT
-#define CONF_MIN_CURRENT_AH_WH_CNT 0.5
-#endif
-
-// Minimum Sleep Current
-#ifndef CONF_MIN_CURRENT_SLEEP
-#define CONF_MIN_CURRENT_SLEEP 0.5
-#endif
-
-// Charger Detect Threshold Voltage
-#ifndef CONF_V_CHARGE_DETECT
-#define CONF_V_CHARGE_DETECT 30
+// Hard Undervoltage
+#ifndef CONF_HARD_UNDER
+#define CONF_HARD_UNDER 4.2
 #endif
 
 // Charge Max Temp
 #ifndef CONF_T_CHARGE_MAX
-#define CONF_T_CHARGE_MAX 45
+#define CONF_T_CHARGE_MAX 105
 #endif
 
-// Current Measurement Mode
-#ifndef CONF_I_MEASURE_MODE
-#define CONF_I_MEASURE_MODE 0
+// Discharge Max Temp
+#ifndef CONF_T_DISCHARGE_MAX
+#define CONF_T_DISCHARGE_MAX 105
 #endif
 
-// Current Shunt Resistance
-#ifndef CONF_EXT_SHUNT_RES
-#define CONF_EXT_SHUNT_RES 0.0002
+// Not used current threshold
+#ifndef CONF_NOT_USED_THRESHOLD
+#define CONF_NOT_USED_THRESHOLD 1
 #endif
 
-// Current Shunt Amp Gain
-#ifndef CONF_EXT_SHUNT_GAIN
-#define CONF_EXT_SHUNT_GAIN 50
-#endif
-
-// External Precharge R Div Top
-#ifndef CONF_EXT_PCH_R_TOP
-#define CONF_EXT_PCH_R_TOP 520000
-#endif
-
-// External Precharge R Div Bottom
-#ifndef CONF_EXT_PCH_R_BOTTOM
-#define CONF_EXT_PCH_R_BOTTOM 10000
-#endif
-
-// Max Charge Current
-#ifndef CONF_MAX_CHARGE_CURRENT
-#define CONF_MAX_CHARGE_CURRENT 16
-#endif
-
-// Sleep Timeout Reset Time
-#ifndef CONF_SLEEP_TIMEOUT_MS
-#define CONF_SLEEP_TIMEOUT_MS 240000
-#endif
-
-// SoC Filter Constant
-#ifndef CONF_SOC_FILTER_CONST
-#define CONF_SOC_FILTER_CONST 1e-05
+// Not Used Timeout
+#ifndef CONF_NOT_USED_TIMEOUT
+#define CONF_NOT_USED_TIMEOUT 1200000
 #endif
 
 // CONF_DEFAULT_H_
