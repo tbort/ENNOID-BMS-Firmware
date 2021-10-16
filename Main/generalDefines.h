@@ -3,6 +3,10 @@
 #define ENNOID_SS_LITE					0
 #endif
 
+#ifndef ENNOID_XLITE
+#define ENNOID_XLITE					0
+#endif
+
 #ifndef ENNOID_SS
 #define ENNOID_SS					0
 #endif
@@ -99,6 +103,19 @@
   #define HW_NAME "ENNOID-SS-LITE"
 	#define HW_LIM_CELL_BALANCE_MAX_SIMULTANEOUS_DISCHARGE 18
 	#define HW_LIM_CELL_MONITOR_IC_COUNT                   1
+	#define HW_LIM_MIN_NOT_USED_DELAY                      5000
+
+	#define HAS_PFET_OUTPUT					1
+	#define ISL28022_MASTER_ADDRES				0x45
+	#define HAS_HUMIDITY					1
+	#define HAS_NO_DISCHARGE				1
+	#define HAS_CHARGER_VOLTAGE_MEASUREMENT			1
+#endif
+
+#if ENNOID_XLITE
+  #define HW_NAME "ENNOID-XLITE"
+	#define HW_LIM_CELL_BALANCE_MAX_SIMULTANEOUS_DISCHARGE 24
+	#define HW_LIM_CELL_MONITOR_IC_COUNT                   2
 	#define HW_LIM_MIN_NOT_USED_DELAY                      5000
 
 	#define HAS_PFET_OUTPUT					1

@@ -70,6 +70,17 @@ make build_args='-DENNOID_LV_2=1'
 cd $DIR
 cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS.bin
 
+#################### HW ENNOID_XLITE ########################
+
+COPYDIR=ENNOID-XLITE
+rm -f $COPYDIR/*
+
+cd $FWPATH
+make clean
+make build_args='-DENNOID_XLITE=1'
+cd $DIR
+cp $FWPATH/main.bin $COPYDIR/ENNOID-BMS.bin
+
 # Clean
 cd $FWPATH
 make clean

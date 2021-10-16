@@ -109,7 +109,11 @@ void modOperationalStateTask(void) {
 			if(modOperationalStatePackStatehandle->balanceActive){
 				modOperationalStateSetNewState(OP_STATE_BALANCING);	
 			}
-			modOperationalStateHandleChargerDisconnect(OP_STATE_POWER_DOWN);
+			if(modOperationalStateGeneralConfigHandle->BMSApplication == electricVehicle){
+				modOperationalStateHandleChargerDisconnect(OP_STATE_POWER_DOWN);
+			}else{
+				modOperationalStateHandleChargerDisconnect(OP_STATE_INIT);
+			}
 			modPowerElectronicsSetCharge(true);
 			if(modOperationalStatePackStatehandle->packCurrent >= 0.5f || modOperationalStatePackStatehandle->packCurrent >= modOperationalStateGeneralConfigHandle->chargerEnabledThreshold){
 				modPowerElectronicsSetChargePFET(true);
@@ -355,7 +359,11 @@ void modOperationalStateTask(void) {
 				modOperationalStateChargedTimeout = HAL_GetTick();
 			};
 		
-			modOperationalStateHandleChargerDisconnect(OP_STATE_POWER_DOWN);
+			if(modOperationalStateGeneralConfigHandle->BMSApplication == electricVehicle){
+				modOperationalStateHandleChargerDisconnect(OP_STATE_POWER_DOWN);
+			}else{
+				modOperationalStateHandleChargerDisconnect(OP_STATE_INIT);
+			}
 			if(modOperationalStatePackStatehandle->chargeAllowed){
 				modPowerElectronicsSetCharge(true);
 				if(modOperationalStatePackStatehandle->packCurrent >= 0.5f || modOperationalStatePackStatehandle->packCurrent >= modOperationalStateGeneralConfigHandle->chargerEnabledThreshold){

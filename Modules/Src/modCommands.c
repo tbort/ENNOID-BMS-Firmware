@@ -83,7 +83,7 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			modCommandsSendBuffer[ind++] = 0;
 			modCommandsSendBuffer[ind++] = FW_TEST_VERSION_NUMBER;
 
-			modCommandsSendBuffer[ind++] = HW_TYPE_ENNOID_BMS;
+			modCommandsSendBuffer[ind++] = HW_TYPE_VESC_BMS;
 
 			modCommandsSendBuffer[ind++] = 1; // One custom config
 

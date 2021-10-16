@@ -734,6 +734,11 @@ typedef enum {
 } configExtEnableStateTypeEnum;
 
 typedef enum {
+  	electricVehicle = 0,
+	energyStorage
+} configBMSApplication;
+
+typedef enum {
   opStateChargingModeCharging = 0,
 	opStateChargingModeNormal
 } configChargerEnableStateTypeEnum;
