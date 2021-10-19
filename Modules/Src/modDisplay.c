@@ -169,23 +169,21 @@ void modDisplayShowInfo(modDisplayInfoType newState, modDisplayDataTypedef modDi
 				libGraphicsSetTextSize(0);
 				libGraphicsSetTextColor_0(INVERSE);
 			//Display cell high voltage
-				libGraphicsSetCursor(8,1);
+				libGraphicsSetCursor(7,0);
 				libGraphicsWrite('C');
-				libGraphicsWrite('V');
 				libGraphicsWrite('H');
 				libGraphicsWrite(':');
-				modDisplayWrite(modDisplayData.HighestCellVoltage,3);
+				modDisplayWrite(modDisplayData.HighestCellVoltage,2);
 				libGraphicsWrite('V');
 				libGraphicsWrite(' ');
 			//Display cell low voltage
 				libGraphicsWrite('C');
-				libGraphicsWrite('V');
 				libGraphicsWrite('L');
 				libGraphicsWrite(':');
-				modDisplayWrite(modDisplayData.LowestCellVoltage,3);
+				modDisplayWrite(modDisplayData.LowestCellVoltage,2);
 				libGraphicsWrite('V');
 			//Display current
-				libGraphicsSetCursor(8,57);
+				libGraphicsSetCursor(7,57);
 				libGraphicsWrite('I');
 				libGraphicsWrite(':');
 				modDisplayWrite(modDisplayData.Current,1);
