@@ -722,8 +722,8 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->packCurrentDataSource				= sourcePackCurrentISL28022;		// The pack current is the same as the current through the low current shunt
 	configLocation->buzzerSignalSource				= buzzerSourceOn;			// Stores what source shoud be taken to trigger
 	configLocation->buzzerSignalPersistant				= false;				// Stores whether the buzzer should stay on after triggering
-	configLocation->shuntLCFactor					= -0.001733f;              		// Shunt factor low current
-	configLocation->voltageLCFactor					= 2.55f;				// Pack voltage factor 
+	configLocation->shuntLCFactor					= -0.00043f;              		// Shunt factor low current
+	configLocation->voltageLCFactor					= 2.75f;				// Pack voltage factor 
 	configLocation->voltageLCOffset					= 0;					// Pack voltage offset 
 	configLocation->loadVoltageFactor				= 41.0f;				// Load voltage factor 
 	configLocation->loadVoltageOffset				= 0.0f;					// Load voltage offset

@@ -227,7 +227,9 @@ bool modPowerElectronicsTask(void) {
 					driverSWHTC1080StartMeasurement();
 				}
 			};
-		#else
+		#endif
+
+		#if(HAS_ON_BOARD_NTC)
 			driverHWADCGetNTCValue(&modPowerElectronicsPackStateHandle->temperatures[0],modPowerElectronicsGeneralConfigHandle->NTC25DegResistance[modConfigNTCGroupMasterPCB],modPowerElectronicsGeneralConfigHandle->NTCTopResistor[modConfigNTCGroupMasterPCB],modPowerElectronicsGeneralConfigHandle->NTCBetaFactor[modConfigNTCGroupMasterPCB],25.0f);
 		#endif
 		
@@ -1297,6 +1299,10 @@ float modPowerElectronicsCalcPackCurrent(void){
 			break;
 		case sourcePackCurrentINA226:
 			returnCurrent = modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
+			break;
+		case sourcePackCurrentCANVESC:
+			//returnCurrent = modCANGetVESCCurrent();
+
 			break;
 		default:
 			break;

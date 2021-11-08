@@ -37,9 +37,13 @@
 #include <math.h>
 
 // Settings
-#define CAN_STATUS_MSG_INT_MS		1
-#define RX_CAN_FRAMES_SIZE	    255       // max 255
-#define RX_CAN_BUFFER_SIZE	    PACKET_MAX_PL_LEN
+#define CAN_STATUS_MSG_INT_MS			1
+#define RX_CAN_FRAMES_SIZE	    		255       // max 255
+#define RX_CAN_BUFFER_SIZE	    		PACKET_MAX_PL_LEN
+
+// Settings
+#define CAN_STATUS_MSGS_TO_STORE		10
+#define CAN_BMS_STATUS_MSGS_TO_STORE		185
 
 void		modCANInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneralConfigStructTypedef *generalConfigPointer);
 void		modCANTask(void);
@@ -69,5 +73,7 @@ void		modCANOpenChargerCheckPresent(void);
 void		modCANOpenBMSSendHeartBeat(void);
 void		modCANOpenChargerStartNode(void);
 void		modCANOpenChargerSetCurrentVoltageReady(float current,float voltage,bool ready);
+
+uint16_t 	modCANGetVESCCurrent(void);
 
 #endif /* MODCAN_H_ */

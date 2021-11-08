@@ -607,18 +607,18 @@ typedef enum {
 } CAN_ID_STYLE;
 
 typedef enum {
-	OP_STATE_INIT = 0,											// 0
-	OP_STATE_CHARGING,											// 1
-	OP_STATE_PRE_CHARGE,										// 2
-	OP_STATE_LOAD_ENABLED,									// 3
-	OP_STATE_BATTERY_DEAD,									// 4
-	OP_STATE_POWER_DOWN,										// 5
-	OP_STATE_EXTERNAL,											// 6
-	OP_STATE_ERROR,													// 7
-	OP_STATE_ERROR_PRECHARGE,								// 8
-	OP_STATE_BALANCING,											// 9
-	OP_STATE_CHARGED,												// 10
-	OP_STATE_FORCEON,												// 11
+	OP_STATE_INIT = 0,		// 0
+	OP_STATE_CHARGING,		// 1
+	OP_STATE_PRE_CHARGE,		// 2
+	OP_STATE_LOAD_ENABLED,		// 3
+	OP_STATE_BATTERY_DEAD,		// 4
+	OP_STATE_POWER_DOWN,		// 5
+	OP_STATE_EXTERNAL,		// 6
+	OP_STATE_ERROR,			// 7
+	OP_STATE_ERROR_PRECHARGE,	// 8
+	OP_STATE_BALANCING,		// 9
+	OP_STATE_CHARGED,		// 10
+	OP_STATE_FORCEON,		// 11
 } OperationalStateTypedef;
 
 typedef enum {
@@ -704,6 +704,36 @@ typedef struct {
 	float duty;
 } can_status_msg;
 
+typedef struct {
+	int id;
+	systime_t rx_time;
+	float amp_hours;
+	float amp_hours_charged;
+} can_status_msg_2;
+
+typedef struct {
+	int id;
+	systime_t rx_time;
+	float watt_hours;
+	float watt_hours_charged;
+} can_status_msg_3;
+
+typedef struct {
+	int id;
+	systime_t rx_time;
+	float temp_fet;
+	float temp_motor;
+	float current_in;
+	float pid_pos_now;
+} can_status_msg_4;
+
+typedef struct {
+	int id;
+	systime_t rx_time;
+	float v_in;
+	int32_t tacho_value;
+} can_status_msg_5;
+
 typedef enum {
 	MOTE_PACKET_BATT_LEVEL = 0,
 	MOTE_PACKET_BUTTONS,
@@ -763,7 +793,8 @@ typedef enum {
 	sourcePackCurrentISL28022,
 	sourcePackCurrentCANDieBieShunt,
 	sourcePackCurrentCANIsaBellenHuette,
-	sourcePackCurrentINA226
+	sourcePackCurrentINA226,
+	sourcePackCurrentCANVESC
 } configPackCurrentDataSourceEnum;
 
 typedef enum {
@@ -826,6 +857,8 @@ typedef enum {
 	si7020,
 	htc1080
 } humidityICTypeEnum;
+
+
 
 
 

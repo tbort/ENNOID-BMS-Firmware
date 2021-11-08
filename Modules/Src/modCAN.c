@@ -47,6 +47,13 @@ ChargerStateTypedef chargerOpStateNew = opInit;
 modPowerElectronicsPackStateTypedef *modCANPackStateHandle;
 modConfigGeneralConfigStructTypedef *modCANGeneralConfigHandle;
 
+// Private variables
+static can_status_msg stat_msgs[CAN_STATUS_MSGS_TO_STORE];
+static can_status_msg_2 stat_msgs_2[CAN_STATUS_MSGS_TO_STORE];
+static can_status_msg_3 stat_msgs_3[CAN_STATUS_MSGS_TO_STORE];
+static can_status_msg_4 stat_msgs_4[CAN_STATUS_MSGS_TO_STORE];
+static can_status_msg_5 stat_msgs_5[CAN_STATUS_MSGS_TO_STORE];
+
 /*
 bool modCANPing(uint8_t controller_id, HW_TYPE *hw_type) {
 	ping_tp = chThdGetSelfX();
@@ -499,7 +506,7 @@ void modCANSubTaskHandleCommunication(void) {
 						break;
 					}
 				}
-/*
+
 				switch (cmd) {
 				case CAN_PACKET_PING:
 					//sleep_reset();
@@ -510,18 +517,18 @@ void modCANSubTaskHandleCommunication(void) {
 
 					for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
 						can_status_msg *stat_tmp = &stat_msgs[i];
-						if (stat_tmp->id == id || stat_tmp->id == -1) {
+						if (stat_tmp->id == destinationID || stat_tmp->id == -1) {
 							ind = 0;
-							stat_tmp->id = id;
-							stat_tmp->rx_time = chVTGetSystemTime();
-							stat_tmp->rpm = (float)buffer_get_int32(data8, &ind);
-							stat_tmp->current = (float)buffer_get_int16(data8, &ind) / 10.0;
-							stat_tmp->duty = (float)buffer_get_int16(data8, &ind) / 1000.0;
+							stat_tmp->id = destinationID;
+							stat_tmp->rx_time = HAL_GetTick();
+							stat_tmp->rpm = (float)libBufferGet_int32(rxmsg.Data, &ind);
+							stat_tmp->current = (float)libBufferGet_int16(rxmsg.Data, &ind) / 10.0;
+							stat_tmp->duty = (float)libBufferGet_int16(rxmsg.Data, &ind) / 1000.0;
 							break;
 						}
 					}
 					break;
-
+/*
 				case CAN_PACKET_STATUS_2:
 					for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
 						can_status_msg_2 *stat_tmp_2 = &stat_msgs_2[i];
@@ -643,11 +650,11 @@ void modCANSubTaskHandleCommunication(void) {
 						}
 					}
 				} break;
-
+				*/
 				default:
 					break;
 				}
-*/
+
 			
 		}
 
@@ -946,6 +953,7 @@ void modCANOpenChargerSetCurrentVoltageReady(float current,float voltage,bool re
 	modCANTransmitStandardID(0x040A, buffer, sendIndex);
 }
 
-
-
+uint16_t modCANGetVESCCurrent(void){
+	//return stat_tmp->current;
+}
 
