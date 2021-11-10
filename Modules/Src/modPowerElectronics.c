@@ -23,6 +23,9 @@
 
 modPowerElectronicsPackStateTypedef *modPowerElectronicsPackStateHandle;
 modConfigGeneralConfigStructTypedef *modPowerElectronicsGeneralConfigHandle;
+
+uint32_t modPowerElectronicsCANCurrentVESCLastTick;
+
 uint32_t modPowerElectronicsMeasureIntervalLastTick;
 
 uint32_t modPowerElectronicsChargeRetryLastTick;
@@ -1301,7 +1304,14 @@ float modPowerElectronicsCalcPackCurrent(void){
 			returnCurrent = modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
 			break;
 		case sourcePackCurrentCANVESC:
-			//returnCurrent = modCANGetVESCCurrent();
+			for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
+				can_status_msg_4 *msg = comm_can_get_status_msg_4_index(i);
+
+				if (msg->id >= 0 && modDelayTick1msNoRST(&modPowerElectronicsCANCurrentVESCLastTick,2000)) {
+					returnCurrent += msg->current_in;
+					
+				}
+			}
 
 			break;
 		default:

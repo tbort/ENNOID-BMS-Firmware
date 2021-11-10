@@ -528,16 +528,16 @@ void modCANSubTaskHandleCommunication(void) {
 						}
 					}
 					break;
-/*
+
 				case CAN_PACKET_STATUS_2:
 					for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
 						can_status_msg_2 *stat_tmp_2 = &stat_msgs_2[i];
-						if (stat_tmp_2->id == id || stat_tmp_2->id == -1) {
+						if (stat_tmp_2->id == destinationID || stat_tmp_2->id == -1) {
 							ind = 0;
-							stat_tmp_2->id = id;
-							stat_tmp_2->rx_time = chVTGetSystemTime();
-							stat_tmp_2->amp_hours = (float)buffer_get_int32(data8, &ind) / 1e4;
-							stat_tmp_2->amp_hours_charged = (float)buffer_get_int32(data8, &ind) / 1e4;
+							stat_tmp_2->id = destinationID;
+							stat_tmp_2->rx_time = HAL_GetTick();
+							stat_tmp_2->amp_hours = (float)libBufferGet_int32(rxmsg.Data, &ind) / 1e4;
+							stat_tmp_2->amp_hours_charged = (float)libBufferGet_int32(rxmsg.Data, &ind) / 1e4;
 							break;
 						}
 					}
@@ -546,12 +546,12 @@ void modCANSubTaskHandleCommunication(void) {
 				case CAN_PACKET_STATUS_3:
 					for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
 						can_status_msg_3 *stat_tmp_3 = &stat_msgs_3[i];
-						if (stat_tmp_3->id == id || stat_tmp_3->id == -1) {
+						if (stat_tmp_3->id == destinationID || stat_tmp_3->id == -1) {
 							ind = 0;
-							stat_tmp_3->id = id;
-							stat_tmp_3->rx_time = chVTGetSystemTime();
-							stat_tmp_3->watt_hours = (float)buffer_get_int32(data8, &ind) / 1e4;
-							stat_tmp_3->watt_hours_charged = (float)buffer_get_int32(data8, &ind) / 1e4;
+							stat_tmp_3->id = destinationID;
+							stat_tmp_3->rx_time = HAL_GetTick();
+							stat_tmp_3->watt_hours = (float)libBufferGet_int32(rxmsg.Data, &ind) / 1e4;
+							stat_tmp_3->watt_hours_charged = (float)libBufferGet_int32(rxmsg.Data, &ind) / 1e4;
 							break;
 						}
 					}
@@ -560,14 +560,14 @@ void modCANSubTaskHandleCommunication(void) {
 				case CAN_PACKET_STATUS_4:
 					for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
 						can_status_msg_4 *stat_tmp_4 = &stat_msgs_4[i];
-						if (stat_tmp_4->id == id || stat_tmp_4->id == -1) {
+						if (stat_tmp_4->id == destinationID || stat_tmp_4->id == -1) {
 							ind = 0;
-							stat_tmp_4->id = id;
-							stat_tmp_4->rx_time = chVTGetSystemTime();
-							stat_tmp_4->temp_fet = (float)buffer_get_int16(data8, &ind) / 10.0;
-							stat_tmp_4->temp_motor = (float)buffer_get_int16(data8, &ind) / 10.0;
-							stat_tmp_4->current_in = (float)buffer_get_int16(data8, &ind) / 10.0;
-							stat_tmp_4->pid_pos_now = (float)buffer_get_int16(data8, &ind) / 50.0;
+							stat_tmp_4->id = destinationID;
+							stat_tmp_4->rx_time = HAL_GetTick();
+							stat_tmp_4->temp_fet = (float)libBufferGet_int16(rxmsg.Data, &ind) / 10.0;
+							stat_tmp_4->temp_motor = (float)libBufferGet_int16(rxmsg.Data, &ind) / 10.0;
+							stat_tmp_4->current_in = (float)libBufferGet_int16(rxmsg.Data, &ind) / 10.0;
+							stat_tmp_4->pid_pos_now = (float)libBufferGet_int16(rxmsg.Data, &ind) / 50.0;
 							break;
 						}
 					}
@@ -576,17 +576,17 @@ void modCANSubTaskHandleCommunication(void) {
 				case CAN_PACKET_STATUS_5:
 					for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
 						can_status_msg_5 *stat_tmp_5 = &stat_msgs_5[i];
-						if (stat_tmp_5->id == id || stat_tmp_5->id == -1) {
+						if (stat_tmp_5->id == destinationID || stat_tmp_5->id == -1) {
 							ind = 0;
-							stat_tmp_5->id = id;
-							stat_tmp_5->rx_time = chVTGetSystemTime();
-							stat_tmp_5->tacho_value = buffer_get_int32(data8, &ind);
-							stat_tmp_5->v_in = (float)buffer_get_int16(data8, &ind) / 1e1;
+							stat_tmp_5->id = destinationID;
+							stat_tmp_5->rx_time = HAL_GetTick();
+							stat_tmp_5->tacho_value = libBufferGet_int32(rxmsg.Data, &ind);
+							stat_tmp_5->v_in = (float)libBufferGet_int16(rxmsg.Data, &ind) / 1e1;
 							break;
 						}
 					}
 					break;
-
+/*
 				case CAN_PACKET_BMS_SOC_SOH_TEMP_STAT: {
 					int32_t ind = 0;
 					bms_soc_soh_temp_stat msg;
@@ -956,4 +956,149 @@ void modCANOpenChargerSetCurrentVoltageReady(float current,float voltage,bool re
 uint16_t modCANGetVESCCurrent(void){
 	//return stat_tmp->current;
 }
+
+
+
+can_status_msg *comm_can_get_status_msg_index(int index) {
+	if (index < CAN_STATUS_MSGS_TO_STORE) {
+		return &stat_msgs[index];
+	} else {
+		return 0;
+	}
+}
+
+can_status_msg *comm_can_get_status_msg_id(int id) {
+	for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
+		if (stat_msgs[i].id == id) {
+			return &stat_msgs[i];
+		}
+	}
+
+	return 0;
+}
+
+can_status_msg_2 *comm_can_get_status_msg_2_index(int index) {
+	if (index < CAN_STATUS_MSGS_TO_STORE) {
+		return &stat_msgs_2[index];
+	} else {
+		return 0;
+	}
+}
+
+can_status_msg_2 *comm_can_get_status_msg_2_id(int id) {
+	for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
+		if (stat_msgs_2[i].id == id) {
+			return &stat_msgs_2[i];
+		}
+	}
+
+	return 0;
+}
+
+can_status_msg_3 *comm_can_get_status_msg_3_index(int index) {
+	if (index < CAN_STATUS_MSGS_TO_STORE) {
+		return &stat_msgs_3[index];
+	} else {
+		return 0;
+	}
+}
+
+can_status_msg_3 *comm_can_get_status_msg_3_id(int id) {
+	for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
+		if (stat_msgs_3[i].id == id) {
+			return &stat_msgs_3[i];
+		}
+	}
+
+	return 0;
+}
+
+can_status_msg_4 *comm_can_get_status_msg_4_index(int index) {
+	if (index < CAN_STATUS_MSGS_TO_STORE) {
+		return &stat_msgs_4[index];
+	} else {
+		return 0;
+	}
+}
+
+can_status_msg_4 *comm_can_get_status_msg_4_id(int id) {
+	for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
+		if (stat_msgs_4[i].id == id) {
+			return &stat_msgs_4[i];
+		}
+	}
+
+	return 0;
+}
+
+can_status_msg_5 *comm_can_get_status_msg_5_index(int index) {
+	if (index < CAN_STATUS_MSGS_TO_STORE) {
+		return &stat_msgs_5[index];
+	} else {
+		return 0;
+	}
+}
+
+can_status_msg_5 *comm_can_get_status_msg_5_id(int id) {
+	for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
+		if (stat_msgs_5[i].id == id) {
+			return &stat_msgs_5[i];
+		}
+	}
+
+	return 0;
+}
+/*
+bms_soc_soh_temp_stat *comm_can_get_bms_soc_soh_temp_stat_index(int index) {
+	if (index < CAN_BMS_STATUS_MSGS_TO_STORE) {
+		return &bms_stat_msgs[index];
+	} else {
+		return 0;
+	}
+}
+
+bms_soc_soh_temp_stat *comm_can_get_bms_soc_soh_temp_stat_id(int id) {
+	for (int i = 0;i < CAN_BMS_STATUS_MSGS_TO_STORE;i++) {
+		if (bms_stat_msgs[i].id == id) {
+			return &bms_stat_msgs[i];
+		}
+	}
+
+	return 0;
+}
+
+bms_soc_soh_temp_stat *comm_can_get_bms_stat_v_cell_min(void) {
+	return &bms_stat_v_cell_min;
+}
+
+psw_status *comm_can_get_psw_status_index(int index) {
+	if (index < CAN_STATUS_MSGS_TO_STORE) {
+		return &psw_stat[index];
+	} else {
+		return 0;
+	}
+}
+
+psw_status *comm_can_get_psw_status_id(int id) {
+	for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
+		if (psw_stat[i].id == id) {
+			return &psw_stat[i];
+		}
+	}
+
+	return 0;
+}
+
+void comm_can_psw_switch(int id, bool is_on, bool plot) {
+	int32_t send_index = 0;
+	uint8_t buffer[8];
+
+	buffer[send_index++] = is_on ? 1 : 0;
+	buffer[send_index++] = plot ? 1 : 0;
+
+	comm_can_transmit_eid(id | ((uint32_t)CAN_PACKET_PSW_SWITCH << 8),
+			buffer, send_index);
+}
+*/
+
 
