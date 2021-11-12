@@ -1306,6 +1306,8 @@ float modPowerElectronicsCalcPackCurrent(void){
 			break;
 		case sourcePackCurrentCANVESC:
 			if(modPowerStateChargerDetected()){
+				returnCurrent = modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
+			}else{
 				for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
 					can_status_msg_4 *msg = comm_can_get_status_msg_4_index(i);
 
@@ -1315,8 +1317,6 @@ float modPowerElectronicsCalcPackCurrent(void){
 				}
 
 				returnCurrent = returnCurrentTemp/CAN_STATUS_MSGS_TO_STORE;
-			}else{
-				returnCurrent = modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
 			}
 			break;
 		default:
