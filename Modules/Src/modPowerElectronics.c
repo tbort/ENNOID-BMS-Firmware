@@ -1290,6 +1290,7 @@ void modPowerElectronicsSamplePackVoltage(float *voltagePointer) {
 
 float modPowerElectronicsCalcPackCurrent(void){
 	float returnCurrent = 0.0f;
+	float returnCurrentTemp = 0.0f;
 
 	switch(modPowerElectronicsGeneralConfigHandle->packCurrentDataSource){
 		case sourcePackCurrentISL28022:
@@ -1304,15 +1305,19 @@ float modPowerElectronicsCalcPackCurrent(void){
 			returnCurrent = modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
 			break;
 		case sourcePackCurrentCANVESC:
-			for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
-				can_status_msg_4 *msg = comm_can_get_status_msg_4_index(i);
+			if(modPowerStateChargerDetected()){
+				for (int i = 0;i < CAN_STATUS_MSGS_TO_STORE;i++) {
+					can_status_msg_4 *msg = comm_can_get_status_msg_4_index(i);
 
-				if (msg->id >= 0 && modDelayTick1msNoRST(&modPowerElectronicsCANCurrentVESCLastTick,2000)) {
-					returnCurrent += msg->current_in;
-					
+					if (msg->id >= 0 && modDelayTick1msNoRST(&modPowerElectronicsCANCurrentVESCLastTick,2000)) {
+						returnCurrentTemp += msg->current_in;
+					}
 				}
-			}
 
+				returnCurrent = returnCurrentTemp/CAN_STATUS_MSGS_TO_STORE;
+			}else{
+				returnCurrent = modPowerElectronicsPackStateHandle->loCurrentLoadCurrent;
+			}
 			break;
 		default:
 			break;
