@@ -285,9 +285,9 @@ void modDisplayShowInfo(modDisplayInfoType newState, modDisplayDataTypedef modDi
 				libGraphicsSetTextColor_0(INVERSE);
 				libGraphicsSetCursor(4,57);
 				libGraphicsWrite('C');
-				libGraphicsWrite('V');
+				libGraphicsWrite('H');
 				libGraphicsWrite(':');
-				modDisplayWrite(modDisplayData.AverageCellVoltage,3);
+				modDisplayWrite(modDisplayData.HighestCellVoltage,3);
 				libGraphicsWrite('V');
 				libGraphicsWrite(' ');
 				libGraphicsWrite(30);
