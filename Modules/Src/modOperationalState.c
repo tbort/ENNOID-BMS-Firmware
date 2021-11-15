@@ -140,6 +140,9 @@ void modOperationalStateTask(void) {
 			modOperationalStateDisplayData.StateOfCharge = modOperationalStateGeneralStateOfCharge->generalStateOfCharge;
 			modOperationalStateDisplayData.Current = fabs(modOperationalStatePackStatehandle->packCurrent);
 			modOperationalStateDisplayData.ChargerVoltage = fabs(modOperationalStatePackStatehandle->chargerVoltage);
+			modOperationalStateDisplayData.CellMismatch = fabs(modOperationalStatePackStatehandle->cellVoltageMisMatch);
+			modOperationalStateDisplayData.LowestCellVoltage = fabs(modOperationalStatePackStatehandle->cellVoltageLow);
+			modOperationalStateDisplayData.HighestCellVoltage = fabs(modOperationalStatePackStatehandle->cellVoltageHigh);
 			modDisplayShowInfo(DISP_MODE_CHARGE,modOperationalStateDisplayData);
 			break;
 		case OP_STATE_PRE_CHARGE:
@@ -396,7 +399,8 @@ void modOperationalStateTask(void) {
 			modOperationalStateUpdateStates();
 			modOperationalStateDisplayData.StateOfCharge = modOperationalStateGeneralStateOfCharge->generalStateOfCharge;
 			modOperationalStateDisplayData.CellMismatch = fabs(modOperationalStatePackStatehandle->cellVoltageMisMatch);
-			modOperationalStateDisplayData.AverageCellVoltage = fabs(modOperationalStatePackStatehandle->cellVoltageAverage);
+			modOperationalStateDisplayData.LowestCellVoltage = fabs(modOperationalStatePackStatehandle->cellVoltageLow);
+			modOperationalStateDisplayData.HighestCellVoltage = fabs(modOperationalStatePackStatehandle->cellVoltageHigh);
 			modDisplayShowInfo(DISP_MODE_BALANCING,modOperationalStateDisplayData);
 			modEffectChangeState(STAT_LED_POWER,STAT_BLINKSHORTLONG_100_20);								// Indicate balancing
 			break;
