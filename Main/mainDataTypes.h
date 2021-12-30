@@ -603,7 +603,8 @@ typedef enum {
 
 typedef enum {
 	CANIDStyleVESC = 0,
-	CANIDStyleFoiler
+	CANIDStyleFoiler,
+	CANIDStyleJ1939
 } CAN_ID_STYLE;
 
 typedef enum {
@@ -695,6 +696,15 @@ typedef enum {
 	CAN_PACKET_EBMS_KEEP_ALIVE_SAFETY,
 	CAN_PACKET_EBMS_STATUS_TEMP_INDIVIDUAL,	
 } CAN_PACKET_ID;
+
+typedef enum {
+	CAN_PACKET_ADV_PACK_INFO = 1,
+	CAN_PACKET_ADV_VOLT_INFO = 2,
+	CAN_PACKET_ADV_AUX_INFO = 3,
+	CAN_PACKET_ADV_TEMP_FAULT_INFO = 4,
+	CAN_PACKET_ADV_CELL_VOLT = 0x10,
+	CAN_PACKET_ADV_TEMPS = 0x20,
+} CAN_PACKET_ID_ADV;
 
 typedef struct {
 	int id;
@@ -820,7 +830,8 @@ typedef enum {
 	canEmitProtocolNone = 0,
   	canEmitProtocolDieBieEngineering,
 	canEmitProtocolMGElectronics,
-	canEmitProtocolVESC
+	canEmitProtocolVESC,
+	canEmitProtocolAdvanced
 } canEmitProtocol;
 
 typedef struct {

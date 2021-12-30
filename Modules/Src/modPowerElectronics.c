@@ -95,6 +95,8 @@ void modPowerElectronicsInit(modPowerElectronicsPackStateTypedef *packState, mod
 	modPowerElectronicsPackStateHandle->cellVoltageHigh				= 0.0f;
 	modPowerElectronicsPackStateHandle->cellVoltageLow				= 0.0f;
 	modPowerElectronicsPackStateHandle->cellVoltageAverage				= 0.0;
+	modPowerElectronicsPackStateHandle->cellVoltageHighID			= 0;
+	modPowerElectronicsPackStateHandle->cellVoltageLowID			= 0;
 	modPowerElectronicsPackStateHandle->disChargeDesired				= false;
 	modPowerElectronicsPackStateHandle->disChargeLCAllowed				= true;
 	modPowerElectronicsPackStateHandle->preChargeDesired				= false;
@@ -374,11 +376,15 @@ void modPowerElectronicsCalculateCellStats(void) {
 	for(uint8_t cellPointer = 0; cellPointer < modPowerElectronicsGeneralConfigHandle->noOfCellsSeries*modPowerElectronicsGeneralConfigHandle->noOfParallelModules; cellPointer++) {
 		cellVoltagesSummed += modPowerElectronicsPackStateHandle->cellVoltagesIndividual[cellPointer].cellVoltage;
 		
-		if(modPowerElectronicsPackStateHandle->cellVoltagesIndividual[cellPointer].cellVoltage > modPowerElectronicsPackStateHandle->cellVoltageHigh)
+		if(modPowerElectronicsPackStateHandle->cellVoltagesIndividual[cellPointer].cellVoltage > modPowerElectronicsPackStateHandle->cellVoltageHigh) {
 			modPowerElectronicsPackStateHandle->cellVoltageHigh = modPowerElectronicsPackStateHandle->cellVoltagesIndividual[cellPointer].cellVoltage;
+			modPowerElectronicsPackStateHandle->cellVoltageHighID = (cellPointer+1);
+		}
 		
-		if(modPowerElectronicsPackStateHandle->cellVoltagesIndividual[cellPointer].cellVoltage < modPowerElectronicsPackStateHandle->cellVoltageLow)
-			modPowerElectronicsPackStateHandle->cellVoltageLow = modPowerElectronicsPackStateHandle->cellVoltagesIndividual[cellPointer].cellVoltage;		
+		if(modPowerElectronicsPackStateHandle->cellVoltagesIndividual[cellPointer].cellVoltage < modPowerElectronicsPackStateHandle->cellVoltageLow) {
+			modPowerElectronicsPackStateHandle->cellVoltageLow = modPowerElectronicsPackStateHandle->cellVoltagesIndividual[cellPointer].cellVoltage;
+			modPowerElectronicsPackStateHandle->cellVoltageLowID = (cellPointer+1);
+		}
 	}
 	
 	modPowerElectronicsPackStateHandle->cellVoltageAverage = cellVoltagesSummed/(modPowerElectronicsGeneralConfigHandle->noOfCellsSeries*modPowerElectronicsGeneralConfigHandle->noOfParallelModules);

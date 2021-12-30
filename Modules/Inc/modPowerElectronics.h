@@ -95,6 +95,8 @@ typedef struct {
 	float    cellVoltageLow;
 	float    cellVoltageAverage;
 	float    cellVoltageMisMatch;
+	uint8_t  cellVoltageHighID;
+	uint8_t  cellVoltageLowID;
 	uint16_t cellBalanceResistorEnableMask;
 	float    temperatures[NoOfTempSensors];
 	float    tempBatteryHigh;
