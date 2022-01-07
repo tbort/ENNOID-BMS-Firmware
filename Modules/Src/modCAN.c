@@ -429,9 +429,9 @@ void modCANSendPackInfo(void) {
 	// Send Battery Pack information.
 	sendIndex = 0;
 	libBufferAppend_uint8(buffer, modCANPackStateHandle->SoC/0.5,&sendIndex);
-	libBufferAppend_uint16(buffer, modCANPackStateHandle->SoCCapacityAh/0.1,&sendIndex);
-	libBufferAppend_uint16(buffer, modCANPackStateHandle->packVoltage/0.1,&sendIndex);
-	libBufferAppend_int16(buffer, modCANPackStateHandle->packCurrent/0.1,&sendIndex);
+	libBufferAppend_uint16_LSBFirst(buffer, modCANPackStateHandle->SoCCapacityAh/0.1,&sendIndex);
+	libBufferAppend_uint16_LSBFirst(buffer, modCANPackStateHandle->packVoltage/0.1,&sendIndex);
+	libBufferAppend_int16_LSBFirst(buffer, modCANPackStateHandle->packCurrent/0.1,&sendIndex);
 
 	if(modCANGeneralConfigHandle->togglePowerModeDirectHCDelay || modCANGeneralConfigHandle->pulseToggleButton){
 		disChargeDesiredMask = modCANPackStateHandle->disChargeDesired && modPowerElectronicsHCSafetyCANAndPowerButtonCheck();
@@ -457,9 +457,9 @@ void modCANSendVoltInfo(void) {
 	
 	// Send Voltage information.
 	sendIndex = 0;
-	libBufferAppend_uint16(buffer, modCANPackStateHandle->cellVoltageLow/0.0001,&sendIndex);
-	libBufferAppend_uint16(buffer, modCANPackStateHandle->cellVoltageHigh/0.0001,&sendIndex);
-	libBufferAppend_uint16(buffer, modCANPackStateHandle->cellVoltageAverage/0.0001,&sendIndex);
+	libBufferAppend_uint16_LSBFirst(buffer, modCANPackStateHandle->cellVoltageLow/0.0001,&sendIndex);
+	libBufferAppend_uint16_LSBFirst(buffer, modCANPackStateHandle->cellVoltageHigh/0.0001,&sendIndex);
+	libBufferAppend_uint16_LSBFirst(buffer, modCANPackStateHandle->cellVoltageAverage/0.0001,&sendIndex);
 	libBufferAppend_uint8(buffer, modCANPackStateHandle->cellVoltageLowID,&sendIndex);
 	libBufferAppend_uint8(buffer, modCANPackStateHandle->cellVoltageHighID,&sendIndex);
 	modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_ADV_VOLT_INFO), buffer, sendIndex);
@@ -471,8 +471,8 @@ void modCANSendAuxInfo(void) {
 	
 	// Send other information.
 	sendIndex = 0;
-	libBufferAppend_uint16(buffer, modCANPackStateHandle->loCurrentLoadVoltage/0.1,&sendIndex);
-	libBufferAppend_int16(buffer, modCANPackStateHandle->loCurrentLoadCurrent/0.1,&sendIndex);
+	libBufferAppend_uint16_LSBFirst(buffer, modCANPackStateHandle->loCurrentLoadVoltage/0.1,&sendIndex);
+	libBufferAppend_int16_LSBFirst(buffer, modCANPackStateHandle->loCurrentLoadCurrent/0.1,&sendIndex);
 
 	uint32_t bal_state = 0;
 	for (int i = 0; i < 24; i++) {
@@ -526,12 +526,12 @@ void modCANSendBroadcast(void) {
 	if (broadcastIndex < totalNoOfCells) {
 		// Send Cell Voltages.
 		libBufferAppend_uint8(buffer,broadcastIndex/3,&sendIndex);
-		libBufferAppend_uint16(buffer, modCANPackStateHandle->cellVoltagesIndividual[broadcastIndex++].cellVoltage/0.0001,&sendIndex);
+		libBufferAppend_uint16_LSBFirst(buffer, modCANPackStateHandle->cellVoltagesIndividual[broadcastIndex++].cellVoltage/0.0001,&sendIndex);
 		if (broadcastIndex < totalNoOfCells) {
-			libBufferAppend_uint16(buffer, modCANPackStateHandle->cellVoltagesIndividual[broadcastIndex++].cellVoltage/0.0001,&sendIndex);
+			libBufferAppend_uint16_LSBFirst(buffer, modCANPackStateHandle->cellVoltagesIndividual[broadcastIndex++].cellVoltage/0.0001,&sendIndex);
 		}
 		if (broadcastIndex < totalNoOfCells) {
-			libBufferAppend_uint16(buffer, modCANPackStateHandle->cellVoltagesIndividual[broadcastIndex++].cellVoltage/0.0001,&sendIndex);
+			libBufferAppend_uint16_LSBFirst(buffer, modCANPackStateHandle->cellVoltagesIndividual[broadcastIndex++].cellVoltage/0.0001,&sendIndex);
 		}
 		modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_ADV_CELL_VOLT), buffer, sendIndex);
 	} else {
