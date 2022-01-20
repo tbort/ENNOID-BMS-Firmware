@@ -27,6 +27,8 @@ uint32_t               modCANSendStatusFastLastTick;
 uint32_t               modCANSendStatusSlowLastTick;
 uint32_t               modCANSendStatusVESCLastTick;
 
+uint8_t                modCANAdvancedSrc = 0xFF;
+uint32_t               modCANSendBoardInfoLastTick;
 uint32_t               modCANSendPackInfoLastTick;
 uint32_t               modCANSendVoltInfoLastTick;
 uint32_t               modCANSendAuxInfoLastTick;
@@ -156,6 +158,7 @@ void modCANInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneral
 	modCANSendStatusSlowLastTick = HAL_GetTick();
 	modCANSendStatusVESCLastTick = HAL_GetTick();
 
+	modCANSendBoardInfoLastTick = HAL_GetTick();
 	modCANSendPackInfoLastTick = HAL_GetTick();
 	modCANSendVoltInfoLastTick = HAL_GetTick();
 	modCANSendAuxInfoLastTick = HAL_GetTick();
@@ -188,16 +191,21 @@ void modCANTask(void){
 			if(modDelayTick1ms(&modCANSendStatusVESCLastTick,1000)) 
 				modCANSendStatusVESC();
 		}else if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced){
-			if(modDelayTick1ms(&modCANSendPackInfoLastTick,100))                          // 10 Hz
-				modCANSendPackInfo();
-			if(modDelayTick1ms(&modCANSendVoltInfoLastTick,100))                          // 10 Hz
-				modCANSendVoltInfo();
-			if(modDelayTick1ms(&modCANSendAuxInfoLastTick,100))                           // 10 Hz
-				modCANSendAuxInfo();
-			if(modDelayTick1ms(&modCANSendTempFaultInfoLastTick,1000))                    // 1 Hz
-				modCANSendTempFaultInfo();
-			if(modDelayTick1ms(&modCANSendBroadcastLastTick,100))                    			// 10 Hz
-				modCANSendBroadcast();
+			if(modCANAdvancedSrc == 0xFF) {
+				if(modDelayTick1ms(&modCANSendBoardInfoLastTick, 100))                        // 10 Hz
+					modCANSendBoardInfo();
+			} else {
+				if(modDelayTick1ms(&modCANSendPackInfoLastTick,100))                          // 10 Hz
+					modCANSendPackInfo();
+				if(modDelayTick1ms(&modCANSendVoltInfoLastTick,100))                          // 10 Hz
+					modCANSendVoltInfo();
+				if(modDelayTick1ms(&modCANSendAuxInfoLastTick,100))                           // 10 Hz
+					modCANSendAuxInfo();
+				if(modDelayTick1ms(&modCANSendTempFaultInfoLastTick,1000))                    // 1 Hz
+					modCANSendTempFaultInfo();
+				if(modDelayTick1ms(&modCANSendBroadcastLastTick,100))                    			// 10 Hz
+					modCANSendBroadcast();
+			}
 		}
 	}
 	
@@ -259,6 +267,8 @@ uint32_t modCANGetCANID(uint32_t destinationID, CAN_PACKET_ID packetID) {
 			int priority = 3;
 			int pgn = 0xFF00 + packetID;
 			int src = destinationID;
+			if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced && modCANAdvancedSrc != 0xFF)
+				src = modCANAdvancedSrc;
 			returnCANID = ((priority & 0x7) << 26) | ((pgn & 0x3FFFF) << 8) | ((src & 0xFF));
 		}
 			break;
@@ -420,6 +430,20 @@ void modCANSendStatusVESC(void){
 
 }
 
+void modCANSendBoardInfo(void) {
+	int32_t sendIndex;
+	uint8_t buffer[8];
+	
+	// Send Firmware Version and Serial Number.
+	sendIndex = 0;
+	libBufferAppend_uint8(buffer, FW_VERSION_MAJOR,&sendIndex);
+	libBufferAppend_uint8(buffer, FW_VERSION_MINOR,&sendIndex);
+	libBufferAppend_uint8(buffer, STM32_UUID_8[10],&sendIndex);
+	libBufferAppend_uint8(buffer, STM32_UUID_8[11],&sendIndex);
+	libBufferAppend_uint32_LSBFirst(buffer, modCANGeneralConfigHandle->SerialNumber,&sendIndex);
+	modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_ADV_BOARD_INFO), buffer, sendIndex);
+}
+
 void modCANSendPackInfo(void) {
 	int32_t sendIndex;
 	uint8_t buffer[8];
@@ -563,11 +587,20 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *CanHandle) {
 		if((*CanHandle->pRxMsg).ExtId == 0x0A23){
 			modCANHandleKeepAliveSafetyMessage(*CanHandle->pRxMsg);
 		}else{
-			uint8_t destinationID = modCANGetDestinationID(*CanHandle->pRxMsg);
-			if(destinationID == modCANGeneralConfigHandle->CANID){
-				modCANRxFrames[modCANRxFrameWrite++] = *CanHandle->pRxMsg;
-				if(modCANRxFrameWrite >= RX_CAN_FRAMES_SIZE) {
-					modCANRxFrameWrite = 0;
+			if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced && modCANAdvancedSrc == 0xFF){
+				uint8_t packetID = ((*CanHandle->pRxMsg).ExtId >> 8) & 0xFF;
+				if(packetID == CAN_PACKET_ADV_SET_SERIAL) {
+					modCANHandleSetSerialMessage(*CanHandle->pRxMsg);
+				} else if (packetID == CAN_PACKET_ADV_SET_SRC) {
+					modCANHandleSetSrcMessage(*CanHandle->pRxMsg);
+				}
+			} else {
+				uint8_t destinationID = modCANGetDestinationID(*CanHandle->pRxMsg);
+				if(destinationID == modCANGeneralConfigHandle->CANID){
+					modCANRxFrames[modCANRxFrameWrite++] = *CanHandle->pRxMsg;
+					if(modCANRxFrameWrite >= RX_CAN_FRAMES_SIZE) {
+						modCANRxFrameWrite = 0;
+					}
 				}
 			}
 		}
@@ -1000,6 +1033,21 @@ void modCANHandleKeepAliveSafetyMessage(CanRxMsgTypeDef canMsg) {
 			modCANPackStateHandle->chargeBalanceActive = modCANGeneralConfigHandle->allowChargingDuringDischarge;
 			modPowerElectronicsResetBalanceModeActiveTimeout();
 		}
+	}
+}
+
+void modCANHandleSetSerialMessage(CanRxMsgTypeDef canMsg) {
+	if(canMsg.DLC == 4) {
+		modCANGeneralConfigHandle->SerialNumber = canMsg.Data[0] | canMsg.Data[1] << 8 | canMsg.Data[2] << 16 | canMsg.Data[3] << 24;
+		modConfigStoreConfig();
+	}
+}
+
+void modCANHandleSetSrcMessage(CanRxMsgTypeDef canMsg) {
+	if(canMsg.DLC == 1) {
+		modCANAdvancedSrc = canMsg.Data[0];
+		modCANGeneralConfigHandle->CANID = modCANAdvancedSrc;
+		modConfigStoreConfig();
 	}
 }
 

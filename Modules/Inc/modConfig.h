@@ -128,6 +128,7 @@ typedef struct {
 	uint16_t	NTCBetaFactor[modConfigNoOfNTCTypes];                                // NTC Beta factor
 	uint8_t		humidityICType;	
 	uint8_t		BMSApplication;																													// Humidity sensor IC type
+	uint32_t	SerialNumber;
 } modConfigGeneralConfigStructTypedef;
 
 modConfigGeneralConfigStructTypedef* modConfigInit(void);
