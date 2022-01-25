@@ -434,14 +434,19 @@ void modCANSendBoardInfo(void) {
 	int32_t sendIndex;
 	uint8_t buffer[8];
 	
-	// Send Firmware Version and Serial Number.
+	// Send first 64 bytes of UUID
 	sendIndex = 0;
-	libBufferAppend_uint8(buffer, FW_VERSION_MAJOR,&sendIndex);
-	libBufferAppend_uint8(buffer, FW_VERSION_MINOR,&sendIndex);
-	libBufferAppend_uint8(buffer, STM32_UUID_8[10],&sendIndex);
-	libBufferAppend_uint8(buffer, STM32_UUID_8[11],&sendIndex);
-	libBufferAppend_uint32_LSBFirst(buffer, modCANGeneralConfigHandle->SerialNumber,&sendIndex);
-	modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_ADV_BOARD_INFO), buffer, sendIndex);
+	libBufferAppend_uint32_LSBFirst(buffer, STM32_UUID[0], &sendIndex);
+	libBufferAppend_uint32_LSBFirst(buffer, STM32_UUID[1], &sendIndex);
+	modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_ADV_BOARD_INFO_1), buffer, sendIndex);
+
+	// Send rest of UUID and Firmware
+	sendIndex = 0;
+	libBufferAppend_uint32_LSBFirst(buffer, STM32_UUID[2], &sendIndex);
+	libBufferAppend_uint8(buffer, FW_VERSION_MAJOR, &sendIndex);
+	libBufferAppend_uint8(buffer, FW_VERSION_MINOR, &sendIndex);
+	libBufferAppend_uint8(buffer, FW_VERSION_REVISION, &sendIndex);
+	modCANTransmitExtID(modCANGetCANID(modCANGeneralConfigHandle->CANID,CAN_PACKET_ADV_BOARD_INFO_2), buffer, sendIndex);
 }
 
 void modCANSendPackInfo(void) {
@@ -587,12 +592,12 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *CanHandle) {
 		if((*CanHandle->pRxMsg).ExtId == 0x0A23){
 			modCANHandleKeepAliveSafetyMessage(*CanHandle->pRxMsg);
 		}else{
-			if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced && modCANAdvancedSrc == 0xFF){
+			if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced){
 				uint8_t packetID = ((*CanHandle->pRxMsg).ExtId >> 8) & 0xFF;
-				if(packetID == CAN_PACKET_ADV_SET_SERIAL) {
-					modCANHandleSetSerialMessage(*CanHandle->pRxMsg);
-				} else if (packetID == CAN_PACKET_ADV_SET_SRC) {
-					modCANHandleSetSrcMessage(*CanHandle->pRxMsg);
+				if(modCANAdvancedSrc == 0xFF) {
+					if (packetID == CAN_PACKET_ADV_SET_SRC) {
+						modCANHandleSetSrcMessage(*CanHandle->pRxMsg);
+					}
 				}
 			} else {
 				uint8_t destinationID = modCANGetDestinationID(*CanHandle->pRxMsg);
@@ -1033,13 +1038,6 @@ void modCANHandleKeepAliveSafetyMessage(CanRxMsgTypeDef canMsg) {
 			modCANPackStateHandle->chargeBalanceActive = modCANGeneralConfigHandle->allowChargingDuringDischarge;
 			modPowerElectronicsResetBalanceModeActiveTimeout();
 		}
-	}
-}
-
-void modCANHandleSetSerialMessage(CanRxMsgTypeDef canMsg) {
-	if(canMsg.DLC == 4) {
-		modCANGeneralConfigHandle->SerialNumber = canMsg.Data[0] | canMsg.Data[1] << 8 | canMsg.Data[2] << 16 | canMsg.Data[3] << 24;
-		modConfigStoreConfig();
 	}
 }
 

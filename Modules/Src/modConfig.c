@@ -199,7 +199,6 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->lastICMask					= 0;
 	configLocation->humidityICType 				 	= 0;
 	configLocation->BMSApplication					= electricVehicle;
-	configLocation->SerialNumber					= 0;
 
 #elif ENNOID_LV_2
 	configLocation->noOfCellsSeries					= 12;					// Total number of cells in series in the battery pack
@@ -301,7 +300,6 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->lastICMask					= 0;
 	configLocation->humidityICType 					= 0;
 	configLocation->BMSApplication					= electricVehicle;
-	configLocation->SerialNumber					= 0;
 
 #elif ENNOID_HV
 	configLocation->noOfCellsSeries					= 12;					// Total number of cells in series in the battery pack
@@ -403,7 +401,6 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->lastICMask					= 0;
 	configLocation->humidityICType 					= 0;
 	configLocation->BMSApplication					= electricVehicle;
-	configLocation->SerialNumber					= 0;
 
 #elif ENNOID_SS
 	configLocation->noOfCellsSeries					= 18;					// Total number of cells in series in the battery pack
@@ -504,7 +501,6 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->lastICMask					= 0;					// Balance mask used for last IC
 	configLocation->humidityICType 					= 2;					// Humidity sensor IC type
 	configLocation->BMSApplication					= electricVehicle;
-	configLocation->SerialNumber					= 0;
 
 #elif ENNOID_SS_24
 	configLocation->noOfCellsSeries					= 24;					// Total number of cells in series in the battery pack
@@ -605,7 +601,6 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->lastICMask					= 0;					// Balance mask used for last IC
 	configLocation->humidityICType 					= 2;
 	configLocation->BMSApplication					= electricVehicle;					// Humidity sensor IC type
-	configLocation->SerialNumber					= 0;
 
 #elif ENNOID_SS_LITE 
 	configLocation->noOfCellsSeries					= 18;					// Total number of cells in series in the battery pack
@@ -706,7 +701,6 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->lastICMask					= 0;
 	configLocation->humidityICType					= 2;
 	configLocation->BMSApplication					= electricVehicle;
-	configLocation->SerialNumber					= 0;
 	
 #elif ENNOID_XLITE 
 	configLocation->noOfCellsSeries					= 24;					// Total number of cells in series in the battery pack
@@ -807,7 +801,6 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->lastICMask					= 0;
 	configLocation->humidityICType					= 2;
 	configLocation->BMSApplication					= electricVehicle;
-	configLocation->SerialNumber					= 0;
 	
 #endif
 
