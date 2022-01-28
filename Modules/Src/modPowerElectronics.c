@@ -128,6 +128,7 @@ void modPowerElectronicsInit(modPowerElectronicsPackStateTypedef *packState, mod
 	modPowerElectronicsPackStateHandle->buzzerOn					= false;
 	modPowerElectronicsPackStateHandle->powerDownDesired				= false;
 	modPowerElectronicsPackStateHandle->powerOnLongButtonPress			= false;
+	modPowerElectronicsPackStateHandle->advancedCanCommandedState	= 0;
 	
 	// init the cell module variables empty
 	for( uint8_t modulePointer = 0; modulePointer < NoOfCellMonitorsPossibleOnBMS; modulePointer++) {

@@ -74,6 +74,7 @@ static void	modCANSendPacketWrapper(unsigned char *data, unsigned int len);
 void		modCANHandleKeepAliveSafetyMessage(CanRxMsgTypeDef canMsg);
 void        modCANHandleSetSerialMessage(CanRxMsgTypeDef canMsg);
 void        modCANHandleSetSrcMessage(CanRxMsgTypeDef canMsg);
+void        modCANHandleControlMessage(CanRxMsgTypeDef canMsg);
 void		modCANHandleCANOpenMessage(CanRxMsgTypeDef canMsg);
 void		modCANHandleSubTaskCharger(void);
 void		modCANRXWatchDog(void);

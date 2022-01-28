@@ -79,8 +79,16 @@ void modOperationalStateTask(void) {
 						break;
 				}
 			}else if(modPowerStateButtonPressedOnTurnon()) {												// Check if button was pressen on turn-on
-				modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);									// Prepare to goto operational state
-				modEffectChangeState(STAT_LED_POWER,STAT_SET);												// Turn LED on in normal operation
+				if (modOperationalStateGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
+					// wait here until commanded to precharge
+					if (modOperationalStatePackStatehandle->advancedCanCommandedState == ADV_CAN_COMMANDED_PRECHARGE) {
+						modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);									// Prepare to goto operational state
+						modEffectChangeState(STAT_LED_POWER,STAT_SET);												// Turn LED on in normal operation
+					}
+				} else {
+					modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);									// Prepare to goto operational state
+					modEffectChangeState(STAT_LED_POWER,STAT_SET);												// Turn LED on in normal operation
+				}
 			}else if(modOperationalStateNewState == OP_STATE_INIT){								  // USB or CAN origin of turn-on
 				switch(modOperationalStateGeneralConfigHandle->externalEnableOperationalState){
 					case opStateExtNormal:
@@ -178,6 +186,11 @@ void modOperationalStateTask(void) {
 			modOperationalStateUpdateStates();
 			break;
 		case OP_STATE_LOAD_ENABLED:
+			if (modOperationalStatePackStatehandle->advancedCanCommandedState == ADV_CAN_COMMANDED_STANDBY) {
+				modOperationalStateSetNewState(OP_STATE_INIT);
+				modPowerElectronicsSetDisCharge(false);
+				modPowerElectronicsSetCharge(false);
+			}
 			if(modPowerElectronicsSetDisCharge(true)) {
 				
 				if(modOperationalStateGeneralConfigHandle->LCUsePrecharge==forced){

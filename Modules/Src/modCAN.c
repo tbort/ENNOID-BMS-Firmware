@@ -593,9 +593,19 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *CanHandle) {
 			modCANHandleKeepAliveSafetyMessage(*CanHandle->pRxMsg);
 		}else{
 			if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced){
-				uint8_t packetID = ((*CanHandle->pRxMsg).ExtId >> 8) & 0xFF;
-				if(modCANAdvancedSrc == 0xFF) {
-					if (packetID == CAN_PACKET_ADV_SET_SRC) {
+				uint8_t pf = ((*CanHandle->pRxMsg).ExtId >> 16);
+				if (pf < 240) {
+					// this packet has a destination
+					uint8_t destination = ((*CanHandle->pRxMsg).ExtId >> 8) & 0xFF;
+					if (destination == modCANAdvancedSrc) {
+						uint8_t packetID = pf;
+						if(packetID == CAN_PACKET_ADV_CONTROL) {
+							modCANHandleControlMessage(*CanHandle->pRxMsg);
+						}
+					}
+				} else {
+					uint8_t packetID = ((*CanHandle->pRxMsg).ExtId >> 8) & 0xFF;
+					if(modCANAdvancedSrc == 0xFF && packetID == CAN_PACKET_ADV_SET_SRC) {
 						modCANHandleSetSrcMessage(*CanHandle->pRxMsg);
 					}
 				}
@@ -1046,6 +1056,12 @@ void modCANHandleSetSrcMessage(CanRxMsgTypeDef canMsg) {
 		modCANAdvancedSrc = canMsg.Data[0];
 		modCANGeneralConfigHandle->CANID = modCANAdvancedSrc;
 		modConfigStoreConfig();
+	}
+}
+
+void modCANHandleControlMessage(CanRxMsgTypeDef canMsg) {
+	if(canMsg.DLC == 8) {
+		modCANPackStateHandle->advancedCanCommandedState = canMsg.Data[0];
 	}
 }
 

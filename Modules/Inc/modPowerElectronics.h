@@ -125,6 +125,7 @@ typedef struct {
 	uint8_t  powerOnLongButtonPress;
 	uint8_t  buzzerOn;
 	uint8_t  watchDogTime;
+	uint8_t  advancedCanCommandedState;
 	cellMonitorCellsTypeDef cellVoltagesIndividual[NoOfCellsPossibleOnBMS];
 	auxMonitorTypeDef auxVoltagesIndividual[NoOfAuxPossibleOnBMS];
 	expMonitorTypeDef expVoltagesIndividual[NoOfExpPossibleOnBMS];
