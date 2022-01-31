@@ -81,7 +81,7 @@ void modOperationalStateTask(void) {
 			}else if(modPowerStateButtonPressedOnTurnon()) {												// Check if button was pressen on turn-on
 				if (modOperationalStateGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
 					// wait here until commanded to precharge
-					if (modOperationalStatePackStatehandle->advancedCanCommandedState == ADV_CAN_COMMANDED_PRECHARGE) {
+					if (modOperationalStatePackStatehandle->advancedCanCommandedState == ADV_CAN_COMMANDED_RUN) {
 						modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);									// Prepare to goto operational state
 						modEffectChangeState(STAT_LED_POWER,STAT_SET);												// Turn LED on in normal operation
 					}
@@ -173,6 +173,9 @@ void modOperationalStateTask(void) {
 				if(modOperationalStateForceOn) {
 					modOperationalStateSetNewState(OP_STATE_FORCEON);								// Goto force on
 				}else{
+					if (modOperationalStateGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
+						modPowerElectronicsAllowForcedOn(true);
+					}
 					modOperationalStateSetNewState(OP_STATE_LOAD_ENABLED);					// Goto normal load enabled operation
 				}
 			}else if(modDelayTick1ms(&modOperationalStatePreChargeTimeout,modOperationalStateGeneralConfigHandle->timeoutLCPreCharge)){
@@ -186,35 +189,43 @@ void modOperationalStateTask(void) {
 			modOperationalStateUpdateStates();
 			break;
 		case OP_STATE_LOAD_ENABLED:
-			if (modOperationalStatePackStatehandle->advancedCanCommandedState == ADV_CAN_COMMANDED_STANDBY) {
+			if (modOperationalStateGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced
+				&& modOperationalStatePackStatehandle->advancedCanCommandedState == ADV_CAN_COMMANDED_STANDBY) {
 				modOperationalStateSetNewState(OP_STATE_INIT);
 				modPowerElectronicsSetDisCharge(false);
 				modPowerElectronicsSetCharge(false);
-			}
-			if(modPowerElectronicsSetDisCharge(true)) {
-				
-				if(modOperationalStateGeneralConfigHandle->LCUsePrecharge==forced){
-					#if ENNOID_HV
-					modPowerElectronicsSetPreCharge(true);
-					#endif
-				}else{
-					modPowerElectronicsSetPreCharge(false);
-				}
-			  if(modPowerStateChargerDetected()){
-					modPowerElectronicsSetCharge(modOperationalStateGeneralConfigHandle->allowChargingDuringDischarge);
-					if(modOperationalStatePackStatehandle->packCurrent >= 0.5f || modOperationalStatePackStatehandle->packCurrent >= modOperationalStateGeneralConfigHandle->chargerEnabledThreshold){
-						modPowerElectronicsSetChargePFET(true);
+				modPowerElectronicsSetChargePFET(false);
+				modPowerElectronicsAllowForcedOn(false);
+				modPowerElectronicsReset();
+			} else {
+				if(modPowerElectronicsSetDisCharge(true)) {
+					
+					if(modOperationalStateGeneralConfigHandle->LCUsePrecharge==forced){
+						#if ENNOID_HV
+						modPowerElectronicsSetPreCharge(true);
+						#endif
+					}else{
+						modPowerElectronicsSetPreCharge(false);
+					}
+					if(modPowerStateChargerDetected()){
+						modPowerElectronicsSetCharge(modOperationalStateGeneralConfigHandle->allowChargingDuringDischarge);
+						if(modOperationalStatePackStatehandle->packCurrent >= 0.5f || modOperationalStatePackStatehandle->packCurrent >= modOperationalStateGeneralConfigHandle->chargerEnabledThreshold){
+							modPowerElectronicsSetChargePFET(true);
+						}
+					}else{
+						modPowerElectronicsSetCharge(false);
+						modPowerElectronicsSetChargePFET(false);
 					}
 				}else{
-					modPowerElectronicsSetCharge(false);
-					modPowerElectronicsSetChargePFET(false);
+					modOperationalStatePackStatehandle->faultState = FAULT_CODE_DISCHARGE_RETRY;
+					// Prevent uncommanded shutdown when using CAN Advanced protocol
+					if (modOperationalStateGeneralConfigHandle->emitStatusProtocol != canEmitProtocolAdvanced) {
+						modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);
+						modPowerElectronicsSetDisCharge(false);
+						modPowerElectronicsSetCharge(false);
+						modPowerElectronicsSetChargePFET(false);
+					}
 				}
-			}else{
-				modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);
-				modOperationalStatePackStatehandle->faultState = FAULT_CODE_DISCHARGE_RETRY;
-				modPowerElectronicsSetDisCharge(false);
-				modPowerElectronicsSetCharge(false);
-				modPowerElectronicsSetChargePFET(false);
 			}
 			
 			modEffectChangeState(STAT_BUZZER,STAT_RESET);
@@ -225,35 +236,44 @@ void modOperationalStateTask(void) {
 			else{
 				modPowerElectronicsSetCooling(false);
 			}
-		//Charger detect
-			if(modPowerStateChargerDetected() && !modOperationalStateGeneralConfigHandle->allowChargingDuringDischarge) {
-				modOperationalStateSetNewState(OP_STATE_INIT);
-				modPowerElectronicsSetDisCharge(false);
-				modPowerElectronicsSetCharge(false);
-			};
+
+			// Prevent uncommanded state change when using CAN Advanced protocol
+			if (modOperationalStateGeneralConfigHandle->emitStatusProtocol != canEmitProtocolAdvanced) {
+				//Charger detect
+				if(modPowerStateChargerDetected() && !modOperationalStateGeneralConfigHandle->allowChargingDuringDischarge) {
+					modOperationalStateSetNewState(OP_STATE_INIT);
+					modPowerElectronicsSetDisCharge(false);
+					modPowerElectronicsSetCharge(false);
+				};
+			}
 			
 			
 			// Battery is empty or battery temp is out of range?
-			if(!modOperationalStatePackStatehandle->disChargeLCAllowed) {							
-				//modOperationalStateSetNewState(OP_STATE_ERROR);
-				modPowerElectronicsSetDisCharge(false);
-				modPowerElectronicsSetCharge(false);
+			if(!modOperationalStatePackStatehandle->disChargeLCAllowed) {
+				// Prevent uncommanded shutdown when using CAN Advanced protocol
+				if (modOperationalStateGeneralConfigHandle->emitStatusProtocol != canEmitProtocolAdvanced) {
+					//modOperationalStateSetNewState(OP_STATE_ERROR);
+					modPowerElectronicsSetDisCharge(false);
+					modPowerElectronicsSetCharge(false);
+				}
 				modOperationalStatePackStatehandle->faultState = FAULT_CODE_DISCHARGE_RETRY;
 				if(modOperationalStateGeneralConfigHandle->buzzerSignalSource)
 					modEffectChangeStateError(STAT_BUZZER,STAT_ERROR,modOperationalStatePackStatehandle->faultState);	
 			}
-
 			
-			if(fabs(modOperationalStatePackStatehandle->packCurrent) >= fabs(modOperationalStateGeneralConfigHandle->notUsedCurrentThreshold)) {
-				if(modDelayTick1ms(&modOperationalStateNotUsedResetDelay,1000))
-					modOperationalStateNotUsedTime = HAL_GetTick();
-			}else{
-				modOperationalStateNotUsedResetDelay = HAL_GetTick();
-			}
-			
-			if(modOperationalStatePowerDownDelayCheck()) {
-				modOperationalStateSetNewState(OP_STATE_POWER_DOWN);
-				modOperationalStatePackStatehandle->powerDownDesired = true;
+			// Prevent unused timeout when using CAN Advanced protocol
+			if (modOperationalStateGeneralConfigHandle->emitStatusProtocol != canEmitProtocolAdvanced) {
+				if(fabs(modOperationalStatePackStatehandle->packCurrent) >= fabs(modOperationalStateGeneralConfigHandle->notUsedCurrentThreshold)) {
+					if(modDelayTick1ms(&modOperationalStateNotUsedResetDelay,1000))
+						modOperationalStateNotUsedTime = HAL_GetTick();
+				}else{
+					modOperationalStateNotUsedResetDelay = HAL_GetTick();
+				}
+				
+				if(modOperationalStatePowerDownDelayCheck()) {
+					modOperationalStateSetNewState(OP_STATE_POWER_DOWN);
+					modOperationalStatePackStatehandle->powerDownDesired = true;
+				}
 			}
 			
 			if(modOperationalStatePackStatehandle->balanceActive) {
@@ -473,19 +493,22 @@ void modOperationalStateTask(void) {
 		}
 	};
 	
-	// In case of extreme cellvoltages or temperatures goto error state
-	if((modOperationalStatePackStatehandle->packOperationalCellState == PACK_STATE_ERROR_HARD_CELLVOLTAGE || modOperationalStatePackStatehandle->packOperationalCellState == PACK_STATE_ERROR_TEMPERATURE) && (modOperationalStatePackStatehandle->packOperationalCellState != packOperationalCellStateLastErrorState) && !modOperationalStateForceOn){
-		packOperationalCellStateLastErrorState = modOperationalStatePackStatehandle->packOperationalCellState; // Meganism to make error situation only trigger once
-		modOperationalStateSetNewState(OP_STATE_ERROR);
-		modOperationalStateUpdateStates();		
-	}
-	
-	// In case of extreme currents goto error state
-	if((modOperationalStatePackStatehandle->packOperationalCellState == PACK_STATE_ERROR_OVER_CURRENT) && (modOperationalStatePackStatehandle->packOperationalCellState != packOperationalCellStateLastErrorState)){
-		packOperationalCellStateLastErrorState = modOperationalStatePackStatehandle->packOperationalCellState; // Meganism to make error situation only trigger once
-		modOperationalStatePackStatehandle->faultState = FAULT_CODE_OVER_CURRENT;
-		modOperationalStateSetNewState(OP_STATE_ERROR);	
-		modOperationalStateUpdateStates();
+	// Prevent uncommanded shutdown when using CAN Advanced protocol
+	if (modOperationalStateGeneralConfigHandle->emitStatusProtocol != canEmitProtocolAdvanced) {
+		// In case of extreme cellvoltages or temperatures goto error state
+		if((modOperationalStatePackStatehandle->packOperationalCellState == PACK_STATE_ERROR_HARD_CELLVOLTAGE || modOperationalStatePackStatehandle->packOperationalCellState == PACK_STATE_ERROR_TEMPERATURE) && (modOperationalStatePackStatehandle->packOperationalCellState != packOperationalCellStateLastErrorState) && !modOperationalStateForceOn){
+			packOperationalCellStateLastErrorState = modOperationalStatePackStatehandle->packOperationalCellState; // Meganism to make error situation only trigger once
+			modOperationalStateSetNewState(OP_STATE_ERROR);
+			modOperationalStateUpdateStates();		
+		}
+		
+		// In case of extreme currents goto error state
+		if((modOperationalStatePackStatehandle->packOperationalCellState == PACK_STATE_ERROR_OVER_CURRENT) && (modOperationalStatePackStatehandle->packOperationalCellState != packOperationalCellStateLastErrorState)){
+			packOperationalCellStateLastErrorState = modOperationalStatePackStatehandle->packOperationalCellState; // Meganism to make error situation only trigger once
+			modOperationalStatePackStatehandle->faultState = FAULT_CODE_OVER_CURRENT;
+			modOperationalStateSetNewState(OP_STATE_ERROR);	
+			modOperationalStateUpdateStates();
+		}
 	}
 	
 	

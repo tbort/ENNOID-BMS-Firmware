@@ -182,6 +182,11 @@ void modPowerElectronicsInit(modPowerElectronicsPackStateTypedef *packState, mod
 
 };
 
+void modPowerElectronicsReset() {
+	modPowerElectronicsFirstDischarge = true;
+	modPowerElectronicsPackStateHandle->disChargeLCAllowed = true;
+}
+
 bool modPowerElectronicsTask(void) {
 	bool returnValue = false;
 	// Static variable for SHT measure timer

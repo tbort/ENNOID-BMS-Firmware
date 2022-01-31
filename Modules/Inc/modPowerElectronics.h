@@ -143,6 +143,7 @@ typedef struct {
 } modPowerElectronicsPackStateTypedef;
 
 void  modPowerElectronicsInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneralConfigStructTypedef *generalConfig);
+void  modPowerElectronicsReset();
 bool  modPowerElectronicsTask(void);
 void  modPowerElectronicsAllowForcedOn(bool allowedState);
 void  modPowerElectronicsSetPreCharge(bool newState);

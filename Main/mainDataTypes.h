@@ -713,7 +713,7 @@ typedef enum {
 
 typedef enum {
 	ADV_CAN_COMMANDED_STANDBY = 0,
-	ADV_CAN_COMMANDED_PRECHARGE = 1,
+	ADV_CAN_COMMANDED_RUN = 1,
 } ADV_CAN_COMMANDED_STATE;
 
 typedef struct {
