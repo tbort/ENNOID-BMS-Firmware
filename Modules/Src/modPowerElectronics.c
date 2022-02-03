@@ -476,13 +476,19 @@ void modPowerElectronicsSubTaskVoltageWatch(void) {
 		}
 
 		if(modPowerElectronicsPackStateHandle->tempBatteryHigh >= modPowerElectronicsGeneralConfigHandle->allowedTempBattDischargingMax){
-			modPowerElectronicsPackStateHandle->disChargeLCAllowed = false;
+			// prevent disabling operations due to temperatures when running with Advanced CAN protocol
+			if (modPowerElectronicsGeneralConfigHandle->emitStatusProtocol != canEmitProtocolAdvanced) {
+				modPowerElectronicsPackStateHandle->disChargeLCAllowed = false;
+			}
 			modPowerElectronicsDisChargeLCRetryLastTick = HAL_GetTick();
 			modPowerElectronicsPackStateHandle->faultState = FAULT_CODE_DISCHARGE_OVER_TEMP_CELLS;
 		}
 		
 		if(modPowerElectronicsPackStateHandle->tempBatteryLow <= modPowerElectronicsGeneralConfigHandle->allowedTempBattDischargingMin){
-			modPowerElectronicsPackStateHandle->disChargeLCAllowed = false;
+			// prevent disabling operations due to temperatures when running with Advanced CAN protocol
+			if (modPowerElectronicsGeneralConfigHandle->emitStatusProtocol != canEmitProtocolAdvanced) {
+				modPowerElectronicsPackStateHandle->disChargeLCAllowed = false;
+			}
 			modPowerElectronicsDisChargeLCRetryLastTick = HAL_GetTick();
 			modPowerElectronicsPackStateHandle->faultState = FAULT_CODE_DISCHARGE_UNDER_TEMP_CELLS;
 		}
@@ -546,8 +552,11 @@ void modPowerElectronicsSubTaskVoltageWatch(void) {
 			modPowerElectronicsPackStateHandle->packOperationalCellState = PACK_STATE_ERROR_TEMPERATURE;
 			modPowerElectronicsPackStateHandle->faultState = FAULT_CODE_MAX_UVT_OVT_ERRORS;
 		}
-		modPowerElectronicsPackStateHandle->disChargeLCAllowed = false;
-		modPowerElectronicsPackStateHandle->chargeAllowed = false;
+		// prevent disabling operations due to temperatures when running with Advanced CAN protocol
+		if (modPowerElectronicsGeneralConfigHandle->emitStatusProtocol != canEmitProtocolAdvanced) {
+			modPowerElectronicsPackStateHandle->disChargeLCAllowed = false;
+			modPowerElectronicsPackStateHandle->chargeAllowed = false;
+		}
 	}else
 		modPowerElectronicsUnderAndOverTemperatureErrorCount = 0;
 	

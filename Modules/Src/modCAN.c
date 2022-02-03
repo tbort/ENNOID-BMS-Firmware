@@ -167,6 +167,7 @@ void modCANInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneral
 
 	modCANSafetyCANMessageTimeout = HAL_GetTick();
 	modCANErrorLastTick = HAL_GetTick();
+	modCANPackStateHandle->advancedCanSrc = modCANAdvancedSrc;
 }
 
 void modCANTask(void){		
@@ -522,11 +523,11 @@ void modCANSendTempFaultInfo(void) {
 	
 	// Send Temp and Fault information.
 	sendIndex = 0;
-	libBufferAppend_uint8(buffer, modCANPackStateHandle->tempBatteryLow+40,&sendIndex);
-	libBufferAppend_uint8(buffer, modCANPackStateHandle->tempBatteryHigh+40,&sendIndex);
-	libBufferAppend_uint8(buffer, modCANPackStateHandle->tempBatteryAverage+40,&sendIndex);
-	libBufferAppend_uint8(buffer, modCANPackStateHandle->tempBMSAverage+40,&sendIndex);
-	libBufferAppend_uint8(buffer, modCANPackStateHandle->humidity/0.5,&sendIndex);
+	libBufferAppend_uint8(buffer, MIN(255, (modCANPackStateHandle->tempBatteryLow+40)),&sendIndex);
+	libBufferAppend_uint8(buffer, MIN(255, (modCANPackStateHandle->tempBatteryHigh+40)),&sendIndex);
+	libBufferAppend_uint8(buffer, MIN(255, (modCANPackStateHandle->tempBatteryAverage+40)),&sendIndex);
+	libBufferAppend_uint8(buffer, MIN(255, (modCANPackStateHandle->tempBMSAverage+40)),&sendIndex);
+	libBufferAppend_uint8(buffer, MIN(255, (modCANPackStateHandle->humidity/0.5)),&sendIndex);
 	libBufferAppend_uint8(buffer, modCANPackStateHandle->faultState,&sendIndex);
 
 	flagHolder |= (modCANPackStateHandle->safetyOverCANHCSafeNSafe	<< 0);
@@ -1055,6 +1056,7 @@ void modCANHandleSetSrcMessage(CanRxMsgTypeDef canMsg) {
 	if(canMsg.DLC == 1) {
 		modCANAdvancedSrc = canMsg.Data[0];
 		modCANGeneralConfigHandle->CANID = modCANAdvancedSrc;
+		modCANPackStateHandle->advancedCanSrc = modCANAdvancedSrc;
 		modConfigStoreConfig();
 	}
 }

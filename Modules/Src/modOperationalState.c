@@ -81,9 +81,15 @@ void modOperationalStateTask(void) {
 			}else if(modPowerStateButtonPressedOnTurnon()) {												// Check if button was pressen on turn-on
 				if (modOperationalStateGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
 					// wait here until commanded to precharge
+					if (modOperationalStatePackStatehandle->advancedCanSrc == 0xFF) {
+						modEffectChangeState(STAT_LED_POWER,STAT_BLINKSHORTLONG_100_20);	// Set LED to blink slow during initialization
+					} else {
+						modEffectChangeState(STAT_LED_POWER,STAT_FLASH);	// Set LED to flash normal after initialization
+					}
+
 					if (modOperationalStatePackStatehandle->advancedCanCommandedState == ADV_CAN_COMMANDED_RUN) {
 						modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);									// Prepare to goto operational state
-						modEffectChangeState(STAT_LED_POWER,STAT_SET);												// Turn LED on in normal operation
+						modEffectChangeState(STAT_LED_POWER,STAT_FLASH_FAST);	// Set LED to flash fast during precharge
 					}
 				} else {
 					modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);									// Prepare to goto operational state
@@ -104,7 +110,10 @@ void modOperationalStateTask(void) {
 			
 			if(modDelayTick1ms(&modOperationalStateStartupDelay,modOperationalStateGeneralConfigHandle->displayTimeoutSplashScreen)) {// Wait for a bit than update state. Also check voltage after main fuse? followed by going to error state if blown?		
 				if(!modOperationalStatePackStatehandle->disChargeLCAllowed && !modPowerStateChargerDetected()) {						// If discharge is not allowed
-					modOperationalStateSetNewState(OP_STATE_ERROR);							// Then the battery is dead
+					// Prevent uncommanded shutdown when using CAN Advanced protocol
+					if (modOperationalStateGeneralConfigHandle->emitStatusProtocol != canEmitProtocolAdvanced) {
+						modOperationalStateSetNewState(OP_STATE_ERROR);							// Then the battery is dead
+					}
 					modOperationalStateBatteryDeadDisplayTime = HAL_GetTick();
 				}
 				modOperationalStateUpdateStates();																		// Sync states
@@ -175,6 +184,7 @@ void modOperationalStateTask(void) {
 				}else{
 					if (modOperationalStateGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
 						modPowerElectronicsAllowForcedOn(true);
+						modEffectChangeState(STAT_LED_POWER,STAT_SET); 			// Turn LED on when precharged
 					}
 					modOperationalStateSetNewState(OP_STATE_LOAD_ENABLED);					// Goto normal load enabled operation
 				}
