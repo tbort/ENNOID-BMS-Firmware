@@ -569,8 +569,9 @@ void modCANSendBroadcast(void) {
 		uint8_t sensorModulePointer = broadcastIndex-totalNoOfCells;
 		libBufferAppend_uint8(buffer,sensorModulePointer,&sendIndex);
 		
-		for(uint8_t sensorPointer = 0; sensorPointer < modCANGeneralConfigHandle->noOfTempSensorPerModule; sensorPointer++) {
-			float temp = modCANPackStateHandle->auxVoltagesIndividual[sensorPointer].auxVoltage;
+		uint8_t tempSensorCount = modCANGeneralConfigHandle->noOfTempSensorPerModule;
+		for(uint8_t sensorPointer = 0; sensorPointer < tempSensorCount; sensorPointer++) {
+			float temp = modCANPackStateHandle->auxVoltagesIndividual[sensorPointer+(sensorModulePointer*tempSensorCount)].auxVoltage;
 			libBufferAppend_uint8(buffer, temp+40,&sendIndex);
 			if (sendIndex >= 8) break;
 		}
