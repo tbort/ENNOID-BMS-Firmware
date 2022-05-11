@@ -65,7 +65,19 @@ void modOperationalStateInit(modPowerElectronicsPackStateTypedef *packState, mod
 void modOperationalStateTask(void) {	
 	switch(modOperationalStateCurrentState) {
 		case OP_STATE_INIT:
-			if(modPowerStateChargerDetected()) {																		// Check to detect charger
+			if (modOperationalStateGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
+				// wait here until commanded to precharge
+				if (modOperationalStatePackStatehandle->advancedCanSrc == 0) {
+					modEffectChangeState(STAT_LED_POWER,STAT_BLINKSHORTLONG_100_20);	// Set LED to blink slow during initialization
+				} else {
+					modEffectChangeState(STAT_LED_POWER,STAT_FLASH);	// Set LED to flash normal after initialization
+				}
+
+				if (modOperationalStatePackStatehandle->advancedCanCommandedState == ADV_CAN_COMMANDED_RUN) {
+					modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);									// Prepare to goto operational state
+					modEffectChangeState(STAT_LED_POWER,STAT_FLASH_FAST);	// Set LED to flash fast during precharge
+				}
+			}else if(modPowerStateChargerDetected()) {																		// Check to detect charger
 				switch(modOperationalStateGeneralConfigHandle->chargeEnableOperationalState){
 				  case opStateChargingModeCharging:
 						modOperationalStateSetNewState(OP_STATE_CHARGING);								// Go to charge state
@@ -79,22 +91,8 @@ void modOperationalStateTask(void) {
 						break;
 				}
 			}else if(modPowerStateButtonPressedOnTurnon()) {												// Check if button was pressen on turn-on
-				if (modOperationalStateGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
-					// wait here until commanded to precharge
-					if (modOperationalStatePackStatehandle->advancedCanSrc == 0xFF) {
-						modEffectChangeState(STAT_LED_POWER,STAT_BLINKSHORTLONG_100_20);	// Set LED to blink slow during initialization
-					} else {
-						modEffectChangeState(STAT_LED_POWER,STAT_FLASH);	// Set LED to flash normal after initialization
-					}
-
-					if (modOperationalStatePackStatehandle->advancedCanCommandedState == ADV_CAN_COMMANDED_RUN) {
-						modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);									// Prepare to goto operational state
-						modEffectChangeState(STAT_LED_POWER,STAT_FLASH_FAST);	// Set LED to flash fast during precharge
-					}
-				} else {
-					modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);									// Prepare to goto operational state
-					modEffectChangeState(STAT_LED_POWER,STAT_SET);												// Turn LED on in normal operation
-				}
+				modOperationalStateSetNewState(OP_STATE_PRE_CHARGE);									// Prepare to goto operational state
+				modEffectChangeState(STAT_LED_POWER,STAT_SET);												// Turn LED on in normal operation
 			}else if(modOperationalStateNewState == OP_STATE_INIT){								  // USB or CAN origin of turn-on
 				switch(modOperationalStateGeneralConfigHandle->externalEnableOperationalState){
 					case opStateExtNormal:
@@ -502,6 +500,20 @@ void modOperationalStateTask(void) {
 			
 		}
 	};
+
+	// If Advanced CAN mode, check for power down
+	if (modOperationalStateGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
+		// Check for power down command
+		if (modOperationalStatePackStatehandle->advancedCanCommandedState == ADV_CAN_COMMANDED_SHUTDOWN) {
+			modOperationalStateSetNewState(OP_STATE_POWER_DOWN);
+			modOperationalStatePackStatehandle->powerDownDesired = true;
+		
+		// Check for CAN timeout if current is below threshold
+		} else if(modOperationalStatePackStatehandle->advancedCanTimeout && fabs(modOperationalStatePackStatehandle->packCurrent) < fabs(modOperationalStateGeneralConfigHandle->notUsedCurrentThreshold)) {
+			modOperationalStateSetNewState(OP_STATE_POWER_DOWN);
+			modOperationalStatePackStatehandle->powerDownDesired = true;
+		}
+	}
 	
 	// Prevent uncommanded shutdown when using CAN Advanced protocol
 	if (modOperationalStateGeneralConfigHandle->emitStatusProtocol != canEmitProtocolAdvanced) {

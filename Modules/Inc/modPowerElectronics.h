@@ -127,6 +127,7 @@ typedef struct {
 	uint8_t  watchDogTime;
 	uint8_t  advancedCanSrc;
 	uint8_t  advancedCanCommandedState;
+	uint8_t  advancedCanTimeout;
 	cellMonitorCellsTypeDef cellVoltagesIndividual[NoOfCellsPossibleOnBMS];
 	auxMonitorTypeDef auxVoltagesIndividual[NoOfAuxPossibleOnBMS];
 	expMonitorTypeDef expVoltagesIndividual[NoOfExpPossibleOnBMS];

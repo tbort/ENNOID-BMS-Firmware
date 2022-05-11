@@ -237,7 +237,7 @@ void     driverSWLTC6804ReadCellVoltageGroups(uint8_t reg, uint8_t total_ic, uin
 void     driverSWLTC6804StartAuxVoltageConversion(uint8_t MD, uint8_t CHG);
 float    driverSWLTC6804ConvertTemperatureExt(uint16_t inputValue,uint32_t ntcNominal,uint32_t ntcSeriesResistance,uint16_t ntcBetaFactor, float ntcNominalTemp);
 
-bool     driverSWLTC6804ReadAuxVoltagesArray(float auxVoltagesArray[][12],uint32_t ntcNominal,uint32_t ntcSeriesResistance, uint16_t ntcBetaFactor,float ntcNominalTemp);
+bool     driverSWLTC6804ReadAuxVoltagesArray(float auxVoltagesArray[][12],uint32_t ntcNominal,uint32_t ntcSeriesResistance, uint16_t ntcBetaFactor,float ntcNominalTemp, bool addressingEnabled);
 int8_t   driverSWLTC6804ReadAuxVoltageRegisters(uint8_t reg, uint8_t total_ic, uint16_t aux_codes[][12]);
 void     driverSWLTC6804ReadAuxGroups(uint8_t reg, uint8_t total_ic,uint8_t *data);
 

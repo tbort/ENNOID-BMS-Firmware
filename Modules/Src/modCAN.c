@@ -27,13 +27,12 @@ uint32_t               modCANSendStatusFastLastTick;
 uint32_t               modCANSendStatusSlowLastTick;
 uint32_t               modCANSendStatusVESCLastTick;
 
-uint8_t                modCANAdvancedSrc = 0xFF;
-uint32_t               modCANSendBoardInfoLastTick;
 uint32_t               modCANSendPackInfoLastTick;
 uint32_t               modCANSendVoltInfoLastTick;
 uint32_t               modCANSendAuxInfoLastTick;
 uint32_t               modCANSendTempFaultInfoLastTick;
 uint32_t               modCANSendBroadcastLastTick;
+uint32_t               modCANTimeoutLastTick;
 
 uint32_t               modCANSafetyCANMessageTimeout;
 uint32_t               modCANLastRXID;
@@ -62,6 +61,9 @@ static can_status_msg_2 stat_msgs_2[CAN_STATUS_MSGS_TO_STORE];
 static can_status_msg_3 stat_msgs_3[CAN_STATUS_MSGS_TO_STORE];
 static can_status_msg_4 stat_msgs_4[CAN_STATUS_MSGS_TO_STORE];
 static can_status_msg_5 stat_msgs_5[CAN_STATUS_MSGS_TO_STORE];
+
+int advancedCanAddressingTable[6] = { 120, 75, 36, 22, 15, 10 };
+int getAdvancedCanAddress(void);
 
 /*
 bool modCANPing(uint8_t controller_id, HW_TYPE *hw_type) {
@@ -158,7 +160,6 @@ void modCANInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneral
 	modCANSendStatusSlowLastTick = HAL_GetTick();
 	modCANSendStatusVESCLastTick = HAL_GetTick();
 
-	modCANSendBoardInfoLastTick = HAL_GetTick();
 	modCANSendPackInfoLastTick = HAL_GetTick();
 	modCANSendVoltInfoLastTick = HAL_GetTick();
 	modCANSendAuxInfoLastTick = HAL_GetTick();
@@ -167,7 +168,14 @@ void modCANInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneral
 
 	modCANSafetyCANMessageTimeout = HAL_GetTick();
 	modCANErrorLastTick = HAL_GetTick();
-	modCANPackStateHandle->advancedCanSrc = modCANAdvancedSrc;
+
+	static uint8_t runOnce = false;
+	if(!runOnce && modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
+		modCANPackStateHandle->advancedCanSrc = getAdvancedCanAddress();
+
+		modCANSendBoardInfo();
+		if (modCANPackStateHandle->advancedCanSrc > 0) runOnce = true;
+	}
 }
 
 void modCANTask(void){		
@@ -192,21 +200,17 @@ void modCANTask(void){
 			if(modDelayTick1ms(&modCANSendStatusVESCLastTick,1000)) 
 				modCANSendStatusVESC();
 		}else if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced){
-			if(modCANAdvancedSrc == 0xFF) {
-				if(modDelayTick1ms(&modCANSendBoardInfoLastTick, 100))                        // 10 Hz
-					modCANSendBoardInfo();
-			} else {
-				if(modDelayTick1ms(&modCANSendPackInfoLastTick,100))                          // 10 Hz
-					modCANSendPackInfo();
-				if(modDelayTick1ms(&modCANSendVoltInfoLastTick,100))                          // 10 Hz
-					modCANSendVoltInfo();
-				if(modDelayTick1ms(&modCANSendAuxInfoLastTick,100))                           // 10 Hz
-					modCANSendAuxInfo();
-				if(modDelayTick1ms(&modCANSendTempFaultInfoLastTick,1000))                    // 1 Hz
-					modCANSendTempFaultInfo();
-				if(modDelayTick1ms(&modCANSendBroadcastLastTick,100))                    			// 10 Hz
-					modCANSendBroadcast();
-			}
+			if(modDelayTick1ms(&modCANSendPackInfoLastTick,100))                          // 10 Hz
+				modCANSendPackInfo();
+			if(modDelayTick1ms(&modCANSendVoltInfoLastTick,100))                          // 10 Hz
+				modCANSendVoltInfo();
+			if(modDelayTick1ms(&modCANSendAuxInfoLastTick,100))                           // 10 Hz
+				modCANSendAuxInfo();
+			if(modDelayTick1ms(&modCANSendTempFaultInfoLastTick,1000))                    // 1 Hz
+				modCANSendTempFaultInfo();
+			if(modDelayTick1ms(&modCANSendBroadcastLastTick,100))                         // 10 Hz
+				modCANSendBroadcast();
+			modCANPackStateHandle->advancedCanTimeout = (modDelayTick1msNoRST(&modCANTimeoutLastTick,5000));
 		}
 	}
 	
@@ -268,8 +272,8 @@ uint32_t modCANGetCANID(uint32_t destinationID, CAN_PACKET_ID packetID) {
 			int priority = 3;
 			int pgn = 0xFF00 + packetID;
 			int src = destinationID;
-			if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced && modCANAdvancedSrc != 0xFF)
-				src = modCANAdvancedSrc;
+			if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced)
+				src = modCANPackStateHandle->advancedCanSrc;
 			returnCANID = ((priority & 0x7) << 26) | ((pgn & 0x3FFFF) << 8) | ((src & 0xFF));
 		}
 			break;
@@ -599,16 +603,11 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *CanHandle) {
 				if (pf < 240) {
 					// this packet has a destination
 					uint8_t destination = ((*CanHandle->pRxMsg).ExtId >> 8) & 0xFF;
-					if (destination == modCANAdvancedSrc) {
+					if (destination == modCANPackStateHandle->advancedCanSrc) {
 						uint8_t packetID = pf;
 						if(packetID == CAN_PACKET_ADV_CONTROL) {
 							modCANHandleControlMessage(*CanHandle->pRxMsg);
 						}
-					}
-				} else {
-					uint8_t packetID = ((*CanHandle->pRxMsg).ExtId >> 8) & 0xFF;
-					if(modCANAdvancedSrc == 0xFF && packetID == CAN_PACKET_ADV_SET_SRC) {
-						modCANHandleSetSrcMessage(*CanHandle->pRxMsg);
 					}
 				}
 			} else {
@@ -877,6 +876,7 @@ void modCANSubTaskHandleCommunication(void) {
 }
 
 void modCANTransmitExtID(uint32_t id, uint8_t *data, uint8_t len) {
+	if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced && modCANPackStateHandle->advancedCanSrc == 0) return; // don't send messages until src address is set
 	CanTxMsgTypeDef txmsg;
 	txmsg.IDE = CAN_ID_EXT;
 	txmsg.ExtId = id;
@@ -1053,18 +1053,10 @@ void modCANHandleKeepAliveSafetyMessage(CanRxMsgTypeDef canMsg) {
 	}
 }
 
-void modCANHandleSetSrcMessage(CanRxMsgTypeDef canMsg) {
-	if(canMsg.DLC == 1) {
-		modCANAdvancedSrc = canMsg.Data[0];
-		modCANGeneralConfigHandle->CANID = modCANAdvancedSrc;
-		modCANPackStateHandle->advancedCanSrc = modCANAdvancedSrc;
-		modConfigStoreConfig();
-	}
-}
-
 void modCANHandleControlMessage(CanRxMsgTypeDef canMsg) {
 	if(canMsg.DLC == 8) {
 		modCANPackStateHandle->advancedCanCommandedState = canMsg.Data[0];
+		modCANTimeoutLastTick = HAL_GetTick();
 	}
 }
 
@@ -1328,5 +1320,38 @@ void comm_can_psw_switch(int id, bool is_on, bool plot) {
 			buffer, send_index);
 }
 */
+
+int getAdvancedCanAddress(void) {
+	#define ADDRESSING_PIN	9
+	#define ADDRESSING_V1		3.3f
+	#define ADDRESSING_R1		120
+
+	// get raw voltage of addressing pin
+	float rawVoltage = modCANPackStateHandle->auxVoltagesIndividual[ADDRESSING_PIN].auxVoltage;
+	if (rawVoltage == 0) return 0;	// if voltage is zero, input has not been read yet
+
+	// calculate resistor value
+	int r2 = (int)(rawVoltage*ADDRESSING_R1)/(ADDRESSING_V1-rawVoltage);
+	int id = 0;
+
+	// find closest resistor match in lookup table and use index as address
+	for (int i=0; i<sizeof(advancedCanAddressingTable)/sizeof(int); i++) {
+		if (r2 >= advancedCanAddressingTable[i]) {
+			int diffPrev = i == 0 ? 0 : abs(r2 - advancedCanAddressingTable[i-1]);
+			int diffCurr = abs(r2 - advancedCanAddressingTable[i]);
+
+			if (i == 0 || diffCurr < diffPrev) {
+				id = (i+1);
+			} else {
+				id = i;
+			}
+			break;
+		} else {
+			id = (i+1);
+		}
+	}
+
+	return 0xB0 + id;
+}
 
 

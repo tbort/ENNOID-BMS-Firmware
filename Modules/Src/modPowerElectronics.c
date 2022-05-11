@@ -128,7 +128,7 @@ void modPowerElectronicsInit(modPowerElectronicsPackStateTypedef *packState, mod
 	modPowerElectronicsPackStateHandle->buzzerOn					= false;
 	modPowerElectronicsPackStateHandle->powerDownDesired				= false;
 	modPowerElectronicsPackStateHandle->powerOnLongButtonPress			= false;
-	modPowerElectronicsPackStateHandle->advancedCanCommandedState	= 0;
+	modPowerElectronicsPackStateHandle->advancedCanCommandedState	= ADV_CAN_COMMANDED_STANDBY;
 	
 	// init the cell module variables empty
 	for( uint8_t modulePointer = 0; modulePointer < NoOfCellMonitorsPossibleOnBMS; modulePointer++) {
@@ -1001,7 +1001,7 @@ void modPowerElectronicsCellMonitorsCheckConfigAndReadAnalogData(void){
 			// Convert modules to full array
 			
 			// Read aux voltages
-			driverSWLTC6804ReadAuxVoltagesArray(modPowerElectronicsPackStateHandle->auxModuleVoltages,modPowerElectronicsGeneralConfigHandle->NTC25DegResistance[modConfigNTCGroupLTCExt],modPowerElectronicsGeneralConfigHandle->NTCTopResistor[modConfigNTCGroupLTCExt],modPowerElectronicsGeneralConfigHandle->NTCBetaFactor[modConfigNTCGroupLTCExt],25.0f);
+			driverSWLTC6804ReadAuxVoltagesArray(modPowerElectronicsPackStateHandle->auxModuleVoltages,modPowerElectronicsGeneralConfigHandle->NTC25DegResistance[modConfigNTCGroupLTCExt],modPowerElectronicsGeneralConfigHandle->NTCTopResistor[modConfigNTCGroupLTCExt],modPowerElectronicsGeneralConfigHandle->NTCBetaFactor[modConfigNTCGroupLTCExt],25.0f, modPowerElectronicsGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced);
 			modPowerElectronicsAuxMonitorsArrayTranslate();
 			//driverSWLTC6804ReadAuxSensors(modPowerElectronicsAuxVoltageArray);
 			//modPowerElectronicsPackStateHandle->temperatures[0] =	modPowerElectronicsPackStateHandle->temperatures[1] = driverSWLTC6804ConvertTemperatureExt(modPowerElectronicsAuxVoltageArray[1],modPowerElectronicsGeneralConfigHandle->NTC25DegResistance[modConfigNTCGroupLTCExt],modPowerElectronicsGeneralConfigHandle->NTCTopResistor[modConfigNTCGroupLTCExt],modPowerElectronicsGeneralConfigHandle->NTCBetaFactor[modConfigNTCGroupLTCExt],25.0f);

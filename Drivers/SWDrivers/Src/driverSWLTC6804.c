@@ -422,7 +422,7 @@ void driverSWLTC6804ReadStatusGroups(uint8_t reg, uint8_t total_ic, uint8_t *dat
 	driverSWLTC6804WriteRead(cmd,4,data,(REG_LEN*total_ic));
 }
 
-bool driverSWLTC6804ReadAuxVoltagesArray(float auxVoltagesArray[][driverSWLTC6804MaxNoOfTempSensorPerModule],uint32_t ntcNominal,uint32_t ntcSeriesResistance, uint16_t ntcBetaFactor,float ntcNominalTemp) {
+bool driverSWLTC6804ReadAuxVoltagesArray(float auxVoltagesArray[][driverSWLTC6804MaxNoOfTempSensorPerModule],uint32_t ntcNominal,uint32_t ntcSeriesResistance, uint16_t ntcBetaFactor,float ntcNominalTemp, bool addressingEnabled) {
 	bool dataValid = true;
 	uint16_t auxVoltageArrayCodes[driverSWLTC6804TotalNumberOfICs][driverSWLTC6804MaxNoOfTempSensorPerModule]; 
 	
@@ -430,9 +430,13 @@ bool driverSWLTC6804ReadAuxVoltagesArray(float auxVoltagesArray[][driverSWLTC680
 	
   for(uint8_t modulePointer = 0; modulePointer < driverSWLTC6804TotalNumberOfICs; modulePointer++) {
 		for(uint8_t auxPointer = 0; auxPointer < driverSWLTC6804MaxNoOfTempSensorPerModule; auxPointer++){
-			if(auxVoltageArrayCodes[modulePointer][auxPointer]*0.0001f < 10.0f)
-			  auxVoltagesArray[modulePointer][auxPointer] = driverSWLTC6804ConvertTemperatureExt(auxVoltageArrayCodes[modulePointer][auxPointer], ntcNominal, ntcSeriesResistance, ntcBetaFactor, ntcNominalTemp);
-			else
+			if(auxVoltageArrayCodes[modulePointer][auxPointer]*0.0001f < 10.0f) {
+				if(addressingEnabled && modulePointer == 1 && auxPointer == 4) {
+					auxVoltagesArray[modulePointer][auxPointer] = auxVoltageArrayCodes[modulePointer][auxPointer]*0.0001f;
+				} else {
+					auxVoltagesArray[modulePointer][auxPointer] = driverSWLTC6804ConvertTemperatureExt(auxVoltageArrayCodes[modulePointer][auxPointer], ntcNominal, ntcSeriesResistance, ntcBetaFactor, ntcNominalTemp);
+				}
+			} else
 				dataValid = false;
 		}
   }
