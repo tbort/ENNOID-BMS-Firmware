@@ -32,6 +32,7 @@ uint32_t               modCANSendVoltInfoLastTick;
 uint32_t               modCANSendAuxInfoLastTick;
 uint32_t               modCANSendTempFaultInfoLastTick;
 uint32_t               modCANSendBroadcastLastTick;
+uint32_t               modCANSendBoardInfoLastTick;
 uint32_t               modCANTimeoutLastTick;
 
 uint32_t               modCANSafetyCANMessageTimeout;
@@ -165,17 +166,10 @@ void modCANInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneral
 	modCANSendAuxInfoLastTick = HAL_GetTick();
 	modCANSendTempFaultInfoLastTick = HAL_GetTick();
 	modCANSendBroadcastLastTick = HAL_GetTick();
+	modCANSendBoardInfoLastTick = HAL_GetTick();
 
 	modCANSafetyCANMessageTimeout = HAL_GetTick();
 	modCANErrorLastTick = HAL_GetTick();
-
-	static uint8_t runOnce = false;
-	if(!runOnce && modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
-		modCANPackStateHandle->advancedCanSrc = getAdvancedCanAddress();
-
-		modCANSendBoardInfo();
-		if (modCANPackStateHandle->advancedCanSrc > 0) runOnce = true;
-	}
 }
 
 void modCANTask(void){		
@@ -210,6 +204,8 @@ void modCANTask(void){
 				modCANSendTempFaultInfo();
 			if(modDelayTick1ms(&modCANSendBroadcastLastTick,100))                         // 10 Hz
 				modCANSendBroadcast();
+			if(modDelayTick1ms(&modCANSendBoardInfoLastTick,10000))                       // 10 second interval
+				modCANSendBoardInfo();
 			modCANPackStateHandle->advancedCanTimeout = (modDelayTick1msNoRST(&modCANTimeoutLastTick,5000));
 		}
 	}
@@ -223,6 +219,15 @@ void modCANTask(void){
 	
 	// Control the charger
 	modCANHandleSubTaskCharger();
+
+	// Configure addressing
+	static uint8_t runOnce = false;
+	if(!runOnce && modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
+		modCANPackStateHandle->advancedCanSrc = getAdvancedCanAddress();
+
+		modCANSendBoardInfo();
+		if (modCANPackStateHandle->advancedCanSrc > 0) runOnce = true;
+	}
 }
 
 uint32_t modCANGetDestinationID(CanRxMsgTypeDef canMsg) {
