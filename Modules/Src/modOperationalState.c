@@ -512,6 +512,12 @@ void modOperationalStateTask(void) {
 		} else if(modOperationalStatePackStatehandle->advancedCanTimeout && fabs(modOperationalStatePackStatehandle->packCurrent) < fabs(modOperationalStateGeneralConfigHandle->notUsedCurrentThreshold)) {
 			modOperationalStateSetNewState(OP_STATE_POWER_DOWN);
 			modOperationalStatePackStatehandle->powerDownDesired = true;
+
+		// Check for CAN messages to transition out of power down
+		} else if(modOperationalStatePackStatehandle->powerDownDesired && !modOperationalStatePackStatehandle->advancedCanTimeout) {
+			modOperationalStatePackStatehandle->powerDownDesired = false;
+			modPowerStateSetState(P_STAT_SET);		// re-enable main power
+			modOperationalStateSetAllStates(OP_STATE_INIT);
 		}
 	}
 	

@@ -37,7 +37,7 @@ uint8_t modDelayTick100ms(uint32_t *last, uint32_t ticks) {
 }
 
 uint8_t modDelayTick1msNoRST(uint32_t *last, uint32_t ticks) {
-	if((uint32_t)(HAL_GetTick() - *last) >= ticks)
+	if(*last < HAL_GetTick() && (uint32_t)(HAL_GetTick() - *last) >= ticks)
 	{
 		return true;
 	}

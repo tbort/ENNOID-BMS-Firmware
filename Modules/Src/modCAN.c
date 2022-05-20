@@ -166,7 +166,6 @@ void modCANInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneral
 	modCANSendAuxInfoLastTick = HAL_GetTick();
 	modCANSendTempFaultInfoLastTick = HAL_GetTick();
 	modCANSendBroadcastLastTick = HAL_GetTick();
-	modCANSendBoardInfoLastTick = HAL_GetTick();
 
 	modCANSafetyCANMessageTimeout = HAL_GetTick();
 	modCANErrorLastTick = HAL_GetTick();
@@ -221,12 +220,15 @@ void modCANTask(void){
 	modCANHandleSubTaskCharger();
 
 	// Configure addressing
-	static uint8_t runOnce = false;
-	if(!runOnce && modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
+	static uint8_t hasAddress = false;
+	if(!hasAddress && modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
 		modCANPackStateHandle->advancedCanSrc = getAdvancedCanAddress();
 
-		modCANSendBoardInfo();
-		if (modCANPackStateHandle->advancedCanSrc > 0) runOnce = true;
+		modCANTimeoutLastTick = HAL_GetTick()+10000;	// wait 10 seconds before starting CAN timeout
+		if (modCANPackStateHandle->advancedCanSrc > 0) {
+			hasAddress = true;
+			modCANSendBoardInfo();
+		}
 	}
 }
 
@@ -604,7 +606,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *CanHandle) {
 			modCANHandleKeepAliveSafetyMessage(*CanHandle->pRxMsg);
 		}else{
 			if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced){
-				uint8_t pf = ((*CanHandle->pRxMsg).ExtId >> 16);
+				uint8_t pf = ((*CanHandle->pRxMsg).ExtId >> 16) & 0xff;
 				if (pf < 240) {
 					// this packet has a destination
 					uint8_t destination = ((*CanHandle->pRxMsg).ExtId >> 8) & 0xFF;
@@ -1331,13 +1333,16 @@ int getAdvancedCanAddress(void) {
 	#define ADDRESSING_V1		3.3f
 	#define ADDRESSING_R1		120
 
+	static uint8_t lastId = 0;
+	static uint8_t counter = 0;
+
 	// get raw voltage of addressing pin
 	float rawVoltage = modCANPackStateHandle->auxVoltagesIndividual[ADDRESSING_PIN].auxVoltage;
 	if (rawVoltage == 0) return 0;	// if voltage is zero, input has not been read yet
 
 	// calculate resistor value
 	int r2 = (int)(rawVoltage*ADDRESSING_R1)/(ADDRESSING_V1-rawVoltage);
-	int id = 0;
+	uint8_t id = 0;
 
 	// find closest resistor match in lookup table and use index as address
 	for (int i=0; i<sizeof(advancedCanAddressingTable)/sizeof(int); i++) {
@@ -1356,7 +1361,16 @@ int getAdvancedCanAddress(void) {
 		}
 	}
 
-	return 0xB0 + id;
+	// check id is valid and stays consistent for some amount of time
+	if (id == 0 || id != lastId) {
+		lastId = id;
+		counter = 0;
+	} else {
+		counter++;
+	}
+
+	if (counter >= 10) return 0xB0 + id;
+	return 0;
 }
 
 
