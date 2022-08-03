@@ -1334,7 +1334,7 @@ int getAdvancedCanAddress(void) {
 	#define ADDRESSING_R1		120
 
 	static uint8_t lastId = 0;
-	static uint8_t counter = 0;
+	static uint16_t counter = 0;
 
 	// get raw voltage of addressing pin
 	float rawVoltage = modCANPackStateHandle->auxVoltagesIndividual[ADDRESSING_PIN].auxVoltage;
@@ -1369,7 +1369,7 @@ int getAdvancedCanAddress(void) {
 		counter++;
 	}
 
-	if (counter >= 10) return 0xB0 + id;
+	if (counter >= 500) return 0xB0 + id;
 	return 0;
 }
 
