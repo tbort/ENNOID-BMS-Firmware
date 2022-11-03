@@ -27,10 +27,14 @@
 #define ENNOID_SS_24					0
 #endif
 
+#ifndef ENNOID_RYSE
+#define ENNOID_RYSE						0
+#endif
+
 // Firmware version
 #define FW_VERSION_MAJOR				5
 #define FW_VERSION_MINOR				2
-#define FW_VERSION_REVISION			9
+#define FW_VERSION_REVISION				10
 #define FW_REAL_VERSION					"V5.2"
 #define FW_TEST_VERSION_NUMBER				0
 // UUID
@@ -122,6 +126,23 @@
 	#define HAS_NO_DISCHARGE				1
 	#define HAS_CHARGER_VOLTAGE_MEASUREMENT			1
 #endif
+
+#if ENNOID_RYSE
+  #define HW_NAME "ENNOID-RYSE"
+	#define HW_LIM_CELL_BALANCE_MAX_SIMULTANEOUS_DISCHARGE 18
+	#define HW_LIM_CELL_MONITOR_IC_COUNT                   2
+	#define HW_LIM_MIN_NOT_USED_DELAY                      5000
+
+	#define HAS_PFET_OUTPUT					1
+	#define ISL28022_MASTER_ADDRES				0x45
+	#define HAS_DISCHARGE					1
+	#define HAS_HUMIDITY					1
+	#define HAS_CHARGER_VOLTAGE_MEASUREMENT			1
+	#define ADDRESS_RESISTOR_LOCATION			4
+#else
+	#define ADDRESS_RESISTOR_LOCATION			10
+#endif
+
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))

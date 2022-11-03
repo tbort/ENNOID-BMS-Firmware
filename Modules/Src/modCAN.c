@@ -222,7 +222,11 @@ void modCANTask(void){
 	// Configure addressing
 	static uint8_t hasAddress = false;
 	if(!hasAddress && modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
-		modCANPackStateHandle->advancedCanSrc = getAdvancedCanAddress();
+		uint32_t configCanId = modCANGeneralConfigHandle->CANID;
+		if (configCanId <= 0xF)
+			modCANPackStateHandle->advancedCanSrc = 0xB0 + configCanId;
+		else
+			modCANPackStateHandle->advancedCanSrc = getAdvancedCanAddress();
 
 		modCANTimeoutLastTick = HAL_GetTick()+10000;	// wait 10 seconds before starting CAN timeout
 		if (modCANPackStateHandle->advancedCanSrc > 0) {
@@ -1329,7 +1333,6 @@ void comm_can_psw_switch(int id, bool is_on, bool plot) {
 */
 
 int getAdvancedCanAddress(void) {
-	#define ADDRESSING_PIN	9
 	#define ADDRESSING_V1		3.3f
 	#define ADDRESSING_R1		120
 
@@ -1337,7 +1340,7 @@ int getAdvancedCanAddress(void) {
 	static uint16_t counter = 0;
 
 	// get raw voltage of addressing pin
-	float rawVoltage = modCANPackStateHandle->auxVoltagesIndividual[ADDRESSING_PIN].auxVoltage;
+	float rawVoltage = modCANPackStateHandle->auxVoltagesIndividual[ADDRESS_RESISTOR_LOCATION-1].auxVoltage;
 	if (rawVoltage == 0) return 0;	// if voltage is zero, input has not been read yet
 
 	// calculate resistor value
