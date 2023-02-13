@@ -808,9 +808,9 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->noOfParallelModules				= 1;                    // Number of parallel modules
 	configLocation->batteryCapacity					= 28.80f;               // XXAh battery
 	configLocation->cellHardUnderVoltage				= 2.30f;				// Worst case X.XXV as lowest cell voltage
-	configLocation->cellHardOverVoltage				= 4.21f;				// Worst case X.XXV as highest cell voltage
+	configLocation->cellHardOverVoltage				= 4.40f;				// Worst case X.XXV as highest cell voltage
 	configLocation->cellLCSoftUnderVoltage				= 3.00f;				// Lowest cell voltage X.XXV.
-	configLocation->cellSoftOverVoltage				= 4.20f;				// Normal highest cell voltage X.XXV.
+	configLocation->cellSoftOverVoltage				= 4.30f;				// Normal highest cell voltage X.XXV.
 	configLocation->cellBalanceDifferenceThreshold                 	= 0.01f;				// Start balancing @ XmV difference, stop if below.
 	configLocation->cellBalanceStart				= 4.1f;					// Start balancing above X.XXV.
 	configLocation->cellBalanceAllTime				= true;					// Enable balancing under all opstate
@@ -818,9 +818,9 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->cellThrottleLowerStart				= 0.20f;				// Lower range of cell voltage for discharge throttling.
 	configLocation->cellThrottleUpperMargin				= 0.01f;				// Margin of throttle from upper soft limits.
 	configLocation->cellThrottleLowerMargin				= 0.50f;				// Margin of throttle from lower soft limits.	
-	configLocation->packVoltageDataSource                          	= sourcePackVoltageISL28022;		// Packvoltage source.
+	configLocation->packVoltageDataSource                          	= sourcePackVoltageSumOfIndividualCellVoltages;	// Packvoltage source.
 	configLocation->packCurrentDataSource                          	= sourcePackCurrentISL28022; 		// The pack current is the same as the current through the low current shunt
-	configLocation->buzzerSignalSource                             	= buzzerSourceOn;         		// Stores what source shoud be taken to trigger
+	configLocation->buzzerSignalSource                             	= buzzerSourceOff;         		// Stores what source shoud be taken to trigger
 	configLocation->buzzerSignalPersistant                         	= false;                    		// Stores whether the buzzer should stay on after triggering
   	configLocation->shuntLCFactor                                  	= -0.0104f;              		// Shunt factor low current
 	configLocation->voltageLCFactor	                               	= 2.505f;                   		// Pack voltage factor 
@@ -858,8 +858,8 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->displayTimeoutBatteryErrorPreCharge		= 10000;				// Show pre charge error for XX seconds.
 	configLocation->displayTimeoutSplashScreen			= 3000;					// Display / INIT splash screen time.
 	configLocation->displayStyle					= advanced;				// Display style used for showing the SSD1306 data
-	configLocation->maxUnderAndOverVoltageErrorCount 		= 5;					// Max count of hard cell voltage errors.
-	configLocation->maxUnderAndOverTemperatureErrorCount 		= 5;					// Max count of hard cell voltage errors.
+	configLocation->maxUnderAndOverVoltageErrorCount 		= 30;					// Max count of hard cell voltage errors.
+	configLocation->maxUnderAndOverTemperatureErrorCount 		= 30;					// Max count of hard cell voltage errors.
 	configLocation->notUsedCurrentThreshold				= 1.0f;					// If abs(packcurrent) < X.XA consider pack as not used.
 	configLocation->notUsedTimeout					= 0;					// If pack is not used for longer than XX minutes disable bms.
 	configLocation->stateOfChargeStoreInterval			= 60*1000;				// Interval in ms to store state of charge information.
@@ -877,7 +877,7 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->noOfTempSensorPerExpansionBoard          	= 0;					// Number of temperature sensors monitored per expansion board
 	configLocation->LCUseDischarge                                 	= enabled;                 		// Enable or disable the solid state output
 	configLocation->LCUsePrecharge                                 	= enabled;              		// Use precharge before enabling main output
-	configLocation->allowChargingDuringDischarge                   	= false;                    		// Allow the battery to be charged in normal mode
+	configLocation->allowChargingDuringDischarge                   	= true;                    		// Allow the battery to be charged in normal mode
 	configLocation->allowForceOn                                   	= false;                   		// Allow the BMS to be forced ON by long actuation of the power button
 	configLocation->pulseToggleButton                             	= false;                    		// Select either pulse or toggle power button
 	configLocation->useCANSafetyInput                              	= false;                   		// Use the safety input status from CAN

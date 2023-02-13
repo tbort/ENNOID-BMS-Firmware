@@ -465,7 +465,7 @@ void modPowerElectronicsSubTaskVoltageWatch(void) {
 	//modPowerElectronicsCellMonitorsReadVoltageFlags(&hardUnderVoltageFlags,&hardOverVoltageFlags);
 	modPowerElectronicsCalculateCellStats();
 	
-	if(modPowerElectronicsPackStateHandle->packOperationalCellState != PACK_STATE_ERROR_HARD_CELLVOLTAGE && modPowerElectronicsPackStateHandle->packOperationalCellState != PACK_STATE_ERROR_TEMPERATURE) {
+//	if(modPowerElectronicsPackStateHandle->packOperationalCellState != PACK_STATE_ERROR_HARD_CELLVOLTAGE && modPowerElectronicsPackStateHandle->packOperationalCellState != PACK_STATE_ERROR_TEMPERATURE) {
 		
 		// Handle soft cell voltage limits & temperatures
 		//Discharge disable
@@ -533,7 +533,7 @@ void modPowerElectronicsSubTaskVoltageWatch(void) {
 			modPowerElectronicsPackStateHandle->coolingAllowed = true;
 		};
 		
-	}
+//	}
 	
 	// Handle hard cell voltage limits
 	if(modPowerElectronicsVoltageSenseError || modPowerElectronicsPackStateHandle->cellVoltageHigh > modPowerElectronicsGeneralConfigHandle-> cellHardOverVoltage || modPowerElectronicsPackStateHandle->cellVoltageLow < modPowerElectronicsGeneralConfigHandle-> cellHardUnderVoltage || (modPowerElectronicsPackStateHandle->packVoltage > modPowerElectronicsGeneralConfigHandle->noOfCellsSeries*modPowerElectronicsGeneralConfigHandle->cellHardOverVoltage)) {
@@ -1274,6 +1274,7 @@ void modPowerElectronicsSamplePackAndLCData(void) {
 	
 	if(fabs(tempPackVoltage - modPowerElectronicsGeneralConfigHandle->noOfCellsSeries*modPowerElectronicsPackStateHandle->cellVoltageAverage) < 0.2f*(modPowerElectronicsGeneralConfigHandle->noOfCellsSeries*modPowerElectronicsPackStateHandle->cellVoltageAverage)) {    // If the error is different than 20% continue normal operation. 
 		modPowerElectronicsVinErrorCount = 0;																								// Reset error count.
+		modPowerElectronicsVoltageSenseError = false;
 	}else{																																								// Error in voltage measurement.
 		if(modPowerElectronicsVinErrorCount++ >= VinErrorThreshold){												// Increase error count
 			modPowerElectronicsVinErrorCount = VinErrorThreshold;

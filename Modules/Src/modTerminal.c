@@ -203,6 +203,17 @@ void modTerminalProcessString(char *str) {
 		modCommandsPrintf("------- End BMS Info  -------");
 		modCommandsPrintf(" ");
 		
+	} else if (strcmp(argv[0], "hwinfo2") == 0) {
+		modCommandsPrintf("-------    BMS Info 2  -------");		
+		modCommandsPrintf("Firmware: %d.%d.%d", FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_REVISION);
+		modCommandsPrintf("Name    : %s", HW_NAME);
+		modCommandsPrintf("UUID: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+				STM32_UUID_8[0], STM32_UUID_8[1], STM32_UUID_8[2], STM32_UUID_8[3],
+				STM32_UUID_8[4], STM32_UUID_8[5], STM32_UUID_8[6], STM32_UUID_8[7],
+				STM32_UUID_8[8], STM32_UUID_8[9], STM32_UUID_8[10], STM32_UUID_8[11]);
+		modCommandsPrintf("------- End BMS Info 2  -------");
+		modCommandsPrintf(" ");
+
 	} else if (strcmp(argv[0], "reboot") == 0) {
 		modCommandsPrintf("------  Rebooting BMS  ------");
 		NVIC_SystemReset();
@@ -242,6 +253,8 @@ void modTerminalProcessString(char *str) {
 		modCommandsPrintf("  Read BMS configuration from EEPROM.");
 		modCommandsPrintf("hwinfo");
 		modCommandsPrintf("  Print some hardware information.");
+		modCommandsPrintf("hwinfo2");
+		modCommandsPrintf("  Print some hardware information with revision.");
 
 		for (int i = 0;i < callback_write;i++) {
 			if (callbacks[i].arg_names) {

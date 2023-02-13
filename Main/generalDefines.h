@@ -34,7 +34,7 @@
 // Firmware version
 #define FW_VERSION_MAJOR				5
 #define FW_VERSION_MINOR				2
-#define FW_VERSION_REVISION				10
+#define FW_VERSION_REVISION				11
 #define FW_REAL_VERSION					"V5.2"
 #define FW_TEST_VERSION_NUMBER				0
 // UUID
