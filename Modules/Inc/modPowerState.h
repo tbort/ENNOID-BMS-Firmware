@@ -31,6 +31,7 @@ void modPowerStateSetConfigHandle(modConfigGeneralConfigStructTypedef *generalCo
 void modPowerStateTask(void);
 bool modPowerStateGetButtonPressedState(void);
 bool modPowerStateChargerDetected(void);
+bool modPowerStateCanEnableDetected(void);
 bool modPowerStatePowerdownRequest(void);
 bool modPowerStateForceOnRequest(void);
 void modPowerStateSetState(PowerStateStateTypedef newState);

@@ -5,7 +5,7 @@
 #include "stm32f3xx_hal.h"
 #include "stdbool.h"
 
-#define NoOfPowersSTATs				3
+#define NoOfPowersSTATs				4
 
 typedef struct {
 	GPIO_TypeDef* Port;
@@ -20,7 +20,8 @@ extern const PowerStatePortStruct driverHWPorts[NoOfPowersSTATs];
 typedef enum {
 	P_STAT_POWER_ENABLE = 0,
 	P_STAT_BUTTON_INPUT,
-	P_STAT_CHARGE_DETECT
+	P_STAT_CHARGE_DETECT,
+	P_STAT_CAN_DETECT
 } PowerStateIDTypedef;
 
 typedef enum {

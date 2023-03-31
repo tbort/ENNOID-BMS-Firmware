@@ -124,6 +124,10 @@ bool modPowerStateChargerDetected(void) {
 	return chargeDetect;
 };
 
+bool modPowerStateCanEnableDetected(void) {
+	return driverHWPowerStateReadInput(P_STAT_CAN_DETECT);
+};
+
 bool modPowerStatePowerdownRequest(void) {
 	bool returnValue = false;
 	

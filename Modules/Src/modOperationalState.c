@@ -508,13 +508,13 @@ void modOperationalStateTask(void) {
 			modOperationalStateSetNewState(OP_STATE_POWER_DOWN);
 			modOperationalStatePackStatehandle->powerDownDesired = true;
 		
-		// Check for CAN timeout if current is below threshold
-		} else if(modOperationalStatePackStatehandle->advancedCanTimeout && fabs(modOperationalStatePackStatehandle->packCurrent) < fabs(modOperationalStateGeneralConfigHandle->notUsedCurrentThreshold)) {
+		// Check for power down condition (loss of enable, CAN timeout, and current is below threshold)
+		} else if(!modPowerStateCanEnableDetected() && modOperationalStatePackStatehandle->advancedCanTimeout && fabs(modOperationalStatePackStatehandle->packCurrent) < fabs(modOperationalStateGeneralConfigHandle->notUsedCurrentThreshold)) {
 			modOperationalStateSetNewState(OP_STATE_POWER_DOWN);
 			modOperationalStatePackStatehandle->powerDownDesired = true;
 
-		// Check for CAN messages to transition out of power down
-		} else if(modOperationalStatePackStatehandle->powerDownDesired && !modOperationalStatePackStatehandle->advancedCanTimeout) {
+		// Check for condition to transition out of power down (enable or CAN command received)
+		} else if(modOperationalStatePackStatehandle->powerDownDesired && (modPowerStateCanEnableDetected() || !modOperationalStatePackStatehandle->advancedCanTimeout)) {
 			modOperationalStatePackStatehandle->powerDownDesired = false;
 			modPowerStateSetState(P_STAT_SET);		// re-enable main power
 			modOperationalStateSetAllStates(OP_STATE_INIT);
