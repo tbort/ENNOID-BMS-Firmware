@@ -609,15 +609,20 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *CanHandle) {
 		if((*CanHandle->pRxMsg).ExtId == 0x0A23){
 			modCANHandleKeepAliveSafetyMessage(*CanHandle->pRxMsg);
 		}else{
-			if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced){
+			if(modCANGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced && modCANPackStateHandle->advancedCanSrc > 0){
 				uint8_t pf = ((*CanHandle->pRxMsg).ExtId >> 16) & 0xff;
 				if (pf < 240) {
 					// this packet has a destination
 					uint8_t destination = ((*CanHandle->pRxMsg).ExtId >> 8) & 0xFF;
-					if (destination == modCANPackStateHandle->advancedCanSrc) {
-						uint8_t packetID = pf;
-						if(packetID == CAN_PACKET_ADV_CONTROL) {
-							modCANHandleControlMessage(*CanHandle->pRxMsg);
+					uint8_t packetID = pf;
+					if(packetID == CAN_PACKET_ADV_CONTROL) {
+						if (destination == modCANPackStateHandle->advancedCanSrc) {
+							// Command for specific pack, data in first byte
+							modCANHandleControlMessage(*CanHandle->pRxMsg, 0);
+						} else if (destination == 0xB0) {
+							// Command for all packs, need to parse correct byte
+							uint8_t idx = modCANPackStateHandle->advancedCanSrc-0xB1;
+							modCANHandleControlMessage(*CanHandle->pRxMsg, idx);
 						}
 					}
 				}
@@ -1064,9 +1069,9 @@ void modCANHandleKeepAliveSafetyMessage(CanRxMsgTypeDef canMsg) {
 	}
 }
 
-void modCANHandleControlMessage(CanRxMsgTypeDef canMsg) {
-	if(canMsg.DLC == 8) {
-		modCANPackStateHandle->advancedCanCommandedState = canMsg.Data[0];
+void modCANHandleControlMessage(CanRxMsgTypeDef canMsg, uint8_t idx) {
+	if(canMsg.DLC == 8 && idx < 8) {
+		modCANPackStateHandle->advancedCanCommandedState = canMsg.Data[idx];
 		modCANTimeoutLastTick = HAL_GetTick();
 	}
 }
