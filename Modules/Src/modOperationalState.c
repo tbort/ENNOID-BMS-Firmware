@@ -378,7 +378,18 @@ void modOperationalStateTask(void) {
 			if(modOperationalStateLastState != modOperationalStateCurrentState)
 				modOperationalStateErrorDisplayTime = HAL_GetTick();
 			
-			if(modDelayTick1ms(&modOperationalStateErrorDisplayTime,modOperationalStateGeneralConfigHandle->displayTimeoutBatteryErrorPreCharge)) {
+
+			// If Advanced CAN mode, transition back to INIT when precharge command goes away
+			if(modOperationalStateGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
+				if(modOperationalStatePackStatehandle->advancedCanCommandedState == ADV_CAN_COMMANDED_STANDBY) {
+					modOperationalStateSetNewState(OP_STATE_INIT);
+					modPowerElectronicsSetDisCharge(false);
+					modPowerElectronicsSetCharge(false);
+					modPowerElectronicsSetChargePFET(false);
+					modPowerElectronicsAllowForcedOn(false);
+					modPowerElectronicsReset();
+				}
+			}else if(modDelayTick1ms(&modOperationalStateErrorDisplayTime,modOperationalStateGeneralConfigHandle->displayTimeoutBatteryErrorPreCharge)) {
 				modOperationalStateSetNewState(OP_STATE_POWER_DOWN);
 				modOperationalStatePackStatehandle->powerDownDesired = true;
 			}
