@@ -67,9 +67,12 @@ void modOperationalStateTask(void) {
 		case OP_STATE_INIT:
 			if (modOperationalStateGeneralConfigHandle->emitStatusProtocol == canEmitProtocolAdvanced) {
 				// wait here until commanded to precharge
-				if (modOperationalStatePackStatehandle->advancedCanSrc == 0) {
+
+				if(modOperationalStatePackStatehandle->loCurrentLoadVoltage > (modOperationalStateGeneralConfigHandle->noOfCellsSeries*modOperationalStateGeneralConfigHandle->cellHardUnderVoltage)){
+					modEffectChangeState(STAT_LED_POWER,STAT_SET);		// Set LED to solid if load voltage is high when not commanded
+				}else if(modOperationalStatePackStatehandle->advancedCanSrc == 0){
 					modEffectChangeState(STAT_LED_POWER,STAT_BLINKSHORTLONG_100_20);	// Set LED to blink slow during initialization
-				} else {
+				}else{
 					modEffectChangeState(STAT_LED_POWER,STAT_FLASH);	// Set LED to flash normal after initialization
 				}
 
@@ -324,14 +327,19 @@ void modOperationalStateTask(void) {
 			  modOperationalStatePSPDisableDelay = HAL_GetTick();
 			}
 			modPowerElectronicsDisableAll();																				// Disable all power paths
-			modEffectChangeState(STAT_LED_POWER,STAT_RESET);												// Turn off power LED
-			modEffectChangeState(STAT_LED_DEBUG,STAT_RESET);
+
 			if(!modOperationalStateGeneralConfigHandle->buzzerSignalPersistant)
 				modEffectChangeState(STAT_BUZZER,STAT_RESET);
 			modOperationalStateUpdateStates();
 			modDisplayShowInfo(DISP_MODE_POWEROFF,modOperationalStateDisplayData);
-		  if(modDelayTick1ms(&modOperationalStatePSPDisableDelay,modOperationalStateGeneralConfigHandle->powerDownDelay))	{					// Wait for the power down delay time to pass
-			  modOperationalStateTerminateOperation();															// Disable powersupply and store SoC
+
+			// Keep LEDs on if load voltage doesn't go low (most likely relay failed closed)
+			if(modOperationalStatePackStatehandle->loCurrentLoadVoltage < (modOperationalStateGeneralConfigHandle->noOfCellsSeries*modOperationalStateGeneralConfigHandle->cellHardUnderVoltage)){
+			  	if(modDelayTick1ms(&modOperationalStatePSPDisableDelay,modOperationalStateGeneralConfigHandle->powerDownDelay))	{					// Wait for the power down delay time to pass
+					modEffectChangeState(STAT_LED_POWER,STAT_RESET);												// Turn off power LED
+					modEffectChangeState(STAT_LED_DEBUG,STAT_RESET);
+					modOperationalStateTerminateOperation();															// Disable powersupply and store SoC
+				}
 			}
 			break;
 		case OP_STATE_EXTERNAL:																										// BMS is turned on by external force IE CAN or USB
