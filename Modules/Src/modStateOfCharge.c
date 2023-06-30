@@ -68,6 +68,12 @@ void modStateOfChargeProcess(void){
 	// Store SoC every 'stateOfChargeStoreInterval'
 	if(modDelayTick1ms(&modStateOfChargeStoreSoCTick,modStateOfChargeGeneralConfigHandle->stateOfChargeStoreInterval) && !modStateOfChargePowerDownSavedFlag && (lastGeneralStateOfCharge.remainingCapacityAh != modStateOfChargeGeneralStateOfCharge.remainingCapacityAh))
 		modStateOfChargeStoreStateOfCharge();
+
+	// Compare calculated SOC to simple linear calculation and make adjustments
+	float simpleSoc = (modStateOfChargePackStatehandle->cellVoltageAverage-3.0f)/(4.2f-3.0f)*100.0f; // calculate SOC based on simple linear calculation
+	if(fabsf(modStateOfChargePackStatehandle->SoC - simpleSoc) > 10){ // if SOC is more than 10% off of simple calculation, make adjustment
+		modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = (simpleSoc/100.0f) * modStateOfChargeGeneralConfigHandle->batteryCapacity;
+	}
 };
 
 bool modStateOfChargeStoreAndLoadDefaultStateOfCharge(void){

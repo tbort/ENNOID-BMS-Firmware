@@ -885,10 +885,10 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->NTCTopResistor[modConfigNTCGroupLTCExt]        	= 100000;                 		// NTC Pullup resistor value
 	configLocation->NTCTopResistor[modConfigNTCGroupMasterPCB]     	= 100000;                  		// NTC Pullup resistor value
 	configLocation->NTCTopResistor[modConfigNTCGroupExp]    	= 100000;                  		// NTC Pullup resistor value
-	configLocation->NTC25DegResistance[modConfigNTCGroupLTCExt]    	= 50000;                  		// NTC resistance at 25 degree
+	configLocation->NTC25DegResistance[modConfigNTCGroupLTCExt]    	= 10000;                  		// NTC resistance at 25 degree
 	configLocation->NTC25DegResistance[modConfigNTCGroupMasterPCB] 	= 100000;                  		// NTC resistance at 25 degree
 	configLocation->NTC25DegResistance[modConfigNTCGroupExp] 	= 100000;                  		// NTC resistance at 25 degree
-	configLocation->NTCBetaFactor[modConfigNTCGroupLTCExt]         	= 3950;                    		// NTC Beta factor
+	configLocation->NTCBetaFactor[modConfigNTCGroupLTCExt]         	= 3892;                    		// NTC Beta factor
 	configLocation->NTCBetaFactor[modConfigNTCGroupMasterPCB]      	= 4250;                    		// NTC Beta factor
 	configLocation->NTCBetaFactor[modConfigNTCGroupExp]		= 4250;                    		// NTC Beta factor
 	configLocation->cellMonitorType                               	= CELL_MON_LTC6811_1;      		// Use the new cell voltage monitor
