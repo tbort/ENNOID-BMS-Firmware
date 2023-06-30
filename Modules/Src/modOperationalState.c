@@ -517,7 +517,7 @@ void modOperationalStateTask(void) {
 			modOperationalStatePackStatehandle->powerDownDesired = true;
 		
 		// Check for power down condition (loss of enable, CAN timeout, and current is below threshold)
-		} else if(!modPowerStateCanEnableDetected() && modOperationalStatePackStatehandle->advancedCanTimeout && fabs(modOperationalStatePackStatehandle->packCurrent) < fabs(modOperationalStateGeneralConfigHandle->notUsedCurrentThreshold)) {
+		} else if(!modPowerStateCanEnableDetected() && modOperationalStatePackStatehandle->advancedCanTimeout && modOperationalStatePackStatehandle->packCurrent > -5.0f) {
 			modOperationalStateSetNewState(OP_STATE_POWER_DOWN);
 			modOperationalStatePackStatehandle->powerDownDesired = true;
 
