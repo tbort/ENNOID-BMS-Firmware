@@ -45,5 +45,5 @@ bool modStateOfChargeStoreStateOfCharge(void);
 bool modStateOfChargeLoadStateOfCharge(void);
 bool modStateOfChargePowerDownSave(void);
 void modStateOfChargeVoltageEvent(modStateOfChargeVoltageEventTypeDef eventType);
-
+void modStateOfChargeEnhanceCoulombCounting(void);
 #endif

@@ -81,7 +81,8 @@ int main(void) {
 		modUARTTask();
 		modCANTask();
 		mainWatchDogReset();
-		
+		//TESTING start 
+    //TESTING end
 		if(modPowerElectronicsTask())																						// Handle power electronics task
 			modStateOfChargeProcess();
 

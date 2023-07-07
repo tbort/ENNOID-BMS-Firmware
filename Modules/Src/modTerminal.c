@@ -273,7 +273,8 @@ void modTerminalProcessString(char *str) {
 		}
 
 		modCommandsPrintf(" ");
-	} else {
+	}
+	else {
 		bool found = false;
 		for (int i = 0;i < callback_write;i++) {
 			if (strcmp(argv[0], callbacks[i].command) == 0) {

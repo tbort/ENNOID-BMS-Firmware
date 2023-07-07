@@ -49,7 +49,7 @@ bool modConfigLoadConfig(void) {
 bool modConfigStoreDefaultConfig(void) {
 	// VALUES WILL ONLY AUTIMATICALLY UPDATE AFTER FLASH ERASE!
 	modConfigGeneralConfigStructTypedef defaultConfig;
-  modConfigLoadDefaultConfig(&defaultConfig);
+  	modConfigLoadDefaultConfig(&defaultConfig);
 	
 	driverSWStorageManagerConfigEmpty = false;
 	return driverSWStorageManagerStoreStruct(&defaultConfig,STORAGE_CONFIG);
