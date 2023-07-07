@@ -110,7 +110,7 @@ OPENOCD_FLAGS_STLINK_V3 = -f interface/stlink.cfg -f target/stm32f3x.cfg
 
 OPENOCD_FLAGS_RM_PROTECTION_BIT = -d0 -f interface/stlink-v2.cfg -f target/stm32f3x.cfg -f GCC/lock.cfg
 
-all: main.elf main.bin main.hex main-St.txt main-d.txt main-h.txt main-nm.txt
+all: main.elf ENNOID-BMS.bin main.hex main-St.txt main-d.txt main-h.txt main-nm.txt
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@ -lm
@@ -120,7 +120,7 @@ all: main.elf main.bin main.hex main-St.txt main-d.txt main-h.txt main-nm.txt
 main.elf: $(OBJS)
 	$(CC) -T$(LINKER_SCRIPT) $(CFLAGS) $(LINKER_FLAGS) $^ -o $@
 
-main.bin: main.elf
+ENNOID-BMS.bin: main.elf
 	$(OBJCOPY) -O binary $< $@
 
 main.hex: main.elf
@@ -141,14 +141,14 @@ main-nm.txt: main.elf
 upload-stlink: main.elf
 	openocd $(OPENOCD_FLAGS) -c "program main.elf reset exit"
 
-upload-bin-stlink: main.bin
-	openocd $(OPENOCD_FLAGS) -c "program main.bin reset verify exit 0x08000000"
+upload-bin-stlink: ENNOID-BMS.bin
+	openocd $(OPENOCD_FLAGS) -c "program ENNOID-BMS.bin reset verify exit 0x08000000"
 
 rm_protection_bit_stlink:
 	openocd $(OPENOCD_FLAGS_RM_PROTECTION_BIT)
 
-upload-bin-stlinkv3: main.bin
-	openocd $(OPENOCD_FLAGS_STLINK_V3) -c "program main.bin reset verify exit 0x08000000"
+upload-bin-stlinkv3: ENNOID-BMS.bin
+	openocd $(OPENOCD_FLAGS_STLINK_V3) -c "program ENNOID-BMS.bin reset verify exit 0x08000000"
 
 upload-hex-stlink: main.hex
 	openocd $(OPENOCD_FLAGS) -c "program main.hex reset verify exit"
@@ -160,8 +160,8 @@ upload: main.elf
 upload-hex: main.hex
 	openocd $(OPENOCD_JLINK_FLAGS) -c "init" -c "reset init" -c "flash write_image erase main.hex" -c "reset" -c "shutdown"
 
-upload-bin: main.bin
-	openocd $(OPENOCD_JLINK_FLAGS) -c "program main.bin reset verify exit 0x08000000"
+upload-bin: ENNOID-BMS.bin
+	openocd $(OPENOCD_JLINK_FLAGS) -c "program ENNOID-BMS.bin reset verify exit 0x08000000"
 
 connect:
 	openocd $(OPENOCD_FLAGS)
