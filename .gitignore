@@ -27,3 +27,4 @@ History
 *.sct
 *.dbgconf
 tools/
+.vscode/
