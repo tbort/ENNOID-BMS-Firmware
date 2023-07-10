@@ -870,7 +870,7 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->emitStatusOverCAN                              	= true;                   		// Send status over can.
 	configLocation->emitStatusProtocol                             	= canEmitProtocolAdvanced;		// Can emit protocol set to MG style for backwards compatibility
 	configLocation->tempEnableMaskBMS                              	= 0x0001;				// Bitwise select what sensor to enable for the BMS (internal sensors).
-	configLocation->tempEnableMaskBattery                          	= 0xFFFF; //0x03E7;				// Bitwise select what sensor to enable for the battery (external sensors).
+	configLocation->tempEnableMaskBattery                          	= 0xFFFF;//0x03E7;				// Bitwise select what sensor to enable for the battery (external sensors).
   	configLocation->tempEnableMaskExpansion                         = 0xFFFF;				// Bitwise select what sensor to enable for the battery (external sensors).
 	configLocation->noOfTempSensorPerModule            		= 5;					// Number of temperature sensors monitored per LTC68XX
 	configLocation->noOfExpansionBoard       			= 0;					// Number of expansion board
