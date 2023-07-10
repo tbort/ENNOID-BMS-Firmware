@@ -1291,10 +1291,13 @@ void modPowerElectronicsSamplePackVoltage(float *voltagePointer) {
 		case sourcePackVoltageNone:
 			break;
 		case sourcePackVoltageISL28022:
-				driverSWISL28022GetBusVoltage(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,voltagePointer,modPowerElectronicsGeneralConfigHandle->voltageLCOffset, modPowerElectronicsGeneralConfigHandle->voltageLCFactor);
+			driverSWISL28022GetBusVoltage(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,voltagePointer,modPowerElectronicsGeneralConfigHandle->voltageLCOffset, modPowerElectronicsGeneralConfigHandle->voltageLCFactor);
 			break;
 		case sourcePackVoltageSumOfIndividualCellVoltages:
-			*voltagePointer = modPowerElectronicsGeneralConfigHandle->noOfCellsSeries*modPowerElectronicsPackStateHandle->cellVoltageAverage;
+			driverSWISL28022GetBusVoltage(ISL28022_MASTER_ADDRES,ISL28022_MASTER_BUS,voltagePointer,modPowerElectronicsGeneralConfigHandle->voltageLCOffset, modPowerElectronicsGeneralConfigHandle->voltageLCFactor);	
+			// modCommandsPrintf("I2C Pack Voltage: %.2fV",*voltagePointer);
+			// *voltagePointer = modPowerElectronicsGeneralConfigHandle->noOfCellsSeries*modPowerElectronicsPackStateHandle->cellVoltageAverage;
+			// modCommandsPrintf("Ted's Pack Voltage: %.2fV",*voltagePointer);
 			break;
 		case sourcePackVoltageCANDieBieShunt:
 			*voltagePointer = 0.0f;

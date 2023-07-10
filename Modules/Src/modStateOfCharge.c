@@ -28,8 +28,8 @@ uint32_t modStateOfChargeStoreSoCTick;
 float modStateOfChargeDepthOfDischarge;
 float modStateOfChargeCapacity;
 bool modStateOfChargePowerDownSavedFlag = false;
-float voltageTable[] = 	{2.9, 3.0, 3.1, 3.2, 3.3, 3.35, 3.4 , 3.45, 3.5 , 3.55, 3.6 , 3.65, 3.7 , 3.75, 3.8 , 3.85, 3.9 , 3.95, 4.0 , 4.1   }; // voltage values
-float SoCTable[] = 		{0.0, 2.0, 4.0, 6.0, 8.0, 10.0, 15.0, 20.0,	28.0, 38.0, 45.0, 50.0, 57.0, 62.0, 67.0, 75.0, 78.0, 85.0, 90.0, 100.0 }; // Corresponding SoC values
+float voltageTable[] = 	{2.9, 2.95, 3.0, 3.05, 3.1, 3.15, 3.2, 3.25, 3.3, 3.35, 3.4 , 3.45, 3.5 , 3.55, 3.6 , 3.65, 3.7 , 3.75, 3.8 , 3.85, 3.9 , 3.95, 4.0 , 4.1   }; // voltage values
+float SoCTable[] = 		{0.0, 1.0 , 2.0, 3.0 , 4.0, 5.0 , 6.0, 7.0 , 8.0, 10.0, 15.0, 20.0,	28.0, 38.0, 45.0, 50.0, 57.0, 62.0, 67.0, 75.0, 78.0, 85.0, 90.0, 100.0 }; // Corresponding SoC values
 
 modStateOfChargeStructTypeDef* modStateOfChargeInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneralConfigStructTypedef *generalConfigPointer){
 	modStateOfChargePackStatehandle = packState;
@@ -45,45 +45,43 @@ modStateOfChargeStructTypeDef* modStateOfChargeInit(modPowerElectronicsPackState
 };
 
 void modStateOfChargeProcess(void){
-	// Calculate accumulated energy
-	uint32_t dt = HAL_GetTick() - modStateOfChargeLargeCoulombTick;
-	modStateOfChargeStructTypeDef lastGeneralStateOfCharge;
+	// // Calculate accumulated energy
+	// uint32_t dt = HAL_GetTick() - modStateOfChargeLargeCoulombTick;
+	// modStateOfChargeStructTypeDef lastGeneralStateOfCharge;
 	
-	lastGeneralStateOfCharge = modStateOfChargeGeneralStateOfCharge;
+	// lastGeneralStateOfCharge = modStateOfChargeGeneralStateOfCharge;
 	
-	modStateOfChargeLargeCoulombTick = HAL_GetTick();
-	modStateOfChargeGeneralStateOfCharge.remainingCapacityAh += dt*modStateOfChargePackStatehandle->packCurrent/(3600*1000);// (miliseconds * amps)/(3600*1000) accumulatedCharge in AmpHour.
+	// modStateOfChargeLargeCoulombTick = HAL_GetTick();
+	// modStateOfChargeGeneralStateOfCharge.remainingCapacityAh += dt*modStateOfChargePackStatehandle->packCurrent/(3600*1000);// (miliseconds * amps)/(3600*1000) accumulatedCharge in AmpHour.
 	
-	// Cap the max stored energy to the configured battery capacity.
-	if(modStateOfChargeGeneralStateOfCharge.remainingCapacityAh > modStateOfChargeGeneralConfigHandle->batteryCapacity)
-		modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = modStateOfChargeGeneralConfigHandle->batteryCapacity;
+	// // Cap the max stored energy to the configured battery capacity.
+	// if(modStateOfChargeGeneralStateOfCharge.remainingCapacityAh > modStateOfChargeGeneralConfigHandle->batteryCapacity)
+	// 	modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = modStateOfChargeGeneralConfigHandle->batteryCapacity;
 	
-	if(modStateOfChargeGeneralStateOfCharge.remainingCapacityAh < 0.0f)
-		modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = 0.0f;
+	// if(modStateOfChargeGeneralStateOfCharge.remainingCapacityAh < 0.0f)
+	// 	modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = 0.0f;
 	
-	// Calculate state of charge
-	modStateOfChargeGeneralStateOfCharge.generalStateOfCharge = modStateOfChargeGeneralStateOfCharge.remainingCapacityAh / modStateOfChargeGeneralConfigHandle->batteryCapacity * 100.0f;
+	// // Calculate state of charge
+	// modStateOfChargeGeneralStateOfCharge.generalStateOfCharge = modStateOfChargeGeneralStateOfCharge.remainingCapacityAh / modStateOfChargeGeneralConfigHandle->batteryCapacity * 100.0f;
 	
-	if(modStateOfChargeGeneralStateOfCharge.generalStateOfCharge >= 100.0f)
-		modStateOfChargeGeneralStateOfCharge.generalStateOfCharge = 100.0f;
+	// if(modStateOfChargeGeneralStateOfCharge.generalStateOfCharge >= 100.0f)
+	// 	modStateOfChargeGeneralStateOfCharge.generalStateOfCharge = 100.0f;
 	
-	modStateOfChargePackStatehandle->SoC = modStateOfChargeGeneralStateOfCharge.generalStateOfCharge;
-	modStateOfChargePackStatehandle->SoCCapacityAh = modStateOfChargeGeneralStateOfCharge.remainingCapacityAh;
+	// modStateOfChargePackStatehandle->SoC = modStateOfChargeGeneralStateOfCharge.generalStateOfCharge;
+	// modStateOfChargePackStatehandle->SoCCapacityAh = modStateOfChargeGeneralStateOfCharge.remainingCapacityAh;
 	
-	// Store SoC every 'stateOfChargeStoreInterval'
-	if(modDelayTick1ms(&modStateOfChargeStoreSoCTick,modStateOfChargeGeneralConfigHandle->stateOfChargeStoreInterval) && !modStateOfChargePowerDownSavedFlag && (lastGeneralStateOfCharge.remainingCapacityAh != modStateOfChargeGeneralStateOfCharge.remainingCapacityAh))
-		modStateOfChargeStoreStateOfCharge();
-
+	// // Store SoC every 'stateOfChargeStoreInterval'
+	// if(modDelayTick1ms(&modStateOfChargeStoreSoCTick,modStateOfChargeGeneralConfigHandle->stateOfChargeStoreInterval) && !modStateOfChargePowerDownSavedFlag && (lastGeneralStateOfCharge.remainingCapacityAh != modStateOfChargeGeneralStateOfCharge.remainingCapacityAh)){
+	// 	modStateOfChargeStoreStateOfCharge();
+	// }
+	
 	// Compare calculated SOC to simple linear calculation and make adjustments
-	float simpleSoc = (modStateOfChargePackStatehandle->cellVoltageAverage-3.0f)/(4.2f-3.0f)*100.0f; // calculate SOC based on simple linear calculation
-	if(fabsf(modStateOfChargePackStatehandle->SoC - simpleSoc) > 10){ // if SOC is more than 10% off of simple calculation, make adjustment
-		modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = (simpleSoc/100.0f) * modStateOfChargeGeneralConfigHandle->batteryCapacity;
-	}
-	// modStateOfChargeEnhanceCoulombCounting();
-	//TESTING FLASHING FIRMARE
-	// modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = 55.23f;
-	// modStateOfChargeStoreStateOfCharge();
-	// modCommandsPrintf("modStateOfChargeTest: %f",modStateOfChargeGeneralStateOfCharge.remainingCapacityAh);
+	// float simpleSoc = (modStateOfChargePackStatehandle->cellVoltageAverage-3.0f)/(4.2f-3.0f)*100.0f; // calculate SOC based on simple linear calculation
+	// if(fabsf(modStateOfChargePackStatehandle->SoC - simpleSoc) > 10){ // if SOC is more than 10% off of simple calculation, make adjustment
+	// 	modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = (simpleSoc/100.0f) * modStateOfChargeGeneralConfigHandle->batteryCapacity;
+	// }
+	modStateOfChargeEnhanceCoulombCounting();
+
 };
 
 void modStateOfChargeEnhanceCoulombCounting(void){
@@ -118,14 +116,16 @@ void modStateOfChargeEnhanceCoulombCounting(void){
 		modStateOfChargeStoreStateOfCharge();
 
 	// Compare calculated SOC to simple linear calculation and make adjustments
-	for (int i = 0; i < 20; i++){
-		if (modStateOfChargePackStatehandle->cellVoltageAverage - voltageTable[i] < 0.05 ){
-			float simpleSoc = (modStateOfChargePackStatehandle->cellVoltageAverage-3.0f)/(4.2f-3.0f)*100.0f; // calculate SOC based on simple linear calculation
-			if(fabsf(modStateOfChargePackStatehandle->SoC - simpleSoc) > 10){ // if SOC is more than 10% off of simple calculation, make adjustment
-				modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = (simpleSoc/100.0f) * modStateOfChargeGeneralConfigHandle->batteryCapacity;
+	//TODO: Debug - Not correct value calculate after for remain cap. 
+	for (int i = 0; i < 24; i++){
+		if (fabsf(modStateOfChargePackStatehandle->cellVoltageAverage - voltageTable[i]) < 0.05 ){
+			if(fabsf(modStateOfChargePackStatehandle->SoC - SoCTable[i]) > 5){ // if SOC is more than 10% off of simple calculation, make adjustment
+				modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = (SoCTable[i]/100.0f) * modStateOfChargeGeneralConfigHandle->batteryCapacity;
 			}	
 		}
 	}
+	//Update and store SoC
+	modStateOfChargeStoreStateOfCharge();
 	
 
 };
