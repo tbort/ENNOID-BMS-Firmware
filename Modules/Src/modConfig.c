@@ -485,7 +485,7 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->NTCTopResistor[modConfigNTCGroupLTCExt]        	= 100000;                 		// NTC Pullup resistor value
 	configLocation->NTCTopResistor[modConfigNTCGroupMasterPCB]     	= 100000;                  		// NTC Pullup resistor value
 	configLocation->NTCTopResistor[modConfigNTCGroupExp]    	= 100000;                  		// NTC Pullup resistor value
-	configLocation->NTC25DegResistance[modConfigNTCGroupLTCExt]    	= 100000;                  		// NTC resistance at 25 degree
+	configLocation->NTC25DegResistance[modConfigNTCGroupLTCExt]    	= 10000;                  		// NTC resistance at 25 degree
 	configLocation->NTC25DegResistance[modConfigNTCGroupMasterPCB] 	= 100000;                  		// NTC resistance at 25 degree
 	configLocation->NTC25DegResistance[modConfigNTCGroupExp] 	= 100000;                  		// NTC resistance at 25 degree
 	configLocation->NTCBetaFactor[modConfigNTCGroupLTCExt]         	= 4250;                    		// NTC Beta factor
@@ -523,11 +523,11 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->buzzerSignalSource                             	= buzzerSourceOn;         		// Stores what source shoud be taken to trigger
 	configLocation->buzzerSignalPersistant                         	= false;                    		// Stores whether the buzzer should stay on after triggering
   	configLocation->shuntLCFactor                                  	= -0.0104f;              		// Shunt factor low current
-	configLocation->voltageLCFactor	                               	= 2.55f;                   		// Pack voltage factor 
+	configLocation->voltageLCFactor	                               	= 2.505f;                   		// Pack voltage factor 
 	configLocation->voltageLCOffset                                	= 0;                       		// Pack voltage offset 
-	configLocation->loadVoltageFactor	                        = 39.0f;   		                // Load voltage factor 
+	configLocation->loadVoltageFactor	                        = 38.55f;   		                // Load voltage factor 
 	configLocation->loadVoltageOffset                              	= 0.0f;                   		// Load voltage offset
-	configLocation->chargerVoltageFactor	                        = 39.0f;      			        // Charger voltage factor 
+	configLocation->chargerVoltageFactor	                        = 38.55f;      			        // Charger voltage factor 
 	configLocation->chargerVoltageOffset                           	= 0.0f;                    		// Charger voltage offset
 	configLocation->throttleChargeIncreaseRate                     	= 1;                       		// Percentage charge throttle increase rate per 100ms (cell voltage loop time)  
 	configLocation->throttleDisChargeIncreaseRate                  	= 2;                      		// Percentage discharge throttle increase rate per 100ms (cell voltage loop time)  	
@@ -585,7 +585,7 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->NTCTopResistor[modConfigNTCGroupLTCExt]        	= 100000;                 		// NTC Pullup resistor value
 	configLocation->NTCTopResistor[modConfigNTCGroupMasterPCB]     	= 100000;                  		// NTC Pullup resistor value
 	configLocation->NTCTopResistor[modConfigNTCGroupExp]    	= 100000;                  		// NTC Pullup resistor value
-	configLocation->NTC25DegResistance[modConfigNTCGroupLTCExt]    	= 100000;                  		// NTC resistance at 25 degree
+	configLocation->NTC25DegResistance[modConfigNTCGroupLTCExt]    	= 10000;                  		// NTC resistance at 25 degree
 	configLocation->NTC25DegResistance[modConfigNTCGroupMasterPCB] 	= 100000;                  		// NTC resistance at 25 degree
 	configLocation->NTC25DegResistance[modConfigNTCGroupExp] 	= 100000;                  		// NTC resistance at 25 degree
 	configLocation->NTCBetaFactor[modConfigNTCGroupLTCExt]         	= 4250;                    		// NTC Beta factor
@@ -823,11 +823,11 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->buzzerSignalSource                             	= buzzerSourceOff;         		// Stores what source shoud be taken to trigger
 	configLocation->buzzerSignalPersistant                         	= false;                    		// Stores whether the buzzer should stay on after triggering
   	configLocation->shuntLCFactor                                  	= -0.0104f;              		// Shunt factor low current
-	configLocation->voltageLCFactor	                               	= 2.55f;                   		// Pack voltage factor 
+	configLocation->voltageLCFactor	                               	= 2.505f;                   		// Pack voltage factor 
 	configLocation->voltageLCOffset                                	= 0;                       		// Pack voltage offset 
-	configLocation->loadVoltageFactor	                        = 39.0f;   		                // Load voltage factor 
+	configLocation->loadVoltageFactor	                        = 38.55f;   		                // Load voltage factor 
 	configLocation->loadVoltageOffset                              	= 0.0f;                   		// Load voltage offset
-	configLocation->chargerVoltageFactor	                        = 39.0f;      			        // Charger voltage factor 
+	configLocation->chargerVoltageFactor	                        = 38.55f;      			        // Charger voltage factor 
 	configLocation->chargerVoltageOffset                           	= 0.0f;                    		// Charger voltage offset
 	configLocation->throttleChargeIncreaseRate                     	= 1;                       		// Percentage charge throttle increase rate per 100ms (cell voltage loop time)  
 	configLocation->throttleDisChargeIncreaseRate                  	= 2;                      		// Percentage discharge throttle increase rate per 100ms (cell voltage loop time)  	
@@ -858,8 +858,8 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->displayTimeoutBatteryErrorPreCharge		= 10000;				// Show pre charge error for XX seconds.
 	configLocation->displayTimeoutSplashScreen			= 3000;					// Display / INIT splash screen time.
 	configLocation->displayStyle					= advanced;				// Display style used for showing the SSD1306 data
-	configLocation->maxUnderAndOverVoltageErrorCount 		= 10;					// Max count of hard cell voltage errors.
-	configLocation->maxUnderAndOverTemperatureErrorCount 		= 10;					// Max count of hard cell voltage errors.
+	configLocation->maxUnderAndOverVoltageErrorCount 		= 30;					// Max count of hard cell voltage errors.
+	configLocation->maxUnderAndOverTemperatureErrorCount 		= 30;					// Max count of hard cell voltage errors.
 	configLocation->notUsedCurrentThreshold				= 1.0f;					// If abs(packcurrent) < X.XA consider pack as not used.
 	configLocation->notUsedTimeout					= 0;					// If pack is not used for longer than XX minutes disable bms.
 	configLocation->stateOfChargeStoreInterval			= 60*1000;				// Interval in ms to store state of charge information.
@@ -870,7 +870,8 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->emitStatusOverCAN                              	= true;                   		// Send status over can.
 	configLocation->emitStatusProtocol                             	= canEmitProtocolAdvanced;		// Can emit protocol set to MG style for backwards compatibility
 	configLocation->tempEnableMaskBMS                              	= 0x0001;				// Bitwise select what sensor to enable for the BMS (internal sensors).
-	configLocation->tempEnableMaskBattery                          	= 0xFFFF;//0x03E7;				// Bitwise select what sensor to enable for the battery (external sensors).
+	configLocation->tempEnableMaskBattery                          	= 0x03E7;				// Bitwise select what sensor to enable for the battery (external sensors).
+	configLocation->tempEnableMaskBattery                          	= 0xFFFF; //0x03E7;				// Bitwise select what sensor to enable for the battery (external sensors).
   	configLocation->tempEnableMaskExpansion                         = 0xFFFF;				// Bitwise select what sensor to enable for the battery (external sensors).
 	configLocation->noOfTempSensorPerModule            		= 5;					// Number of temperature sensors monitored per LTC68XX
 	configLocation->noOfExpansionBoard       			= 0;					// Number of expansion board
@@ -885,7 +886,7 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->NTCTopResistor[modConfigNTCGroupLTCExt]        	= 100000;                 		// NTC Pullup resistor value
 	configLocation->NTCTopResistor[modConfigNTCGroupMasterPCB]     	= 100000;                  		// NTC Pullup resistor value
 	configLocation->NTCTopResistor[modConfigNTCGroupExp]    	= 100000;                  		// NTC Pullup resistor value
-	configLocation->NTC25DegResistance[modConfigNTCGroupLTCExt]    	= 100000;                  		// NTC resistance at 25 degree
+	configLocation->NTC25DegResistance[modConfigNTCGroupLTCExt]    	= 10000;                  		// NTC resistance at 25 degree
 	configLocation->NTC25DegResistance[modConfigNTCGroupMasterPCB] 	= 100000;                  		// NTC resistance at 25 degree
 	configLocation->NTC25DegResistance[modConfigNTCGroupExp] 	= 100000;                  		// NTC resistance at 25 degree
 	configLocation->NTCBetaFactor[modConfigNTCGroupLTCExt]         	= 3892;                    		// NTC Beta factor
