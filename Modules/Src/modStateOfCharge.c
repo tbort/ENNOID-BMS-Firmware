@@ -94,18 +94,24 @@ void modStateOfChargeEnhanceCoulombCounting(void){
 	modStateOfChargeLargeCoulombTick = HAL_GetTick();
 	modStateOfChargeCapacity += dt*modStateOfChargePackStatehandle->packCurrent/(3600*1000);// (miliseconds * amps)/(3600*1000) accumulatedCharge in AmpHour.
 	
-	// Cap the max stored energy to the configured battery capacity.
-	if( modStateOfChargeCapacity > modStateOfChargeGeneralConfigHandle->batteryCapacity)
-		modStateOfChargeCapacity = modStateOfChargeGeneralConfigHandle->batteryCapacity;
+	// if( modStateOfChargeCapacity > modStateOfChargeGeneralConfigHandle->batteryCapacity)
+	// 	modStateOfChargeCapacity = modStateOfChargeGeneralConfigHandle->batteryCapacity;
 	
-	if(modStateOfChargeCapacity < 0.0f)
-	 	modStateOfChargeCapacity = 0.0f;
+	// if(modStateOfChargeCapacity < 0.0f)
+	//  	modStateOfChargeCapacity = 0.0f;
 	
 	// Calculate state of charge
 	modStateOfChargeDepthOfDischarge += -modStateOfChargeCapacity/modStateOfChargeGeneralConfigHandle->batteryCapacity * 100.0f;
 	modStateOfChargeGeneralStateOfCharge.generalStateOfCharge = 100.0f - modStateOfChargeDepthOfDischarge;
 	modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = modStateOfChargeGeneralConfigHandle->batteryCapacity * modStateOfChargeGeneralStateOfCharge.generalStateOfCharge; 
+
+	// Cap the max stored energy to the configured battery capacity.
+	if(modStateOfChargeGeneralStateOfCharge.remainingCapacityAh > modStateOfChargeGeneralConfigHandle->batteryCapacity)
+		modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = modStateOfChargeGeneralConfigHandle->batteryCapacity;
 	
+	if(modStateOfChargeGeneralStateOfCharge.remainingCapacityAh < 0.0f)
+		modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = 0.0f;
+
 	if(modStateOfChargeGeneralStateOfCharge.generalStateOfCharge >= 100.0f)
 		modStateOfChargeGeneralStateOfCharge.generalStateOfCharge = 100.0f;
 	
@@ -118,16 +124,14 @@ void modStateOfChargeEnhanceCoulombCounting(void){
 	// Compare calculated SOC to simple linear calculation and make adjustments
 	//TODO: Debug - Not correct value calculate after for remain cap. 
 	for (int i = 0; i < 24; i++){
-		if (fabsf(modStateOfChargePackStatehandle->cellVoltageAverage - voltageTable[i]) < 0.05 ){
-			if(fabsf(modStateOfChargePackStatehandle->SoC - SoCTable[i]) > 5){ // if SOC is more than 10% off of simple calculation, make adjustment
+		if (fabsf(modStateOfChargePackStatehandle->cellVoltageAverage - voltageTable[i]) < 0.04 ){
+			if(fabsf(modStateOfChargePackStatehandle->SoC - SoCTable[i]) > 3){ // if SOC is more than 10% off of simple calculation, make adjustment
 				modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = (SoCTable[i]/100.0f) * modStateOfChargeGeneralConfigHandle->batteryCapacity;
 			}	
 		}
 	}
 	//Update and store SoC
 	modStateOfChargeStoreStateOfCharge();
-	
-
 };
 
 bool modStateOfChargeStoreAndLoadDefaultStateOfCharge(void){
