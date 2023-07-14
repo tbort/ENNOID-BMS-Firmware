@@ -27,4 +27,4 @@ History
 *.sct
 *.dbgconf
 tools/
-.vscode/setting.json
+.vscode/settings.json
