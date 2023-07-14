@@ -46,4 +46,8 @@ bool modStateOfChargeLoadStateOfCharge(void);
 bool modStateOfChargePowerDownSave(void);
 void modStateOfChargeVoltageEvent(modStateOfChargeVoltageEventTypeDef eventType);
 void modStateOfChargeEnhanceCoulombCounting(void);
+
+#define NC .95 //Charge effienciecy
+#define ND .98 //Discharge effienciecy
+
 #endif
