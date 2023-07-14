@@ -81,7 +81,6 @@ void modStateOfChargeProcess(void){
 	// 	modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = (simpleSoc/100.0f) * modStateOfChargeGeneralConfigHandle->batteryCapacity;
 	// }
 	modStateOfChargeEnhanceCoulombCounting();
-
 };
 
 void modStateOfChargeEnhanceCoulombCounting(void){
@@ -123,22 +122,32 @@ void modStateOfChargeEnhanceCoulombCounting(void){
 
 	// Compare calculated SOC to simple linear calculation and make adjustments
 	//TODO: Debug - Not correct value calculate after for remain cap. 
-	for (int i = 0; i < 24; i++){
+	for (int i = 0; i < sizeof(voltageTable)/sizeof(voltageTable[i]); i++){
 		if (fabsf(modStateOfChargePackStatehandle->cellVoltageAverage - voltageTable[i]) < 0.04 ){
-			if(fabsf(modStateOfChargePackStatehandle->SoC - SoCTable[i]) > 3){ // if SOC is more than 10% off of simple calculation, make adjustment
+			if(fabsf(modStateOfChargePackStatehandle->SoC - SoCTable[i]) > 3){ // if SOC is more than 3% off of simple calculation, make adjustment
 				modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = (SoCTable[i]/100.0f) * modStateOfChargeGeneralConfigHandle->batteryCapacity;
 			}	
 		}
-	}
+	};	
 	//Update and store SoC
 	modStateOfChargeStoreStateOfCharge();
-};
+}
 
 bool modStateOfChargeStoreAndLoadDefaultStateOfCharge(void){
 	bool returnVal = false;
 	if(driverSWStorageManagerStateOfChargeEmpty){
 		// TODO: SoC manager is empy -> Determin SoC from voltage when voltages are available.
+		
 		modStateOfChargeStructTypeDef defaultStateOfCharge;
+		// TODO: Test determine SoC from voltage to init pack
+		// for (int i = 0; i < sizeof(voltageTable)/sizeof(voltageTable[i]); i++){
+		// 	if (fabsf(modStateOfChargePackStatehandle->cellVoltageAverage - voltageTable[i]) < 0.04 ){
+		// 		defaultStateOfCharge.generalStateOfCharge = SoCTable[i];
+		// 		defaultStateOfCharge.generalStateOfHealth = 100.0f;
+		// 		defaultStateOfCharge.remainingCapacityAh = modStateOfChargeGeneralConfigHandle->batteryCapacity * defaultStateOfCharge.generalStateOfCharge;
+		// 		defaultStateOfCharge.remainingCapacityWh = modStateOfChargePackStatehandle->packVoltage * defaultStateOfCharge.remainingCapacityAh ;
+		// 	}
+		// }
 		defaultStateOfCharge.generalStateOfCharge = 100.0f;
 		defaultStateOfCharge.generalStateOfHealth = 100.0f;
 		defaultStateOfCharge.remainingCapacityAh = modStateOfChargeGeneralConfigHandle->batteryCapacity;
@@ -146,7 +155,7 @@ bool modStateOfChargeStoreAndLoadDefaultStateOfCharge(void){
 		
 		driverSWStorageManagerStateOfChargeEmpty = false;
 		driverSWStorageManagerStoreStruct(&defaultStateOfCharge,STORAGE_STATEOFCHARGE);
-		// TODO_EEPROM
+		// TODO_EEPROM		
 	}
 	
 	modStateOfChargeStructTypeDef tempStateOfCharge;
