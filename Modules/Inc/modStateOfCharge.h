@@ -47,7 +47,7 @@ bool modStateOfChargePowerDownSave(void);
 void modStateOfChargeVoltageEvent(modStateOfChargeVoltageEventTypeDef eventType);
 void modStateOfChargeEnhanceCoulombCounting(void);
 
-#define NC .95 //Charge effienciecy
+#define NC .97 //Charge effienciecy
 #define ND .98 //Discharge effienciecy
-
+#define CMAX 28.8 //Realistic maximum battery capacity
 #endif

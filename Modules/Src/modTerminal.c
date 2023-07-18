@@ -63,6 +63,7 @@ void modTerminalProcessString(char *str) {
 		modCommandsPrintf("-----Battery Pack Status-----");		
 		modCommandsPrintf("Pack voltage Direct   : %.2fV",packState.packVoltage);
 		modCommandsPrintf("Pack voltage CVAverage: %.2fV",packState.cellVoltageAverage*generalConfig->noOfCellsSeries);		
+		modCommandsPrintf("Cell voltage Average: %.2fV",packState.cellVoltageAverage);		
 		modCommandsPrintf("Pack current          : %.2fA",packState.packCurrent);
 		modCommandsPrintf("LC Load voltage       : %.2fV",packState.loCurrentLoadVoltage);	
 		modCommandsPrintf("Low  current          : %.2fA",packState.loCurrentLoadCurrent);	
@@ -109,8 +110,8 @@ void modTerminalProcessString(char *str) {
 		modCommandsPrintf("Cell voltage mismatch : %.3fV",packState.cellVoltageMisMatch);
 		modCommandsPrintf("Discharge enabled     : %s",disChargeEnabled ? "True" : "False");
 		modCommandsPrintf("Charge enabled        : %s",chargeEnabled ? "True" : "False");	
-    modCommandsPrintf("Power button pressed  : %s",packState.powerButtonActuated ? "True" : "False");	
-    modCommandsPrintf("CAN safety state      : %s",packState.safetyOverCANHCSafeNSafe	? "True" : "False");
+    	modCommandsPrintf("Power button pressed  : %s",packState.powerButtonActuated ? "True" : "False");	
+    	modCommandsPrintf("CAN safety state      : %s",packState.safetyOverCANHCSafeNSafe	? "True" : "False");
 
 		
 		modCommandsPrintf("---End Battery Pack Status---");
