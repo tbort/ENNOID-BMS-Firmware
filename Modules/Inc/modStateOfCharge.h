@@ -25,6 +25,8 @@
 #include "stdbool.h"
 #include "modPowerElectronics.h"
 #include "modConfig.h"
+extern float modStateOfChargeDoDAccum;
+extern float modStateOfChargeDoDPeriod;
 
 typedef struct {
 	float generalStateOfCharge;
@@ -46,6 +48,7 @@ bool modStateOfChargeLoadStateOfCharge(void);
 bool modStateOfChargePowerDownSave(void);
 void modStateOfChargeVoltageEvent(modStateOfChargeVoltageEventTypeDef eventType);
 void modStateOfChargeEnhanceCoulombCounting(void);
+void modStateOfChargeVoltageToSoC(void);
 
 #define NC .97 //Charge effienciecy
 #define ND .98 //Discharge effienciecy
