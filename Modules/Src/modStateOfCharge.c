@@ -90,18 +90,6 @@ void modStateOfChargeEnhanceCoulombCounting(void){
 	}
 	// Compare calculated SOC to simple linear calculation and make adjustments 
 	modStateOfChargeVoltageToSoC();
-	
-	// for (int i = 0; i < sizeof(voltageTable)/sizeof(voltageTable[i]); i++){
-	// 	if (fabsf(modStateOfChargePackStateHandle->cellVoltageAverage - voltageTable[i]) < 0.025 ){
-	// 		if(fabsf(modStateOfChargePackStateHandle->SoC - SoCTable[i]) > 3){ // if SOC is more than 3% off of simple calculation, make adjustment
-	// 			modCommandsPrintf("modStateOfCharge: SoC update using voltatge table ");
-	// 			modStateOfChargeGeneralStateOfCharge.generalStateOfCharge = SoCTable[i];
-	// 			modStateOfChargeGeneralStateOfCharge.remainingCapacityAh = (SoCTable[i]/100.0f) * modStateOfChargeGeneralConfigHandle->batteryCapacity;
-	// 			modStateOfChargeDoDAccum = 100 - modStateOfChargeGeneralStateOfCharge.generalStateOfCharge;
-	// 		}	
-	// 	}
-	// }
-
 }
 
 bool modStateOfChargeStoreAndLoadDefaultStateOfCharge(void){
