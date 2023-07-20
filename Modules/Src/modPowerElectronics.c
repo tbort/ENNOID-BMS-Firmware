@@ -152,7 +152,7 @@ void modPowerElectronicsInit(modPowerElectronicsPackStateTypedef *packState, mod
 	modPowerElectronicsCellMonitorsStartCellConversion();
 
 	// Init the external bus monitor
-  modPowerElectronicsInitISL();
+ 	modPowerElectronicsInitISL();
 	
 	#if (HAS_HUMIDITY)
 		if(modPowerElectronicsGeneralConfigHandle->humidityICType == si7020)
@@ -978,7 +978,7 @@ void modPowerElectronicsCellMonitorsInit(void){
 			configStruct.DischargeTimout          = 0;																											// Discharge timout value / limit
 			configStruct.CellUnderVoltageLimit    = modPowerElectronicsGeneralConfigHandle->cellHardUnderVoltage; // Undervoltage level, cell voltages under this limit will cause interrupt
 			configStruct.CellOverVoltageLimit     = modPowerElectronicsGeneralConfigHandle->cellHardOverVoltage;  // Over voltage limit, cell voltages over this limit will cause interrupt
-			driverSWLTC6804Init(configStruct, modPowerElectronicsGeneralConfigHandle->cellMonitorICCount, 18, 12, modPowerElectronicsGeneralConfigHandle->cellMonitorType);   
+			driverSWLTC6804Init(configStruct, modPowerElectronicsGeneralConfigHandle->cellMonitorICCount, modPowerElectronicsGeneralConfigHandle->noOfCellsPerModule, modPowerElectronicsGeneralConfigHandle->noOfTempSensorPerModule, modPowerElectronicsGeneralConfigHandle->cellMonitorType);   
 			
 			// Safety signal is managed by the controller, it is configured as open drain and will be kept low by. watchdog will make the output to be released.
 			driverHWSwitchesSetSwitchState(SWITCH_SAFETY_OUTPUT,SWITCH_RESET);

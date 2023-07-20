@@ -52,7 +52,7 @@ void driverSWLTC6804Init(driverLTC6804ConfigStructTypedef configStruct, uint8_t 
 		driverSWLTC6804WriteConfigRegister(driverSWLTC6804TotalNumberOfICs,0,false);
 		if(cellMonitorType==CELL_MON_LTC6812_1 || cellMonitorType == CELL_MON_LTC6813_1){
 			driverSWLTC6804WriteConfigRegisterB(driverSWLTC6804TotalNumberOfICs,0,false);
-	}
+	  }
 		driverSWLTC6804WakeIC();
 		LTCScanCount++;
 	}

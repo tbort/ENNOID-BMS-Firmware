@@ -32,7 +32,7 @@ bool modConfigStoreAndLoadDefaultConfig(void) {
 	if(driverSWStorageManagerConfigEmpty) {
 		returnVal = modConfigStoreDefaultConfig();
 	}
-	returnVal = modConfigStoreDefaultConfig();
+	// returnVal = modConfigStoreDefaultConfig();
 	
 	modConfigLoadConfig();
 	return returnVal;

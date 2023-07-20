@@ -85,7 +85,7 @@ int main(void) {
 		mainWatchDogReset();
 		if(modPowerElectronicsTask()){																						// Handle power electronics task
       modStateOfChargeProcess();
-      if (flag < 100000){
+      if (flag % 10 == 0){
         modCommandsPrintf("---------------------------DEBUG--------------------------------");	
         modCommandsPrintf("Main: packState AVoltage        %.3fV",packState.cellVoltageAverage);
         modCommandsPrintf("Main: packState SoC             %.2f%%",packState.SoC);
@@ -95,7 +95,6 @@ int main(void) {
         modCommandsPrintf("------------------------------------------------------------------");	      
       }
       flag += 1;
-      if (flag == 100000) flag = 0;
     }
    
     //safety_check_task(); 
