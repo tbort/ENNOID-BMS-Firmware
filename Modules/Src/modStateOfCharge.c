@@ -28,8 +28,50 @@ uint32_t modStateOfChargeStoreSoCTick;
 float modStateOfChargeDoDAccum = 0.0f;
 float modStateOfChargeDoDPeriod = 0.0f; 
 bool modStateOfChargePowerDownSavedFlag = false;
-float voltageTable[] = 	{2.9, 2.95, 3.0, 3.05, 3.1, 3.15, 3.2, 3.25, 3.3, 3.35, 3.4 , 3.45, 3.5 , 3.55, 3.6 , 3.65, 3.7 , 3.75, 3.8 , 3.85, 3.9 , 3.95, 4.0 , 4.05, 4.1 , 4.15 , 4.2  }; // voltage values
-float SoCTable[] = 		{0.0, 1.0 , 2.0, 3.0 , 4.0, 5.0 , 6.0, 7.0 , 8.0, 10.0, 15.0, 20.0,	28.0, 38.0, 45.0, 50.0, 57.0, 62.0, 67.0, 75.0, 78.0, 85.0, 90.0, 95.0, 99.5, 100.0, 100.0}; // Corresponding SoC values
+
+// V: 2.900 SoC:0.00 
+// V: 2.950 SoC:1.00 
+// V: 3.000 SoC:2.00 
+// V: 3.050 SoC:3.00 
+// V: 3.100 SoC:4.00 
+// V: 3.150 SoC:5.00 
+// V: 3.200 SoC:6.00 
+// V: 3.250 SoC:7.00 
+// V: 3.300 SoC:8.00 
+// V: 3.350 SoC:10.00 
+// V: 3.400 SoC:15.00 
+// V: 3.450 SoC:20.00 
+// V: 3.500 SoC:28.00 
+// V: 3.550 SoC:38.00 
+// V: 3.600 SoC:45.00 
+// V: 3.650 SoC:50.00 
+// V: 3.700 SoC:57.00 
+// V: 3.750 SoC:62.00 
+// V: 3.800 SoC:67.00 
+// V: 3.850 SoC:75.00 
+// V: 3.900 SoC:78.00 
+// V: 3.950 SoC:85.00 
+// V: 4.000 SoC:90.00 
+// V: 4.050 SoC:95.00 
+// V: 4.100 SoC:99.50 
+// V: 4.150 SoC:100.00 
+
+float voltageTable[] = {
+    2.900, 2.925, 2.950, 2.975, 3.000, 3.025, 3.050, 3.075, 3.100, 3.125,
+    3.150, 3.175, 3.200, 3.225, 3.250, 3.275, 3.300, 3.325, 3.350, 3.375,
+    3.400, 3.425, 3.450, 3.475, 3.500, 3.525, 3.550, 3.575, 3.600, 3.625,
+    3.650, 3.675, 3.700, 3.725, 3.750, 3.775, 3.800, 3.825, 3.850, 3.875,
+    3.900, 3.925, 3.950, 3.975, 4.000, 4.025, 4.050, 4.075, 4.100, 4.125,
+    4.150, 4.175
+};
+
+float SoCTable[] = {
+    0.00, 0.50, 1.00, 1.50, 2.00, 2.50, 3.00, 3.50, 4.00, 4.50, 5.00, 5.50,
+    6.00, 6.50, 7.00, 7.50, 8.00, 9.00, 10.00, 12.50, 15.00, 17.50, 20.00,
+    24.00, 28.00, 33.00, 38.00, 41.50, 45.00, 47.50, 50.00, 53.50, 57.00,
+    59.50, 62.00, 64.50, 67.00, 71.00, 75.00, 76.50, 78.00, 81.50, 85.00,
+    87.50, 90.00, 92.50, 95.00, 97.25, 99.50, 99.75, 100.00, 100.00
+};
 
 
 modStateOfChargeStructTypeDef* modStateOfChargeInit(modPowerElectronicsPackStateTypedef *packState, modConfigGeneralConfigStructTypedef *generalConfigPointer){
@@ -85,7 +127,6 @@ void modStateOfChargeEnhanceCoulombCounting(void){
 	
 	// Store SoC every 'stateOfChargeStoreInterval'
 	if(modDelayTick1ms(&modStateOfChargeStoreSoCTick,modStateOfChargeGeneralConfigHandle->stateOfChargeStoreInterval) && !modStateOfChargePowerDownSavedFlag && (lastGeneralStateOfCharge.remainingCapacityAh != modStateOfChargeGeneralStateOfCharge.remainingCapacityAh)){
-		modCommandsPrintf("modStateOfCharge: Update and store SoC");	
 		modStateOfChargeStoreStateOfCharge();	
 	}
 	// Compare calculated SOC to simple linear calculation and make adjustments 
@@ -105,9 +146,6 @@ bool modStateOfChargeStoreAndLoadDefaultStateOfCharge(void){
 		driverSWStorageManagerStateOfChargeEmpty = false;
    		driverSWStorageManagerStoreStruct(&defaultStateOfCharge,STORAGE_STATEOFCHARGE);
 	}
-	
-	// modStateOfChargeStructTypeDef tempStateOfCharge;
-	// driverSWStorageManagerGetStruct(&tempStateOfCharge,STORAGE_STATEOFCHARGE);
 	
 	modStateOfChargeLoadStateOfCharge();
 	return returnVal;
@@ -145,8 +183,9 @@ void modStateOfChargeVoltageEvent(modStateOfChargeVoltageEventTypeDef eventType)
 
 void modStateOfChargeVoltageToSoC(void){
 	for (int i = 0; i < sizeof(voltageTable)/sizeof(voltageTable[i]); i++){
-		if (fabsf(modStateOfChargePackStateHandle->cellVoltageAverage - voltageTable[i]) < 0.025 ){
-			if(fabsf(modStateOfChargePackStateHandle->SoC - SoCTable[i]) > 3){ 
+		if (fabsf(modStateOfChargePackStateHandle->cellVoltageAverage - voltageTable[i]) < 0.0125 ){
+			if(fabsf(modStateOfChargePackStateHandle->SoC - SoCTable[i]) > 2.5){ 
+				modCommandsPrintf("modStateOfChargeVoltageToSoC: Update SoC based on Voltage table");
 				modStateOfChargeDoDAccum = modStateOfChargeGeneralStateOfCharge.generalStateOfHealth - SoCTable[i];
 			}
 			return;
