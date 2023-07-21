@@ -978,7 +978,7 @@ void modPowerElectronicsCellMonitorsInit(void){
 			configStruct.DischargeTimout          = 0;																											// Discharge timout value / limit
 			configStruct.CellUnderVoltageLimit    = modPowerElectronicsGeneralConfigHandle->cellHardUnderVoltage; // Undervoltage level, cell voltages under this limit will cause interrupt
 			configStruct.CellOverVoltageLimit     = modPowerElectronicsGeneralConfigHandle->cellHardOverVoltage;  // Over voltage limit, cell voltages over this limit will cause interrupt
-			driverSWLTC6804Init(configStruct, modPowerElectronicsGeneralConfigHandle->cellMonitorICCount, modPowerElectronicsGeneralConfigHandle->noOfCellsPerModule, modPowerElectronicsGeneralConfigHandle->noOfTempSensorPerModule, modPowerElectronicsGeneralConfigHandle->cellMonitorType);   
+			driverSWLTC6804Init(configStruct, modPowerElectronicsGeneralConfigHandle->cellMonitorICCount, modPowerElectronicsGeneralConfigHandle->noOfCellsPerModule, 2*modPowerElectronicsGeneralConfigHandle->noOfTempSensorPerModule, modPowerElectronicsGeneralConfigHandle->cellMonitorType);   
 			
 			// Safety signal is managed by the controller, it is configured as open drain and will be kept low by. watchdog will make the output to be released.
 			driverHWSwitchesSetSwitchState(SWITCH_SAFETY_OUTPUT,SWITCH_RESET);
@@ -994,7 +994,9 @@ void modPowerElectronicsCellMonitorsCheckConfigAndReadAnalogData(void){
 			// TODO: Implement
 			
 			// Read cell voltages
-			driverSWLTC6804ReadCellVoltagesArray(modPowerElectronicsPackStateHandle->cellModuleVoltages);
+			if(driverSWLTC6804ReadCellVoltagesArray(modPowerElectronicsPackStateHandle->cellModuleVoltages)){
+				// modCommandsPrintf("modPowerElectronicsCellMonitorsCheckConfigAndReadAnalogData: driverSWLTC6804ReadCellVoltagesArray true");
+			}
 			modPowerElectronicsCellMonitorsArrayTranslate();
 			
 				
