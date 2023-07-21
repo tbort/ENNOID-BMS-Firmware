@@ -90,7 +90,7 @@ CC = arm-none-eabi-gcc
 OBJCOPY = arm-none-eabi-objcopy
 OBJDUMP = arm-none-eabi-objdump
 
-CFLAGS  = -std=gnu99 -g -Os -Wall
+CFLAGS  = -std=gnu99 -g -Os -Wall -gdwarf-4
 CFLAGS += -mlittle-endian -mthumb -mthumb-interwork
 CFLAGS += -mcpu=cortex-m4 -fsingle-precision-constant
 CFLAGS += -Wdouble-promotion
@@ -166,7 +166,8 @@ upload-bin: main.bin
 connect:
 	openocd $(OPENOCD_FLAGS)
 
-
+flash: 
+	st-flash write main.bin 0x08000000
 
 debug:
 	arm-none-eabi-gdb --eval-command="target remote localhost:3333" main.elf
