@@ -29,3 +29,47 @@ The flash is formatted as follows (summary):
 ((uint32_t)0x08032000) /* Base @ of Page 100, 2 Kbytes */  // Bootloader base<br>
 
 See "modFlash.h" and "modFlash.c" for more info.
+
+# Install OpenOCD for Debugging with VSCode for Window
+- Install VSCode with C/C++, C/C++ extension pack, and Cortex-Debug, Makefile Tools, Serial Monitor
+- Download MSYS2 or Git Bash
+- Download xPack OpenOCD 
+- Download gcc-arm-none-eabi 
+- Extract all download file to its corresponding folder
+- Install make with Git Bash/MSYS2
+- Update path to arm tool chain : $ echo 'export PATH=$PATH:/c/gcc-arm-none-eabi/bin/' >> ~/.bashrc && source ~/.bashrc
+- Go to ./build_all/rebuild_all to find corresponding "make" -> run make to create main.elf 
+- On VSCode, click on debug icon on left side, and click on "create a launch.json file" ; choose Cortex_Debug
+- Copy and change corresponding path for configFiles and searchDir
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "cwd": "${workspaceRoot}",
+            "executable": "./main.elf",
+            "name": "Debug with OpenOCD",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "C:/openocd/scripts/interface//stlink.cfg",
+                "C:/openocd/scripts/target/stm32f3x.cfg"
+            ],
+            "searchDir": [
+                "C:/openocd/scripts"
+            ],
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "none"
+        },
+    ]
+}
+- Create settings.json, copy and paste: 
+{
+    "cortex-debug.gdbPath": "C:/gcc-arm-none-eabi/bin/arm-none-eabi-gdb",
+    "cortex-debug.openocdPath": "C:/openocd/bin/openocd",
+    "cortex-debug.variableUseNaturalFormat": true
+}
+
+-Click on green button on left "Debug with OpenOCD"
+
+Example video: https://www.youtube.com/watch?v=-p26X8lTAvo&ab_channel=EkaSusilo 
