@@ -71,7 +71,7 @@ void modTerminalProcessString(char *str) {
 		modCommandsPrintf("generalStateOfCharge Capacity    : %.1fAh",generalStateOfCharge->remainingCapacityAh);
 		modCommandsPrintf("packState Capacity    : %.2fAh",packState.SoCCapacityAh);
 		modCommandsPrintf("packState SoC		 : %.2f%%",packState.SoC);
-		
+		modCommandsPrintf("packState Balance	 : %s",packState.balanceActive?"True":"False");
 		switch(modOperationalStateCurrentState) {
 			case OP_STATE_CHARGING:
 				modCommandsPrintf("Operational state     : %s","Charging");
