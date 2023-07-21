@@ -85,16 +85,16 @@ int main(void) {
 		mainWatchDogReset();
 		if(modPowerElectronicsTask()){																						// Handle power electronics task
       modStateOfChargeProcess();
-      if (flag % 10 == 0){
-        modCommandsPrintf("---------------------------DEBUG--------------------------------");	
-        modCommandsPrintf("Main: packState AVoltage        %.3fV",packState.cellVoltageAverage);
-        modCommandsPrintf("Main: packState SoC             %.2f%%",packState.SoC);
-        modCommandsPrintf("Main: generalStateOfCharge      %.2f%%",generalStateOfCharge->generalStateOfCharge);
-        modCommandsPrintf("Main: modStateOfChargeDoDAccum  %.7f%%",modStateOfChargeDoDAccum);
-        modCommandsPrintf("Main: modStateOfChargeDoDPeriod %.7f%%",modStateOfChargeDoDPeriod); 
-        modCommandsPrintf("------------------------------------------------------------------");	      
-      }
-      flag += 1;
+      // if (flag % 10 == 0){
+      //   modCommandsPrintf("---------------------------DEBUG--------------------------------");	
+      //   modCommandsPrintf("Main: packState AVoltage        %.3fV",packState.cellVoltageAverage);
+      //   modCommandsPrintf("Main: packState SoC             %.2f%%",packState.SoC);
+      //   modCommandsPrintf("Main: generalStateOfCharge      %.2f%%",generalStateOfCharge->generalStateOfCharge);
+      //   modCommandsPrintf("Main: modStateOfChargeDoDAccum  %.7f%%",modStateOfChargeDoDAccum);
+      //   modCommandsPrintf("Main: modStateOfChargeDoDPeriod %.7f%%",modStateOfChargeDoDPeriod); 
+      //   modCommandsPrintf("------------------------------------------------------------------");	      
+      // }
+      // flag += 1;
     }
    
     //safety_check_task(); 

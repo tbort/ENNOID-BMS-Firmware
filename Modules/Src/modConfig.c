@@ -898,7 +898,7 @@ void modConfigLoadDefaultConfig(modConfigGeneralConfigStructTypedef *configLocat
 	configLocation->chargeEnableOperationalState                   	= opStateChargingModeCharging;		// Go to charging mode when a charger is connected
 	configLocation->powerDownDelay                                 	= 3000;                    		// Wait only minimal to turn off
 	configLocation->noOfCellsPerModule                             	= 12;                      		// Number of cell levels monitored per LTC68XX	
-	configLocation->lastICNoOfCells					= 2;					// Last IC cell count (calculated)
+	configLocation->lastICNoOfCells					= 12;					// Last IC cell count (calculated)
 	configLocation->lastICMask					= 0;					// Balance mask used for last IC
 	configLocation->humidityICType 					= 2;
 	configLocation->BMSApplication					= electricVehicle;					// Humidity sensor IC type
