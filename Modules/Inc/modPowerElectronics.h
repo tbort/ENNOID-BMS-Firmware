@@ -135,8 +135,8 @@ typedef struct {
 	modPowerElectronicsPackOperationalCellStatesTypedef packOperationalCellState;
 	
 	// Slave modules -> TODO move into struct.
-	float    cellModuleVoltages[NoOfCellMonitorsPossibleOnBMS][18];
-	float    auxModuleVoltages[NoOfCellMonitorsPossibleOnBMS][12];
+	float    cellModuleVoltages[NoOfCellMonitorsPossibleOnBMS][12];
+	float    auxModuleVoltages[NoOfCellMonitorsPossibleOnBMS][10];
 	float    expModuleVoltages[NoOfExpMonitorPossibleOnBMS][8];
 	uint32_t cellModuleBalanceResistorEnableMask[NoOfCellMonitorsPossibleOnBMS];
 	uint32_t cellModuleBalanceResistorEnableMaskTest[NoOfCellMonitorsPossibleOnBMS];
