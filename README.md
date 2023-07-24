@@ -35,12 +35,13 @@ See "modFlash.h" and "modFlash.c" for more info.
 - Download MSYS2 or Git Bash
 - Download xPack OpenOCD 
 - Download gcc-arm-none-eabi 
-- Extract all download file to its corresponding folder
+- Extract, and install to its corresponding folder (i.e. C:/openocd/... , C:/gcc-arm-none-eabi/... , )
 - Install make with Git Bash/MSYS2
 - Update path to arm tool chain : $ echo 'export PATH=$PATH:/c/gcc-arm-none-eabi/bin/' >> ~/.bashrc && source ~/.bashrc
 - Go to ./build_all/rebuild_all to find corresponding "make" -> run make to create main.elf 
 - On VSCode, click on debug icon on left side, and click on "create a launch.json file" ; choose Cortex_Debug
 - Copy and change corresponding path for configFiles and searchDir
+````
 {
     "version": "0.2.0",
     "configurations": [
@@ -63,12 +64,16 @@ See "modFlash.h" and "modFlash.c" for more info.
         },
     ]
 }
+````
+
 - Create settings.json, copy and paste: 
+````
 {
     "cortex-debug.gdbPath": "C:/gcc-arm-none-eabi/bin/arm-none-eabi-gdb",
     "cortex-debug.openocdPath": "C:/openocd/bin/openocd",
     "cortex-debug.variableUseNaturalFormat": true
 }
+````
 
 -Click on green button on left "Debug with OpenOCD"
 
