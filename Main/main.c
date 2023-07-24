@@ -42,9 +42,7 @@ IWDG_HandleTypeDef handleIWDG;
 modConfigGeneralConfigStructTypedef *generalConfig;
 modStateOfChargeStructTypeDef       *generalStateOfCharge;
 modPowerElectronicsPackStateTypedef packState;
-//TESTING: Global var
 
-//TESTING
 void SystemClock_Config(void);
 void mainWatchDogInitAndStart(void);
 void mainWatchDogReset(void);
@@ -74,8 +72,7 @@ int main(void) {
 	modOperationalStateInit(&packState,generalConfig,generalStateOfCharge);		// Will keep track of and control operational state (eg. normal use / charging / balancing / power down)
 	
   //safety_check_init(&packState, generalConfig);
-  	//report_status_init(&packState); 
-	int flag = -10;	
+  //report_status_init(&packState); 
   while(true) {
 		modEffectTask();
 		modPowerStateTask();
@@ -85,18 +82,7 @@ int main(void) {
 		mainWatchDogReset();
 		if(modPowerElectronicsTask()){																						// Handle power electronics task
       modStateOfChargeProcess();
-      // if (flag % 10 == 0){
-      //   modCommandsPrintf("---------------------------DEBUG--------------------------------");	
-      //   modCommandsPrintf("Main: packState AVoltage        %.3fV",packState.cellVoltageAverage);
-      //   modCommandsPrintf("Main: packState SoC             %.2f%%",packState.SoC);
-      //   modCommandsPrintf("Main: generalStateOfCharge      %.2f%%",generalStateOfCharge->generalStateOfCharge);
-      //   modCommandsPrintf("Main: modStateOfChargeDoDAccum  %.7f%%",modStateOfChargeDoDAccum);
-      //   modCommandsPrintf("Main: modStateOfChargeDoDPeriod %.7f%%",modStateOfChargeDoDPeriod); 
-      //   modCommandsPrintf("------------------------------------------------------------------");	      
-      // }
-      // flag += 1;
     }
-   
     //safety_check_task(); 
     //report_status_task();																						// If there is new data handle SoC estimation
   }

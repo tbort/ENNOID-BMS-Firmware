@@ -67,8 +67,8 @@ void modTerminalProcessString(char *str) {
 		modCommandsPrintf("Pack current          : %.2fA",packState.packCurrent);
 		modCommandsPrintf("LC Load voltage       : %.2fV",packState.loCurrentLoadVoltage);	
 		modCommandsPrintf("Low  current          : %.2fA",packState.loCurrentLoadCurrent);	
-		modCommandsPrintf("generalStateOfCharge SoC       : %.1f%%",generalStateOfCharge->generalStateOfCharge);
-		modCommandsPrintf("generalStateOfCharge Capacity    : %.1fAh",generalStateOfCharge->remainingCapacityAh);
+		modCommandsPrintf("generalStateOfCharge SoC       : %.2f%%",generalStateOfCharge->generalStateOfCharge);
+		modCommandsPrintf("generalStateOfCharge Capacity    : %.2fAh",generalStateOfCharge->remainingCapacityAh);
 		modCommandsPrintf("packState Capacity    : %.2fAh",packState.SoCCapacityAh);
 		modCommandsPrintf("packState SoC		 : %.2f%%",packState.SoC);
 		modCommandsPrintf("packState Balance	 : %s",packState.balanceActive?"True":"False");
@@ -112,8 +112,6 @@ void modTerminalProcessString(char *str) {
 		modCommandsPrintf("Charge enabled        : %s",chargeEnabled ? "True" : "False");	
     	modCommandsPrintf("Power button pressed  : %s",packState.powerButtonActuated ? "True" : "False");	
     	modCommandsPrintf("CAN safety state      : %s",packState.safetyOverCANHCSafeNSafe	? "True" : "False");
-
-		
 		modCommandsPrintf("---End Battery Pack Status---");
 		modCommandsPrintf(" ");
 		
@@ -232,8 +230,16 @@ void modTerminalProcessString(char *str) {
 		
 	} else if (strcmp(argv[0], "bootloader_jump") == 0) {
 		modFlashJumpToBootloader();
-		
-	} else if (strcmp(argv[0], "help") == 0) {
+
+	} else if(strcmp(argv[0], "debug_soc") == 0){
+        modCommandsPrintf("-------SoC Debug---------");	
+        modCommandsPrintf("packState AVoltage        %.3fV",packState.cellVoltageAverage);
+        modCommandsPrintf("packState SoC             %.2f%%",packState.SoC);
+        modCommandsPrintf("generalStateOfCharge      %.2f%%",generalStateOfCharge->generalStateOfCharge);
+        modCommandsPrintf("modStateOfChargeDoDAccum  %.7f%%",modStateOfChargeDoDAccum);
+        modCommandsPrintf("modStateOfChargeDoDPeriod %.7f%%",modStateOfChargeDoDPeriod); 
+	
+	}else if (strcmp(argv[0], "help") == 0) {
 		modCommandsPrintf("------- Start of help -------");
 		modCommandsPrintf("Valid commands for ENNOID-BMS are:");
 		modCommandsPrintf("help");
@@ -260,6 +266,8 @@ void modTerminalProcessString(char *str) {
 		modCommandsPrintf("  Print some hardware information.");
 		modCommandsPrintf("hwinfo2");
 		modCommandsPrintf("  Print some hardware information with revision.");
+		modCommandsPrintf("debug_soc");
+		modCommandsPrintf("  Print SoC related values for debugging.");
 
 		for (int i = 0;i < callback_write;i++) {
 			if (callbacks[i].arg_names) {
